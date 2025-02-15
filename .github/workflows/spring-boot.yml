@@ -72,5 +72,4 @@ jobs:
           target: prod
           push: true
           tags: |
-            ${{ vars.DOCKER_REPOSITORY_API }}:${{ steps.pom-version.outputs.version }}
             ${{ vars.DOCKER_REPOSITORY_API }}:latest

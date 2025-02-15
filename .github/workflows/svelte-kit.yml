@@ -80,7 +80,6 @@ jobs:
           target: prod
           push: true
           tags: |
-            ${{ vars.DOCKER_REPOSITORY_UI }}:${{ steps.package-version.outputs.version }}
             ${{ vars.DOCKER_REPOSITORY_UI }}:latest
           build-args: |
             PUBLIC_APP_NAME=${{ env.PUBLIC_APP_NAME }}
