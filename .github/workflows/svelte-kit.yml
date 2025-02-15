@@ -62,8 +62,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get package version
-        id: package-version
+      - name: Get ui version
+        id: ui-version
         run: echo "version=$(jq -r .version frontend/svelte-kit/package.json)" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
@@ -80,7 +80,7 @@ jobs:
           target: prod
           push: true
           tags: |
-            ${{ vars.DOCKER_REPOSITORY_UI }}:${{ steps.package-version.outputs.version }}
+            ${{ vars.DOCKER_REPOSITORY_UI }}:${{ steps.ui-version.outputs.version }}
             ${{ vars.DOCKER_REPOSITORY_UI }}:latest
           build-args: |
             PUBLIC_APP_NAME=${{ env.PUBLIC_APP_NAME }}

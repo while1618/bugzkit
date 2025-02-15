@@ -55,8 +55,8 @@ jobs:
       - name: Install xmllint
         run: sudo apt install -y libxml2-utils
 
-      - name: Get package version
-        id: pom-version
+      - name: Get api version
+        id: api-version
         run: |
           VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" backend/spring-boot/pom.xml | sed 's/-SNAPSHOT//')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -75,5 +75,5 @@ jobs:
           target: prod
           push: true
           tags: |
-            ${{ vars.DOCKER_REPOSITORY_API }}:${{ steps.package-version.outputs.version }}
+            ${{ vars.DOCKER_REPOSITORY_API }}:${{ steps.api-version.outputs.version }}
             ${{ vars.DOCKER_REPOSITORY_API }}:latest
