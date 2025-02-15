@@ -55,7 +55,7 @@ jobs:
       - name: Get package version
         id: pom-version
         run: |
-          VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml | sed 's/-SNAPSHOT//')
+          VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" backend/spring-boot/pom.xml | sed 's/-SNAPSHOT//')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
@@ -72,4 +72,5 @@ jobs:
           target: prod
           push: true
           tags: |
+            ${{ vars.DOCKER_REPOSITORY_API }}:${{ steps.package-version.outputs.version }}
             ${{ vars.DOCKER_REPOSITORY_API }}:latest
