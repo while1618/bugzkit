@@ -1,11 +1,7 @@
 services:
   bugzkit-api:
     container_name: bugzkit-api
-    image: bugzkit-api:1.0.0
-    build:
-      context: ./backend/spring-boot
-      dockerfile: Dockerfile
-      target: ${PROFILE:-prod}
+    image: while1618/bugzkit-api:1.0.0
     ports:
       - "${API_PORT:-8080}:${API_PORT:-8080}"
     environment:
@@ -96,15 +92,7 @@ services:
 
   bugzkit-ui:
     container_name: bugzkit-ui
-    image: bugzkit-ui:1.0.0
-    build:
-      context: ./frontend/svelte-kit
-      dockerfile: Dockerfile
-      args:
-        PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
-        PUBLIC_API_URL: ${HTTP_PROTOCOL:-http}://bugzkit-api:${API_PORT:-8080}/v1
-        JWT_SECRET: ${JWT_SECRET:-secret}
-      target: ${PROFILE:-prod}
+    image: while1618/bugzkit-ui:1.0.0
     environment:
       PORT: ${UI_PORT:-5173}
       ORIGIN: ${HTTP_PROTOCOL:-http}://${UI_HOST:-localhost}:${UI_PORT:-5173}
