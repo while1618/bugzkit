@@ -2,8 +2,7 @@ services:
   bugzkit-api:
     container_name: bugzkit-api
     image: while1618/bugzkit-api:1.0.0
-    ports:
-      - "8080:8080"
+    restart: always
     environment:
       UI_URL: ${UI_URL:-https://bugzkit.com}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
@@ -26,10 +25,8 @@ services:
   postgres:
     container_name: postgres
     image: postgres:17.2-alpine
-    ports:
-      - "5432:5432"
+    restart: always
     environment:
-      PGPORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DB: ${POSTGRES_DB:-bugzkit}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
@@ -42,9 +39,8 @@ services:
   redis:
     container_name: redis
     image: redis:7.4.1
-    ports:
-      - "6379:6379"
-    command: redis-server --port 6379 --requirepass ${REDIS_PASSWORD:-root}
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD:-root}
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
     healthcheck:
@@ -56,11 +52,9 @@ services:
   bugzkit-ui:
     container_name: bugzkit-ui
     image: while1618/bugzkit-ui:1.0.0
+    restart: always
     environment:
-      PORT: 5173
       ORIGIN: http://localhost:5173
-    ports:
-      - "5173:5173"
     depends_on:
       - bugzkit-api
     healthcheck:
