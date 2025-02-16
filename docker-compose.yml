@@ -21,6 +21,12 @@ services:
     container_name: bugzkit-api
     image: while1618/bugzkit-api:1.0.0
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.guestbook.rule=Host(`api.bugzkit.com`)"
+      - "traefik.http.routers.guestbook.entrypoints=websecure"
+      - "traefik.http.routers.guestbook.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
     environment:
       UI_URL: ${UI_URL:-https://bugzkit.com}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
@@ -71,6 +77,12 @@ services:
     container_name: bugzkit-ui
     image: while1618/bugzkit-ui:1.0.0
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.guestbook.rule=Host(`bugzkit.com`)"
+      - "traefik.http.routers.guestbook.entrypoints=websecure"
+      - "traefik.http.routers.guestbook.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
     environment:
       ORIGIN: http://localhost:5173
     depends_on:
@@ -80,3 +92,6 @@ services:
       start_period: 10s
       interval: 30s
       retries: 3
+volumes:
+  db-data:
+  letsencrypt:
