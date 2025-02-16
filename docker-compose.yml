@@ -1,33 +1,28 @@
 services:
   reverse-proxy:
     image: traefik:v3.1
+    container_name: traefik
+    restart: always
     command:
-      - "--providers.docker"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entryPoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=while1618@tutamail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.email=your-email@example.com
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - letsencrypt:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - web
+
   bugzkit-api:
     container_name: bugzkit-api
     image: while1618/bugzkit-api:1.0.0
     restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.bugzkit-api.rule=Host(`api.bugzkit.com`)"
-      - "traefik.http.routers.bugzkit-api.entrypoints=websecure"
-      - "traefik.http.routers.bugzkit-api.tls.certresolver=myresolver"
-      - "traefik.http.services.api.loadbalancer.server.port=8080"
-      - "com.centurylinklabs.watchtower.enable=true"
     environment:
       UI_URL: ${UI_URL:-https://bugzkit.com}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
@@ -41,11 +36,14 @@ services:
     depends_on:
       - postgres
       - redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      start_period: 10s
-      interval: 30s
-      retries: 3
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.bugzkit.com`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
 
   postgres:
     container_name: postgres
@@ -60,6 +58,8 @@ services:
       start_period: 10s
       interval: 30s
       retries: 3
+    networks:
+      - web
 
   redis:
     container_name: redis
@@ -73,27 +73,29 @@ services:
       start_period: 10s
       interval: 30s
       retries: 3
+    networks:
+      - web
 
   bugzkit-ui:
     container_name: bugzkit-ui
     image: while1618/bugzkit-ui:1.0.0
     restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.bugzkit-ui.rule=Host(`bugzkit.com`)"
-      - "traefik.http.routers.bugzkit-ui.entrypoints=websecure"
-      - "traefik.http.routers.bugzkit-ui.tls.certresolver=myresolver"
-      - "traefik.http.services.ui.loadbalancer.server.port=5173"
-      - "com.centurylinklabs.watchtower.enable=true"
     environment:
       PORT: 5173
       ORIGIN: https://bugzkit.com
     depends_on:
       - bugzkit-api
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5173"]
-      start_period: 10s
-      interval: 30s
-      retries: 3
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ui.rule=Host(`bugzkit.com`)"
+      - "traefik.http.routers.ui.entrypoints=websecure"
+      - "traefik.http.routers.ui.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ui.loadbalancer.server.port=5173"
+
 volumes:
   letsencrypt:
+networks:
+  web:
+    driver: bridge
