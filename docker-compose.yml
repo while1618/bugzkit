@@ -23,9 +23,10 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.guestbook.rule=Host(`api.bugzkit.com`)"
-      - "traefik.http.routers.guestbook.entrypoints=websecure"
-      - "traefik.http.routers.guestbook.tls.certresolver=myresolver"
+      - "traefik.http.routers.bugzkit-api.rule=Host(`api.bugzkit.com`)"
+      - "traefik.http.routers.bugzkit-api.entrypoints=websecure"
+      - "traefik.http.routers.bugzkit-api.tls.certresolver=myresolver"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
       - "com.centurylinklabs.watchtower.enable=true"
     environment:
       UI_URL: ${UI_URL:-https://bugzkit.com}
@@ -79,12 +80,14 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.guestbook.rule=Host(`bugzkit.com`)"
-      - "traefik.http.routers.guestbook.entrypoints=websecure"
-      - "traefik.http.routers.guestbook.tls.certresolver=myresolver"
+      - "traefik.http.routers.bugzkit-ui.rule=Host(`bugzkit.com`)"
+      - "traefik.http.routers.bugzkit-ui.entrypoints=websecure"
+      - "traefik.http.routers.bugzkit-ui.tls.certresolver=myresolver"
+      - "traefik.http.services.ui.loadbalancer.server.port=5173"
       - "com.centurylinklabs.watchtower.enable=true"
     environment:
-      ORIGIN: http://localhost:5173
+      PORT: 5173
+      ORIGIN: https://bugzkit.com
     depends_on:
       - bugzkit-api
     healthcheck:
@@ -93,5 +96,4 @@ services:
       interval: 30s
       retries: 3
 volumes:
-  db-data:
   letsencrypt:
