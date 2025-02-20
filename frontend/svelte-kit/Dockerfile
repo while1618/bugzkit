@@ -29,5 +29,4 @@ WORKDIR /app
 COPY --from=build /app/build build/
 COPY --from=build /app/package.json .
 ENV NODE_ENV=production
-EXPOSE 5173
 CMD ["node", "build"]

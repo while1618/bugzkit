@@ -16,5 +16,4 @@ ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "bugzkit-api.jar"]
 FROM openjdk:21-jdk AS prod
 WORKDIR /app
 COPY --from=build /app/target/*.jar bugzkit-api.jar
-EXPOSE 8080
 ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "bugzkit-api.jar"]
