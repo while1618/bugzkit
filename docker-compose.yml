@@ -1,20 +1,4 @@
 services:
-  reverse-proxy:
-    image: nginx:alpine
-    container_name: reverse-proxy
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-    depends_on:
-      - bugzkit-api
-      - bugzkit-ui
-    networks:
-      - web
-
   bugzkit-api:
     container_name: bugzkit-api
     image: while1618/bugzkit-api:1.0.0
@@ -76,15 +60,30 @@ services:
     image: while1618/bugzkit-ui:1.0.0
     restart: always
     environment:
-      PORT: 5173
-      ORIGIN: http://localhost:5173
+      ORIGIN: https://bugzkit.com
     depends_on:
       - bugzkit-api
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
       start_period: 10s
       interval: 30s
       retries: 3
+    networks:
+      - web
+
+  caddy:
+    container_name: caddy
+    image: caddy:2.9.1
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy_data:/data
+      - ./caddy_config:/config
+      - /etc/ssl/bugzkit/cert.pem:/etc/caddy/cert.pem
+      - /etc/ssl/bugzkit/key.pem:/etc/caddy/key.pem
     networks:
       - web
 

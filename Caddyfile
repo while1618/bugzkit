@@ -1,0 +1,9 @@
+api.bugzkit.com {
+    tls /etc/caddy/cert.pem /etc/caddy/key.pem
+    reverse_proxy / bugzkit-api:8080
+}
+
+bugzkit.com {
+    tls /etc/caddy/cert.pem /etc/caddy/key.pem
+    reverse_proxy / bugzkit-ui:3000
+}
