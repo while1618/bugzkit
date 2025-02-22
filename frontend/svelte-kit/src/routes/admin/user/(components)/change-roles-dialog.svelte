@@ -68,7 +68,7 @@
       </div>
     </form>
 
-    <Dialog.Footer>
+    <Dialog.Footer class="gap-2 sm:gap-0">
       <Button variant="outline" onclick={() => (dialogOpen = false)}>{m.general_cancel()}</Button>
       <Form.Button form="changeRolesForm" onclick={() => (dialogOpen = false)}>
         {m.general_save()}

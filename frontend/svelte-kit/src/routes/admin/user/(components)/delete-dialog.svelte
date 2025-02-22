@@ -3,6 +3,7 @@
   import { Button, buttonVariants } from '$lib/components/ui/button';
   import type { AdminUser } from '$lib/models/user/user';
   import * as m from '$lib/paraglide/messages.js';
+  import { cn } from '$lib/utils.js';
   import Trash2Icon from 'lucide-svelte/icons/trash-2';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
@@ -52,7 +53,11 @@
       <AlertDialog.Action onclick={() => (dialogOpen = false)}>
         {#snippet child({ props })}
           <form method="POST" action="?/delete" use:enhance>
-            <Button {...props} type="submit" class={buttonVariants({ variant: 'destructive' })}>
+            <Button
+              {...props}
+              type="submit"
+              class={cn('w-full', buttonVariants({ variant: 'destructive' }))}
+            >
               {m.general_delete()}
             </Button>
           </form>

@@ -3,6 +3,7 @@
   import { Button } from '$lib/components/ui/button';
   import type { AdminUser } from '$lib/models/user/user';
   import * as m from '$lib/paraglide/messages.js';
+  import { cn } from '$lib/utils.js';
   import LockKeyholeIcon from 'lucide-svelte/icons/lock-keyhole';
   import LockKeyholeOpenIcon from 'lucide-svelte/icons/lock-keyhole-open';
   import { toast } from 'svelte-sonner';
@@ -70,9 +71,10 @@
             <Button
               {...props}
               type="submit"
-              class={user.lock
-                ? 'bg-blue-500 hover:bg-blue-500/90'
-                : 'bg-red-500 hover:bg-red-500/90'}
+              class={cn(
+                'w-full',
+                user.lock ? 'bg-blue-500 hover:bg-blue-500/90' : 'bg-red-500 hover:bg-red-500/90',
+              )}
             >
               {user.lock ? m.admin_unlock() : m.admin_lock()}
             </Button>

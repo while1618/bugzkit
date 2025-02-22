@@ -3,6 +3,7 @@
   import { Button } from '$lib/components/ui/button';
   import type { AdminUser } from '$lib/models/user/user';
   import * as m from '$lib/paraglide/messages.js';
+  import { cn } from '$lib/utils';
   import CheckIcon from 'lucide-svelte/icons/check';
   import XIcon from 'lucide-svelte/icons/x';
   import { toast } from 'svelte-sonner';
@@ -70,9 +71,12 @@
             <Button
               {...props}
               type="submit"
-              class={user.active
-                ? 'bg-red-500 hover:bg-red-500/90'
-                : 'bg-green-500 hover:bg-green-500/90'}
+              class={cn(
+                'w-full',
+                user.active
+                  ? 'bg-red-500 hover:bg-red-500/90'
+                  : 'bg-green-500 hover:bg-green-500/90',
+              )}
             >
               {user.active ? m.admin_deactivate() : m.admin_activate()}
             </Button>
