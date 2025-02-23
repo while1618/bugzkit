@@ -64,7 +64,7 @@ services:
     image: while1618/bugzkit-ui:1.0.0
     restart: always
     environment:
-      ORIGIN: https://bugzkit.com
+      ORIGIN: ${UI_URL:-https://bugzkit.com}
     depends_on:
       - bugzkit-api
     healthcheck:
