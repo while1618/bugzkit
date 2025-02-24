@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import org.bugzkit.api.shared.email.service.impl.EmailServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,7 @@ class EmailServiceTest {
   @InjectMocks private EmailServiceImpl emailService;
 
   @Test
-  void sendHtmlEmail() throws MessagingException {
+  void sendHtmlEmail() throws MessagingException, UnsupportedEncodingException {
     final var to = "user";
     final var subject = "subject";
     final var body =
