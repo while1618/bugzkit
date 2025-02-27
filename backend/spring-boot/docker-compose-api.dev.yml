@@ -41,6 +41,10 @@ services:
       start_period: 10s
       interval: 30s
       retries: 3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - web
 
   redis:
     container_name: redis
@@ -55,3 +59,15 @@ services:
       start_period: 10s
       interval: 30s
       retries: 3
+    volumes:
+      - redis_data:/data
+    networks:
+      - web
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  web:
+    driver: bridge
