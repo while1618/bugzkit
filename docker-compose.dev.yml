@@ -85,7 +85,7 @@ services:
     environment:
       ORIGIN: ${UI_URL:-http://localhost:5173}
       JWT_SECRET: ${JWT_SECRET:-secret}
-      PUBLIC_APP_NAME: ${APP_NAME:-test}
+      PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
       PUBLIC_API_URL: ${API_URL:-http://bugzkit-api:8080}
     depends_on:
       - bugzkit-api
