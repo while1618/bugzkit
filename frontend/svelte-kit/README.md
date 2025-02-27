@@ -5,7 +5,7 @@ Ensure the API is up and running before starting the UI. Then, create a `.env` f
 ```bash
 # Public
 PUBLIC_APP_NAME=your_app_name
-PUBLIC_API_URL=http://localhost:8080/v1
+PUBLIC_API_URL=http://localhost:8080
 # Private
 JWT_SECRET=secret
 ```

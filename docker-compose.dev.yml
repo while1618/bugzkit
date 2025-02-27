@@ -77,7 +77,7 @@ services:
       args:
         JWT_SECRET: ${JWT_SECRET:-secret}
         PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
-        PUBLIC_API_URL: ${API_URL:-http://bugzkit-api:8080/v1}
+        PUBLIC_API_URL: ${API_URL:-http://bugzkit-api:8080}
       target: dev
     ports:
       - "5173:5173"
@@ -86,7 +86,7 @@ services:
       ORIGIN: ${UI_URL:-http://localhost:5173}
       JWT_SECRET: ${JWT_SECRET:-secret}
       PUBLIC_APP_NAME: ${APP_NAME:-test}
-      PUBLIC_API_URL: ${API_URL:-http://bugzkit-api:8080/v1}
+      PUBLIC_API_URL: ${API_URL:-http://bugzkit-api:8080}
     depends_on:
       - bugzkit-api
     healthcheck:
