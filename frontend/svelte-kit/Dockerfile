@@ -3,6 +3,9 @@ WORKDIR /app
 ARG PUBLIC_APP_NAME
 ARG PUBLIC_API_URL
 ARG JWT_SECRET
+ENV PUBLIC_APP_NAME=$PUBLIC_APP_NAME
+ENV PUBLIC_API_URL=$PUBLIC_API_URL
+ENV JWT_SECRET=$JWT_SECRET
 COPY package.json .
 COPY pnpm-lock.yaml .
 RUN npm install -g pnpm
@@ -10,9 +13,6 @@ RUN pnpm install
 COPY . .
 
 FROM base AS dev
-ENV PUBLIC_APP_NAME=$PUBLIC_APP_NAME
-ENV PUBLIC_API_URL=$PUBLIC_API_URL
-ENV JWT_SECRET=$JWT_SECRET
 RUN apk add --no-cache curl
 CMD ["pnpm", "run", "dev", "--host"]
 

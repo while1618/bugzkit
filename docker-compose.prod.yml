@@ -10,7 +10,6 @@ services:
       REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
       USER_PASSWORD: ${USER_PASSWORD:-qwerty123}
-      SMTP_USER: ${SMTP_USER:-username}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-password}
       JWT_SECRET: ${JWT_SECRET:-secret}
     depends_on:
@@ -64,11 +63,15 @@ services:
     image: while1618/bugzkit-ui:1.0.0
     restart: always
     environment:
+      PORT: 5173
       ORIGIN: ${UI_URL:-https://bugzkit.com}
+      JWT_SECRET: ${JWT_SECRET:-secret}
+      PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
+      PUBLIC_API_URL: ${API_URL:-http://bugzkit-api:8080/v1}
     depends_on:
       - bugzkit-api
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
       start_period: 10s
       interval: 30s
       retries: 3

@@ -1,0 +1,106 @@
+services:
+  bugzkit-api:
+    container_name: bugzkit-api
+    image: bugzkit-api:dev
+    build:
+      context: ./backend/spring-boot
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      UI_URL: ${UI_URL:-http://localhost:5173}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
+      USER_PASSWORD: ${USER_PASSWORD:-qwerty123}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-password}
+      JWT_SECRET: ${JWT_SECRET:-secret}
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+    networks:
+      - web
+
+  postgres:
+    container_name: postgres
+    image: postgres:17.2-alpine
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bugzkit}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - web
+
+  redis:
+    container_name: redis
+    image: redis:7.4.1
+    ports:
+      - "6379:6379"
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD:-root}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-root}", "ping"]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+    volumes:
+      - redis_data:/data
+    networks:
+      - web
+
+  bugzkit-ui:
+    container_name: bugzkit-ui
+    image: bugzkit-ui:dev
+    build:
+      context: ./frontend/svelte-kit
+      dockerfile: Dockerfile
+      args:
+        JWT_SECRET: ${JWT_SECRET:-secret}
+        PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
+        PUBLIC_API_URL: ${API_URL:-http://bugzkit-api:8080/v1}
+      target: dev
+    ports:
+      - "5173:5173"
+    restart: always
+    environment:
+      ORIGIN: ${UI_URL:-http://localhost:5173}
+      JWT_SECRET: ${JWT_SECRET:-secret}
+      PUBLIC_APP_NAME: ${APP_NAME:-test}
+      PUBLIC_API_URL: ${API_URL:-http://bugzkit-api:8080/v1}
+    depends_on:
+      - bugzkit-api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+    networks:
+      - web
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  web:
+    driver: bridge
