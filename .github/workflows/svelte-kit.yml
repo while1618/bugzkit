@@ -12,6 +12,11 @@ on:
     paths:
       - frontend/svelte-kit/**
 
+env:
+  JWT_SECRET: ${{secrets.JWT_SECRET}}
+  PUBLIC_APP_NAME: ${{vars.PUBLIC_APP_NAME}}
+  PUBLIC_API_URL: ${{vars.PUBLIC_API_URL}}
+
 jobs:
   build:
     defaults:
@@ -78,6 +83,6 @@ jobs:
             ${{ vars.DOCKER_REPOSITORY_UI }}:${{ steps.ui-version.outputs.version }}
             ${{ vars.DOCKER_REPOSITORY_UI }}:latest
           build-args: |
-            PUBLIC_APP_NAME=${{ vars.PUBLIC_APP_NAME }}
-            PUBLIC_API_URL=${{ vars.PUBLIC_API_URL }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            PUBLIC_APP_NAME=${{ env.PUBLIC_APP_NAME }}
+            PUBLIC_API_URL=${{ env.PUBLIC_API_URL }}
+            JWT_SECRET=${{ env.JWT_SECRET }}
