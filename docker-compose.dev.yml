@@ -67,7 +67,7 @@ services:
           "CMD",
           "pg_isready",
           "-U",
-          "${POSTGRES_USERNAME:-postgres}",
+          "${POSTGRES_USER:-postgres}",
           "-d",
           "${POSTGRES_DATABASE:-bugzkit}",
         ]
