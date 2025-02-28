@@ -13,7 +13,7 @@ services:
       UI_URL: ${UI_URL:-http://localhost:5173}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      POSTGRES_DB: ${POSTGRES_DB:-bugzkit}
+      POSTGRES_DATABASE: ${POSTGRES_DATABASE:-bugzkit}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
       REDIS_HOST: ${REDIS_HOST:-redis}
@@ -56,7 +56,7 @@ services:
     restart: always
     environment:
       PGPORT: ${POSTGRES_PORT:-5432}
-      POSTGRES_DB: ${POSTGRES_DB:-bugzkit}
+      POSTGRES_DB: ${POSTGRES_DATABASE:-bugzkit}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
     healthcheck:
