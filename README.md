@@ -8,6 +8,7 @@ A production-ready web application template designed to handle essential web app
 Developers can focus on business logic while using this template as a robust starting point.
 
 [Docs](https://docs.bugzkit.com/)
+[Demo](https://bugzkit.com/)
 
 ## Overview
 
