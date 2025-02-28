@@ -1,29 +1,28 @@
 ## Environment Variables
 
-| Variable                      | Description                                                                | Default          |
-| ----------------------------- | -------------------------------------------------------------------------- | ---------------- |
-| PROFILE                       | Profile used in docker compose when starting the application (dev or prod) | prod             |
-| APP_NAME                      | Name of the app displayed in the UI                                        | bugzkit          |
-| HTTP_PROTOCOL                 | HTTP protocol (e.g., http or https)                                        | http             |
-| UI_HOST                       | Host for the UI                                                            | localhost        |
-| UI_PORT                       | Port for the UI                                                            | 5173             |
-| API_PORT                      | Port for the API                                                           | 8080             |
-| POSTGRES_HOST                 | **For local development**: Host where PostgreSQL is running                | localhost        |
-| POSTGRES_PORT                 | PostgreSQL port                                                            | 5432             |
-| POSTGRES_DATABASE             | Name of the PostgreSQL database                                            | bugzkit          |
-| POSTGRES_USERNAME             | PostgreSQL username                                                        | postgres         |
-| POSTGRES_PASSWORD             | PostgreSQL password                                                        | root             |
-| REDIS_HOST                    | **For local development**: Host where Redis is running                     | localhost        |
-| REDIS_PORT                    | Redis port                                                                 | 6379             |
-| REDIS_DATABASE                | Redis database index                                                       | 0                |
-| REDIS_PASSWORD                | Redis password                                                             | root             |
-| MAIL_HOST                     | SMTP server host                                                           | smtp.mailgun.org |
-| MAIL_PORT                     | SMTP server port                                                           | 587              |
-| MAIL_USERNAME                 | SMTP username                                                              | username         |
-| MAIL_PASSWORD                 | SMTP password                                                              | password         |
-| JWT_SECRET                    | Secret key for signing JWTs                                                | secret           |
-| ACCESS_TOKEN_DURATION         | Duration of the access token in seconds                                    | 900 (15 minutes) |
-| REFRESH_TOKEN_DURATION        | Duration of the refresh token in seconds                                   | 604800 (7 days)  |
-| VERIFY_EMAIL_TOKEN_DURATION   | Duration of the verify email token in seconds                              | 900 (15 minutes) |
-| RESET_PASSWORD_TOKEN_DURATION | Duration of the reset password token in seconds                            | 900 (15 minutes) |
-| SPRING_SECURITY_PASSWORD      | Password for auto-generated Spring Security users                          | qwerty123        |
+| Variable                      | Description                                                 | Default               |
+| ----------------------------- | ----------------------------------------------------------- | --------------------- |
+| APP_NAME                      | Name of the app                                             | bugzkit               |
+| UI_PORT                       | Port for the UI                                             | 5173                  |
+| UI_URL                        | URL for the UI                                              | http://localhost:5173 |
+| API_PORT                      | Port for the API                                            | 8080                  |
+| POSTGRES_HOST                 | **For local development**: Host where PostgreSQL is running | localhost             |
+| POSTGRES_PORT                 | PostgreSQL port                                             | 5432                  |
+| POSTGRES_DATABASE             | Name of the PostgreSQL database                             | bugzkit               |
+| POSTGRES_USER                 | PostgreSQL user                                             | postgres              |
+| POSTGRES_PASSWORD             | PostgreSQL password                                         | root                  |
+| REDIS_HOST                    | **For local development**: Host where Redis is running      | localhost             |
+| REDIS_PORT                    | Redis port                                                  | 6379                  |
+| REDIS_DATABASE                | Redis database index                                        | 0                     |
+| REDIS_PASSWORD                | Redis password                                              | root                  |
+| SMTP_HOST                     | SMTP server host                                            | smtp.sendgrid.net     |
+| SMTP_PORT                     | SMTP server port                                            | 587                   |
+| SMTP_USER                     | SMTP user                                                   | apikey                |
+| SMTP_PASSWORD                 | SMTP password                                               | password              |
+| SMTP_SENDER                   | SMTP sender                                                 | office@bugzkit.com    |
+| JWT_SECRET                    | Secret key for signing JWTs                                 | secret                |
+| ACCESS_TOKEN_DURATION         | Duration of the access token in seconds                     | 900 (15 minutes)      |
+| REFRESH_TOKEN_DURATION        | Duration of the refresh token in seconds                    | 604800 (7 days)       |
+| VERIFY_EMAIL_TOKEN_DURATION   | Duration of the verify email token in seconds               | 900 (15 minutes)      |
+| RESET_PASSWORD_TOKEN_DURATION | Duration of the reset password token in seconds             | 900 (15 minutes)      |
+| USER_PASSWORD                 | Password for auto-generated Spring Security users           | qwerty123             |
