@@ -3,13 +3,23 @@ services:
     container_name: postgres
     image: postgres:17.2-alpine
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}"
+    restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DATABASE:-bugzkit}
-      POSTGRES_USER: ${POSTGRES_USERNAME:-postgres}
+      PGPORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-bugzkit}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-U",
+          "${POSTGRES_USERNAME:-postgres}",
+          "-d",
+          "${POSTGRES_DATABASE:-bugzkit}",
+        ]
       start_period: 10s
       interval: 30s
       retries: 3
@@ -22,12 +32,25 @@ services:
     container_name: redis
     image: redis:7.4.1
     ports:
-      - "6379:6379"
-    command: redis-server --requirepass ${REDIS_PASSWORD:-root}
+      - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
+    restart: always
     environment:
+      REDIS_DATABASE: ${REDIS_DATABASE:-0}
       REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
+    command: redis-server --port ${REDIS_PORT:-6379} --requirepass ${REDIS_PASSWORD:-root}
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-root}", "ping"]
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "-h",
+          "localhost",
+          "-p",
+          "${REDIS_PORT:-6379}",
+          "-a",
+          "${REDIS_PASSWORD:-root}",
+          "ping",
+        ]
       start_period: 10s
       interval: 30s
       retries: 3

@@ -85,6 +85,9 @@ services:
     ports:
       - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
     restart: always
+    environment:
+      REDIS_DATABASE: ${REDIS_DATABASE:-0}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
     command: redis-server --port ${REDIS_PORT:-6379} --requirepass ${REDIS_PASSWORD:-root}
     healthcheck:
       test:
