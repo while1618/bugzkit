@@ -11,18 +11,18 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DATABASE: ${POSTGRES_DATABASE:-bugzkit}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_DATABASE: ${REDIS_DATABASE:-0}
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
-      USER_PASSWORD: ${USER_PASSWORD:-qwerty123}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      USER_PASSWORD: ${USER_PASSWORD}
       SMTP_HOST: ${SMTP_HOST:-smtp.sendgrid.net}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USER:-apikey}
-      SMTP_PASSWORD: ${SMTP_PASSWORD:-password}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_SENDER: ${SMTP_SENDER:-office@bugzkit.com}
-      JWT_SECRET: ${JWT_SECRET:-secret}
+      JWT_SECRET: ${JWT_SECRET}
       ACCESS_TOKEN_DURATION: ${ACCESS_TOKEN_DURATION:-900}
       REFRESH_TOKEN_DURATION: ${REFRESH_TOKEN_DURATION:-604800}
       VERIFY_EMAIL_TOKEN_DURATION: ${VERIFY_EMAIL_TOKEN_DURATION:-900}
@@ -52,7 +52,7 @@ services:
       PGPORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DB: ${POSTGRES_DATABASE:-bugzkit}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test:
         [
@@ -77,8 +77,8 @@ services:
     restart: always
     environment:
       REDIS_DATABASE: ${REDIS_DATABASE:-0}
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
-    command: redis-server --port ${REDIS_PORT:-6379} --requirepass ${REDIS_PASSWORD:-root}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: redis-server --port ${REDIS_PORT:-6379} --requirepass ${REDIS_PASSWORD}
     healthcheck:
       test:
         [
@@ -89,7 +89,7 @@ services:
           "-p",
           "${REDIS_PORT:-6379}",
           "-a",
-          "${REDIS_PASSWORD:-root}",
+          "${REDIS_PASSWORD}",
           "ping",
         ]
       start_period: 10s
@@ -107,7 +107,7 @@ services:
     environment:
       PORT: ${UI_PORT:-5173}
       ORIGIN: ${UI_URL:-https://bugzkit.com}
-      JWT_SECRET: ${JWT_SECRET:-secret}
+      JWT_SECRET: ${JWT_SECRET}
       PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
       PUBLIC_API_URL: http://bugzkit-api:${API_PORT:-8080}
     depends_on:
