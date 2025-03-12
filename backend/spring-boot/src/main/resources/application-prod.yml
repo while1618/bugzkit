@@ -6,19 +6,19 @@ spring:
     import: optional:configtree:/run/secrets/
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:postgres}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:bugzkit}
-    password: ${POSTGRES_PASSWORD}
+    password: ${postgres_password}
   jpa:
     hibernate:
       ddl-auto: create # change this to validate when liquibase is added
   data:
     redis:
       host: ${REDIS_HOST:redis}
-      password: ${REDIS_PASSWORD}
+      password: ${redis_password}
   security:
     user:
-      password: ${USER_PASSWORD} # remove when liquibase is added
+      password: ${user_password} # remove when liquibase is added
   mail:
-    password: ${SMTP_PASSWORD}
+    password: ${smtp_password}
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${jwt_secret}
