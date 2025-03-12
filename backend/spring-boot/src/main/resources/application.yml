@@ -2,20 +2,14 @@ app:
   name: ${APP_NAME:bugzkit}
 server:
   port: ${API_PORT:8080}
-ui:
-  url: ${UI_URL:http://localhost:5173}
 
 spring:
   sql:
     init:
       platform: postgres
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:bugzkit}
     username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:root}
   jpa:
-    hibernate:
-      ddl-auto: create
     properties:
       jakarta:
         persistence:
@@ -31,19 +25,13 @@ spring:
         one-indexed-parameters: true
         default-page-size: 10
     redis:
-      host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       database: ${REDIS_DATABASE:0}
-      password: ${REDIS_PASSWORD:root}
       timeout: 60
-  security:
-    user:
-      password: ${USER_PASSWORD:qwerty123}
   mail:
     host: ${SMTP_HOST:smtp.sendgrid.net}
     port: ${SMTP_PORT:587}
     username: ${SMTP_USER:apikey}
-    password: ${SMTP_PASSWORD:password}
     properties:
       sender: ${SMTP_SENDER:office@bugzkit.com}
       mail:
@@ -53,7 +41,6 @@ spring:
             enable: true
 
 jwt:
-  secret: ${JWT_SECRET:secret}
   access-token:
     duration: ${ACCESS_TOKEN_DURATION:900}
   refresh-token:

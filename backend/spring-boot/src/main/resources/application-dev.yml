@@ -1,0 +1,22 @@
+ui:
+  url: ${UI_URL:http://localhost:5173}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:bugzkit}
+    password: ${POSTGRES_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: create
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      password: ${REDIS_PASSWORD:root}
+  security:
+    user:
+      password: ${USER_PASSWORD:qwerty123}
+  mail:
+    password: ${SMTP_PASSWORD:password}
+
+jwt:
+  secret: ${JWT_SECRET:secret}
