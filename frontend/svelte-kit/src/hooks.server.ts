@@ -27,8 +27,9 @@ const tryToGetSignedInUser: Handle = async ({ event, resolve }) => {
 };
 
 async function tryToRefreshToken(cookies: Cookies, locals: App.Locals): Promise<void> {
-  const refreshToken = cookies.get('refreshToken');
-  if (refreshToken) {
+  try {
+    const refreshToken = cookies.get('refreshToken') ?? '';
+    jwt.verify(refreshToken, JWT_SECRET);
     const response = await makeRequest({
       method: HttpRequest.POST,
       path: '/auth/tokens/refresh',
@@ -44,6 +45,8 @@ async function tryToRefreshToken(cookies: Cookies, locals: App.Locals): Promise<
       const { iss } = jwt.decode(accessToken) as JwtPayload;
       locals.userId = iss;
     }
+  } catch (_) {
+    removeAuth(cookies, locals);
   }
 }
 
