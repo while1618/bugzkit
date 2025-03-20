@@ -1,4 +1,4 @@
-import { JWT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import * as m from '$lib/paraglide/messages.js';
 import { apiErrors, makeRequest } from '$lib/server/apis/api';
 import { HttpRequest } from '$lib/server/utils/util';
@@ -23,7 +23,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form });
 
     try {
-      jwt.verify(form.data.token, JWT_SECRET);
+      jwt.verify(form.data.token, env.JWT_SECRET);
     } catch (_) {
       return setError(form, m.auth_tokenInvalid());
     }

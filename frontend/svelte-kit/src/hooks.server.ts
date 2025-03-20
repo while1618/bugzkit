@@ -1,4 +1,4 @@
-import { JWT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { i18n } from '$lib/i18n';
 import type { AuthTokens } from '$lib/models/auth/auth-tokens';
 import type { JwtPayload } from '$lib/models/auth/jwt-payload';
@@ -18,7 +18,7 @@ import jwt from 'jsonwebtoken';
 const tryToGetSignedInUser: Handle = async ({ event, resolve }) => {
   try {
     const accessToken = event.cookies.get('accessToken') ?? '';
-    const { iss } = jwt.verify(accessToken, JWT_SECRET) as JwtPayload;
+    const { iss } = jwt.verify(accessToken, env.JWT_SECRET) as JwtPayload;
     event.locals.userId = iss;
   } catch (_) {
     await tryToRefreshToken(event.cookies, event.locals);
@@ -29,7 +29,7 @@ const tryToGetSignedInUser: Handle = async ({ event, resolve }) => {
 async function tryToRefreshToken(cookies: Cookies, locals: App.Locals): Promise<void> {
   try {
     const refreshToken = cookies.get('refreshToken') ?? '';
-    jwt.verify(refreshToken, JWT_SECRET);
+    jwt.verify(refreshToken, env.JWT_SECRET);
     const response = await makeRequest({
       method: HttpRequest.POST,
       path: '/auth/tokens/refresh',
