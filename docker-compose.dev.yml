@@ -116,10 +116,6 @@ services:
     build:
       context: ./frontend/svelte-kit
       dockerfile: Dockerfile
-      args:
-        JWT_SECRET: ${JWT_SECRET:-secret}
-        PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
-        PUBLIC_API_URL: http://bugzkit-api:${API_PORT:-8080}
       target: dev
     ports:
       - "${UI_PORT:-5173}:${UI_PORT:-5173}"
