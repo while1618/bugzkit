@@ -48,6 +48,13 @@ services:
         max_attempts: 3
     networks:
       - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bugzkit-api.rule=Host(`api.bugzkit.com`)
+      - traefik.http.routers.bugzkit-api.entrypoints=websecure
+      - traefik.http.routers.bugzkit-api.tls=true
+      - traefik.http.services.bugzkit-api.loadbalancer.server.port=8080
+      - traefik.http.routers.bugzkit-api.tls.certresolver=myresolver
 
   postgres:
     image: postgres:17.2-alpine
@@ -142,29 +149,40 @@ services:
         max_attempts: 3
     networks:
       - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bugzkit-ui.rule=Host(`bugzkit.com`)
+      - traefik.http.routers.bugzkit-ui.entrypoints=websecure
+      - traefik.http.routers.bugzkit-ui.tls=true
+      - traefik.http.services.bugzkit-ui.loadbalancer.server.port=5173
+      - traefik.http.routers.bugzkit-ui.tls.certresolver=myresolver
 
-  caddy:
-    image: caddy:2.9.1
+  traefik:
+    image: traefik:v3.3
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./caddy_data:/data
-      - ./caddy_config:/config
-      - /etc/ssl/bugzkit/cert.pem:/etc/caddy/cert.pem
-      - /etc/ssl/bugzkit/key.pem:/etc/caddy/key.pem
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --providers.docker=true
+      - --providers.docker.network=web
+      - --providers.docker.exposedbydefault=false
+      - --certificatesresolvers.myresolver.acme.email=office@bugzkit.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
     networks:
       - web
 
 volumes:
   postgres_data:
   redis_data:
+  letsencrypt:
 
 networks:
   web:
