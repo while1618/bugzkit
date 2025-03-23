@@ -60,5 +60,6 @@ The goal is to provide a reliable and customizable foundation that eliminates re
 
 - [GitHub Actions](https://github.com/features/actions)
 - [Docker](https://www.docker.com/)
+- [Traefik](https://github.com/traefik/traefik)
 
 </details>
