@@ -26,5 +26,5 @@ jobs:
           name: bugzkit
           file: docker-stack.prod.yml
           host: ${{ secrets.HOST }}
-          user: ${{ secrets.DEPLOY_USER }}
+          user: bugzkit
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
