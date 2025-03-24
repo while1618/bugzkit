@@ -52,7 +52,7 @@ jobs:
           npx playwright install --with-deps
           npx playwright test --pass-with-no-tests
 
-  deploy:
+  push-image:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'

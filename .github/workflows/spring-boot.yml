@@ -43,7 +43,7 @@ jobs:
       - name: Integration tests
         run: mvn -B failsafe:integration-test failsafe:verify
 
-  deploy:
+  push-image:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
