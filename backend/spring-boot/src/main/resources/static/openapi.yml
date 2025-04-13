@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
   title: bugzkit
-  description: Description
+  description: A production-ready web application template
   termsOfService: https://swagger.io/terms/
   contact:
-    email: dejan.zdravkovic@protonmail.com
+    email: office@bugzkit.com
   license:
     name: MIT License
     url: https://choosealicense.com/licenses/mit/
@@ -55,15 +55,17 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/AuthTokenRequest"
       responses:
-        200:
+        204:
           description: Auth tokens created successfully
-          content:
-            application/json:
+          headers:
+            Set-Cookie:
               schema:
-                $ref: "#/components/schemas/AuthTokensDTO"
-              example:
-                accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw
-                refreshToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ
+                type: array
+                items:
+                  type: string
+                example:
+                  - "accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=9000"
+                  - "refreshToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=604800"
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -75,37 +77,61 @@ paths:
         - auth
       summary: Delete access and refresh tokens
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       responses:
         204:
           description: Access and refresh tokens deleted successfully
+          headers:
+            Set-Cookie:
+              schema:
+                type: array
+                items:
+                  type: string
+                example:
+                  - "accessToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0"
+                  - "refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=0"
   /auth/tokens/devices:
     delete:
       tags:
         - auth
       summary: Delete access and refresh tokens on all devices
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       responses:
         204:
           description: Access and refresh tokens deleted successfully on all devices
+          headers:
+            Set-Cookie:
+              schema:
+                type: array
+                items:
+                  type: string
+                example:
+                  - "accessToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0"
+                  - "refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=0"
   /auth/tokens/refresh:
     post:
       tags:
         - auth
       summary: Refresh auth tokens
-      requestBody:
-        $ref: "#/components/requestBodies/RefreshAuthTokensRequest"
+      parameters:
+        - in: cookie
+          name: refreshToken
+          schema:
+            type: string
+            example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ"
       responses:
-        200:
+        204:
           description: Auth tokens refreshed successfully
-          content:
-            application/json:
+          headers:
+            Set-Cookie:
               schema:
-                $ref: "#/components/schemas/AuthTokensDTO"
-              example:
-                accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw
-                refreshToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ
+                type: array
+                items:
+                  type: string
+                example:
+                  - "accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=9000"
+                  - "refreshToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=604800"
         400:
           $ref: "#/components/responses/BadRequest"
   /auth/password/forgot:
@@ -170,7 +196,7 @@ paths:
         - profile
       summary: Get profile
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       responses:
         200:
           description: Profile retrieved successfully
@@ -190,7 +216,7 @@ paths:
         - profile
       summary: Patch profile
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/PatchProfileRequest"
       responses:
@@ -216,7 +242,7 @@ paths:
         - profile
       summary: Delete profile
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       responses:
         204:
           description: Profile deleted successfully
@@ -228,7 +254,7 @@ paths:
         - profile
       summary: Change profile password
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/ChangePasswordRequest"
       responses:
@@ -363,7 +389,7 @@ paths:
         - roles
       summary: Get roles
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       responses:
         200:
           description: Roles retrieved successfully
@@ -386,7 +412,7 @@ paths:
         - admin
       summary: Create user
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/UserRequest"
       responses:
@@ -418,7 +444,7 @@ paths:
         - admin
       summary: Get users with pagination
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/size"
@@ -478,7 +504,7 @@ paths:
         - admin
       summary: Get user by id
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
@@ -508,7 +534,7 @@ paths:
         - admin
       summary: Update user by id
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       parameters:
         - $ref: "#/components/parameters/id"
       requestBody:
@@ -543,7 +569,7 @@ paths:
         - admin
       summary: Patch user by id
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       parameters:
         - $ref: "#/components/parameters/id"
       requestBody:
@@ -580,7 +606,7 @@ paths:
         - admin
       summary: Delete user by id
       security:
-        - BearerAuth: []
+        - cookieAuth: [ ]
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
@@ -973,28 +999,6 @@ components:
           example:
             email: user@localhost
   schemas:
-    AuthTokensDTO:
-      type: object
-      required:
-        - accessToken
-        - refreshToken
-      properties:
-        accessToken:
-          type: string
-          format: JWT
-        refreshToken:
-          type: string
-          format: JWT
-    RoleDTO:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          enum:
-            - USER
-            - ADMIN
     UserDTO:
       type: object
       required:
@@ -1023,6 +1027,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RoleDTO"
+    RoleDTO:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          enum:
+            - USER
+            - ADMIN
     AvailabilityDTO:
       type: object
       required:
@@ -1051,7 +1065,7 @@ components:
           items:
             type: string
   securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: accessToken

@@ -1,9 +1,12 @@
 package org.bugzkit.api.auth.util;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import org.bugzkit.api.auth.security.UserPrincipal;
 import org.bugzkit.api.user.model.Role.RoleName;
-import org.springframework.http.HttpHeaders;
+import org.springframework.boot.web.server.Cookie.SameSite;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class AuthUtil {
@@ -38,7 +41,23 @@ public class AuthUtil {
     return ipAddress;
   }
 
-  public static String getAccessTokenFromRequest(HttpServletRequest request) {
-    return request.getHeader(HttpHeaders.AUTHORIZATION);
+  public static String getValueFromCookie(String name, HttpServletRequest request) {
+    final var cookies = request.getCookies();
+    if (cookies == null) return null;
+    return Arrays.stream(cookies)
+        .filter(cookie -> name.equals(cookie.getName()))
+        .findFirst()
+        .map(Cookie::getValue)
+        .orElse(null);
+  }
+
+  public static ResponseCookie createCookie(String name, String value, int maxAge) {
+    return ResponseCookie.from(name, value)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(maxAge)
+        .sameSite(SameSite.STRICT.attributeValue())
+        .build();
   }
 }

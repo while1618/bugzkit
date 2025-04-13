@@ -17,19 +17,23 @@ export const load = (async ({ cookies, url }) => {
   if (page < 1) page = 1;
   if (size < 1) size = 10;
 
-  const usersResponse = await makeRequest({
-    method: HttpRequest.GET,
-    path: `/admin/users?page=${page}&size=${size}`,
-    auth: cookies.get('accessToken'),
-  });
+  const usersResponse = await makeRequest(
+    {
+      method: HttpRequest.GET,
+      path: `/admin/users?page=${page}&size=${size}`,
+    },
+    cookies,
+  );
 
   if ('error' in usersResponse) error(usersResponse.status, { message: usersResponse.error });
 
-  const rolesResponse = await makeRequest({
-    method: HttpRequest.GET,
-    path: `/roles`,
-    auth: cookies.get('accessToken'),
-  });
+  const rolesResponse = await makeRequest(
+    {
+      method: HttpRequest.GET,
+      path: `/roles`,
+    },
+    cookies,
+  );
 
   if ('error' in rolesResponse) error(rolesResponse.status, { message: rolesResponse.error });
 
@@ -56,12 +60,14 @@ export const actions = {
     const form = await superValidate(request, zod(createSchema));
     if (!form.valid) return fail(400, { form });
 
-    const response = await makeRequest({
-      method: HttpRequest.POST,
-      path: `/admin/users`,
-      auth: cookies.get('accessToken'),
-      body: JSON.stringify(form.data),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.POST,
+        path: `/admin/users`,
+        body: JSON.stringify(form.data),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 
@@ -70,12 +76,14 @@ export const actions = {
   activate: async ({ request, cookies }) => {
     const form = await superValidate(request, zod(actionSchema));
 
-    const response = await makeRequest({
-      method: HttpRequest.PATCH,
-      path: `/admin/users/${form.data.id}`,
-      auth: cookies.get('accessToken'),
-      body: JSON.stringify({ active: true }),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.PATCH,
+        path: `/admin/users/${form.data.id}`,
+        body: JSON.stringify({ active: true }),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 
@@ -84,12 +92,14 @@ export const actions = {
   deactivate: async ({ request, cookies }) => {
     const form = await superValidate(request, zod(actionSchema));
 
-    const response = await makeRequest({
-      method: HttpRequest.PATCH,
-      path: `/admin/users/${form.data.id}`,
-      auth: cookies.get('accessToken'),
-      body: JSON.stringify({ active: false }),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.PATCH,
+        path: `/admin/users/${form.data.id}`,
+        body: JSON.stringify({ active: false }),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 
@@ -98,12 +108,14 @@ export const actions = {
   unlock: async ({ request, cookies }) => {
     const form = await superValidate(request, zod(actionSchema));
 
-    const response = await makeRequest({
-      method: HttpRequest.PATCH,
-      path: `/admin/users/${form.data.id}`,
-      auth: cookies.get('accessToken'),
-      body: JSON.stringify({ lock: false }),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.PATCH,
+        path: `/admin/users/${form.data.id}`,
+        body: JSON.stringify({ lock: false }),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 
@@ -112,12 +124,14 @@ export const actions = {
   lock: async ({ request, cookies }) => {
     const form = await superValidate(request, zod(actionSchema));
 
-    const response = await makeRequest({
-      method: HttpRequest.PATCH,
-      path: `/admin/users/${form.data.id}`,
-      auth: cookies.get('accessToken'),
-      body: JSON.stringify({ lock: true }),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.PATCH,
+        path: `/admin/users/${form.data.id}`,
+        body: JSON.stringify({ lock: true }),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 
@@ -126,11 +140,13 @@ export const actions = {
   delete: async ({ request, cookies }) => {
     const form = await superValidate(request, zod(actionSchema));
 
-    const response = await makeRequest({
-      method: HttpRequest.DELETE,
-      path: `/admin/users/${form.data.id}`,
-      auth: cookies.get('accessToken'),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.DELETE,
+        path: `/admin/users/${form.data.id}`,
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 
@@ -139,12 +155,14 @@ export const actions = {
   changeRoles: async ({ request, cookies }) => {
     const form = await superValidate(request, zod(changeRolesSchema));
 
-    const response = await makeRequest({
-      method: HttpRequest.PATCH,
-      path: `/admin/users/${form.data.id}`,
-      auth: cookies.get('accessToken'),
-      body: JSON.stringify({ roleNames: form.data.roleNames }),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.PATCH,
+        path: `/admin/users/${form.data.id}`,
+        body: JSON.stringify({ roleNames: form.data.roleNames }),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 

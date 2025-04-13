@@ -35,6 +35,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: 9.0.7
         version: 9.0.7
+      '@types/set-cookie-parser':
+        specifier: 2.4.10
+        version: 2.4.10
       autoprefixer:
         specifier: 10.4.20
         version: 10.4.20(postcss@8.5.1)
@@ -80,6 +83,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: 0.6.10
         version: 0.6.10(prettier-plugin-svelte@3.3.3(prettier@3.4.2)(svelte@5.19.1))(prettier@3.4.2)
+      set-cookie-parser:
+        specifier: 2.7.1
+        version: 2.7.1
       svelte:
         specifier: 5.19.1
         version: 5.19.1
@@ -826,6 +832,9 @@ packages:
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
+
+  '@types/set-cookie-parser@2.4.10':
+    resolution: {integrity: sha512-GGmQVGpQWUe5qglJozEjZV/5dyxbOOZ0LHe/lqyWssB88Y4svNfst0uqBVscdDeIKl5Jy5+aPSvy7mI9tYRguw==}
 
   '@types/validator@13.12.2':
     resolution: {integrity: sha512-6SlHBzUW8Jhf3liqrGGXyTJSIFe4nqlJ5A5KaMZ2l/vbM3Wh3KSybots/wfWVzNLK4D1NZluDlSQIbIEPx6oyA==}
@@ -3275,6 +3284,10 @@ snapshots:
       undici-types: 6.20.0
 
   '@types/resolve@1.20.2': {}
+
+  '@types/set-cookie-parser@2.4.10':
+    dependencies:
+      '@types/node': 22.10.7
 
   '@types/validator@13.12.2':
     optional: true

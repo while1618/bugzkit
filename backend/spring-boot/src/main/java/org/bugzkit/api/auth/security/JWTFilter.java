@@ -31,8 +31,8 @@ public class JWTFilter extends OncePerRequestFilter {
       @Nonnull HttpServletResponse response,
       @Nonnull FilterChain chain)
       throws IOException, ServletException {
-    final var accessToken = AuthUtil.getAccessTokenFromRequest(request);
-    if (accessToken == null || !JwtUtil.isBearer(accessToken)) {
+    final var accessToken = AuthUtil.getValueFromCookie("accessToken", request);
+    if (accessToken == null) {
       chain.doFilter(request, response);
       return;
     }
@@ -45,9 +45,8 @@ public class JWTFilter extends OncePerRequestFilter {
   }
 
   private UsernamePasswordAuthenticationToken getAuth(String accessToken) {
-    final var token = JwtUtil.removeBearer(accessToken);
-    accessTokenService.check(token);
-    final var userId = JwtUtil.getUserId(token);
+    accessTokenService.check(accessToken);
+    final var userId = JwtUtil.getUserId(accessToken);
     final var userPrincipal = (UserPrincipal) userDetailsService.loadUserByUserId(userId);
     return new UsernamePasswordAuthenticationToken(
         userPrincipal, null, userPrincipal.getAuthorities());

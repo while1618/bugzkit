@@ -8,15 +8,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.bugzkit.api.auth.jwt.service.impl.ResetPasswordTokenServiceImpl;
 import org.bugzkit.api.auth.jwt.service.impl.VerificationTokenServiceImpl;
 import org.bugzkit.api.auth.payload.request.AuthTokensRequest;
 import org.bugzkit.api.auth.payload.request.ForgotPasswordRequest;
-import org.bugzkit.api.auth.payload.request.RefreshAuthTokensRequest;
 import org.bugzkit.api.auth.payload.request.RegisterUserRequest;
 import org.bugzkit.api.auth.payload.request.ResetPasswordRequest;
 import org.bugzkit.api.auth.payload.request.VerificationEmailRequest;
@@ -33,6 +34,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -134,9 +136,8 @@ class AuthControllerIT extends DatabaseContainers {
             post(Path.AUTH + "/tokens")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(authTokensRequest)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.accessToken").isString())
-        .andExpect(jsonPath("$.refreshToken").isString());
+        .andExpect(status().isNoContent())
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
   }
 
   @Test
@@ -175,7 +176,7 @@ class AuthControllerIT extends DatabaseContainers {
         .perform(
             delete(Path.AUTH + "/tokens")
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isNoContent());
     invalidAccessToken(authTokens.accessToken());
     invalidRefreshToken(authTokens.refreshToken());
@@ -189,8 +190,9 @@ class AuthControllerIT extends DatabaseContainers {
         .perform(
             delete(Path.AUTH + "/tokens/devices")
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
-        .andExpect(status().isNoContent());
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
+        .andExpect(status().isNoContent())
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
     invalidAccessToken(authTokens.accessToken());
     invalidRefreshToken(authTokens.refreshToken());
   }
@@ -200,18 +202,17 @@ class AuthControllerIT extends DatabaseContainers {
         .perform(
             get(Path.PROFILE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken)))
+                .cookie(new Cookie("accessToken", accessToken)))
         .andExpect(status().isUnauthorized())
         .andExpect(content().string(containsString("API_ERROR_AUTH_UNAUTHORIZED")));
   }
 
   private void invalidRefreshToken(String refreshToken) throws Exception {
-    final var refreshTokenRequest = new RefreshAuthTokensRequest(refreshToken);
     mockMvc
         .perform(
             post(Path.AUTH + "/tokens/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(refreshTokenRequest)))
+                .cookie(new Cookie("refreshToken", refreshToken)))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("API_ERROR_AUTH_TOKEN_INVALID")));
   }
@@ -219,13 +220,13 @@ class AuthControllerIT extends DatabaseContainers {
   @Test
   void refreshToken() throws Exception {
     final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "update1");
-    final var refreshTokenRequest = new RefreshAuthTokensRequest(authTokens.refreshToken());
     mockMvc
         .perform(
             post(Path.AUTH + "/tokens/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(refreshTokenRequest)))
-        .andExpect(status().isOk());
+                .cookie(new Cookie("refreshToken", authTokens.refreshToken())))
+        .andExpect(status().isNoContent())
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
   }
 
   @Test
@@ -270,7 +271,7 @@ class AuthControllerIT extends DatabaseContainers {
             post(Path.AUTH + "/tokens")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(authTokensRequest)))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
   }
 
   @Test

@@ -1,6 +1,5 @@
-import type { AuthTokens } from '$lib/models/auth/auth-tokens';
 import { apiErrors, makeRequest } from '$lib/server/apis/api';
-import { HttpRequest, setAccessTokenCookie, setRefreshTokenCookie } from '$lib/server/utils/util';
+import { HttpRequest } from '$lib/server/utils/util';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -20,17 +19,16 @@ export const actions = {
     const form = await superValidate(request, zod(signInSchema));
     if (!form.valid) return fail(400, { form });
 
-    const response = await makeRequest({
-      method: HttpRequest.POST,
-      path: '/auth/tokens',
-      body: JSON.stringify(form.data),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.POST,
+        path: '/auth/tokens',
+        body: JSON.stringify(form.data),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
-
-    const { accessToken, refreshToken } = response as AuthTokens;
-    setAccessTokenCookie(cookies, accessToken);
-    setRefreshTokenCookie(cookies, refreshToken);
 
     redirect(302, '/');
   },

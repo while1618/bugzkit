@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.bugzkit.api.shared.config.DatabaseContainers;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.email.service.EmailService;
@@ -45,7 +46,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             get(Path.PROFILE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").value("user"))
         .andExpect(jsonPath("$.email").value("user@localhost"));
@@ -59,7 +60,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(patchProfileRequest)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").value("updated1"))
@@ -76,7 +77,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(patchProfileRequest)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").value("update2"))
@@ -91,7 +92,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(patchProfileRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_USERNAME_EXISTS")));
@@ -105,7 +106,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(patchProfileRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_EMAIL_EXISTS")));
@@ -119,7 +120,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(patchProfileRequest)))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("API_ERROR_USER_EMAIL_INVALID")))
@@ -133,7 +134,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             delete(Path.PROFILE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isNoContent());
   }
 
@@ -146,7 +147,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE + "/password")
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(changePasswordRequest)))
         .andExpect(status().isNoContent());
   }
@@ -160,7 +161,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE + "/password")
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(changePasswordRequest)))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("API_ERROR_USER_CURRENT_PASSWORD_WRONG")));
@@ -175,7 +176,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE + "/password")
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(changePasswordRequest)))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("API_ERROR_USER_PASSWORDS_DO_NOT_MATCH")));
@@ -189,7 +190,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.PROFILE + "/password")
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(changePasswordRequest)))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("API_ERROR_USER_PASSWORD_INVALID")));

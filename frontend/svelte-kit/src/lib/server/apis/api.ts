@@ -1,32 +1,42 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { ErrorCode, type ErrorMessage } from '$lib/models/shared/error-message';
 import * as m from '$lib/paraglide/messages.js';
-import type { HttpRequest } from '$lib/server/utils/util';
-import { fail } from '@sveltejs/kit';
-import { type SuperValidated, setError } from 'sveltekit-superforms';
+import { setCookieFromString, type HttpRequest } from '$lib/server/utils/util';
+import { fail, type Cookies } from '@sveltejs/kit';
+import { setError, type SuperValidated } from 'sveltekit-superforms';
 
 interface RequestParams {
   method: HttpRequest;
   path: string;
   body?: string;
-  auth?: string;
 }
 
-export async function makeRequest(params: RequestParams): Promise<object | ErrorMessage> {
+export async function makeRequest(
+  params: RequestParams,
+  cookies: Cookies,
+): Promise<object | ErrorMessage> {
   const opts: RequestInit = {};
-  let headers: HeadersInit = {};
+  const headers = new Headers();
+
+  const accessToken = cookies.get('accessToken');
+  const refreshToken = cookies.get('refreshToken');
+  if (accessToken) headers.append('Cookie', `accessToken=${accessToken}`);
+  if (refreshToken) headers.append('Cookie', `refreshToken=${refreshToken}`);
 
   if (params.body) {
-    headers = { 'Content-Type': 'application/json' };
+    headers.append('Content-Type', 'application/json');
     opts.body = params.body;
   }
-
-  if (params.auth) headers = { ...headers, Authorization: `Bearer ${params.auth}` };
 
   opts.method = params.method;
   opts.headers = headers;
 
   const response = await fetch(`${PUBLIC_API_URL}${params.path}`, opts);
+
+  const setCookies = response.headers.getSetCookie();
+  setCookies.forEach((cookie: string) => {
+    setCookieFromString(cookie, cookies);
+  });
 
   if (!response.ok) return (await response.json()) as ErrorMessage;
 

@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.bugzkit.api.shared.config.DatabaseContainers;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.util.IntegrationTestUtil;
@@ -32,7 +33,7 @@ public class RoleControllerIT extends DatabaseContainers {
         .perform(
             get(Path.ROLES)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(2));
   }

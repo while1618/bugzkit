@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import java.util.Set;
 import org.bugzkit.api.admin.payload.request.PatchUserRequest;
 import org.bugzkit.api.admin.payload.request.UserRequest;
@@ -31,11 +32,10 @@ import org.springframework.test.web.servlet.MockMvc;
 @ActiveProfiles("test")
 @SpringBootTest
 class AccessingResourcesIT extends DatabaseContainers {
-  @Autowired private MockMvc mockMvc;
-  @Autowired private ObjectMapper objectMapper;
-
   private final String unauthorized = "API_ERROR_AUTH_UNAUTHORIZED";
   private final String forbidden = "API_ERROR_AUTH_FORBIDDEN";
+  @Autowired private MockMvc mockMvc;
+  @Autowired private ObjectMapper objectMapper;
 
   @Test
   void getProfile_throwUnauthorized_userNotSignedIn() throws Exception {
@@ -94,7 +94,7 @@ class AccessingResourcesIT extends DatabaseContainers {
         .perform(
             post(Path.ADMIN_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isForbidden())
         .andExpect(content().string(containsString(forbidden)));
@@ -115,7 +115,7 @@ class AccessingResourcesIT extends DatabaseContainers {
         .perform(
             get(Path.ADMIN_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isForbidden())
         .andExpect(content().string(containsString(forbidden)));
   }
@@ -135,7 +135,7 @@ class AccessingResourcesIT extends DatabaseContainers {
         .perform(
             get(Path.ADMIN_USERS + "/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isForbidden())
         .andExpect(content().string(containsString(forbidden)));
   }
@@ -165,7 +165,7 @@ class AccessingResourcesIT extends DatabaseContainers {
         .perform(
             put(Path.ADMIN_USERS + "/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isForbidden())
         .andExpect(content().string(containsString(forbidden)));
@@ -187,7 +187,7 @@ class AccessingResourcesIT extends DatabaseContainers {
         .perform(
             patch(Path.ADMIN_USERS + "/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken()))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
                 .content(objectMapper.writeValueAsString(patchUserRequest)))
         .andExpect(status().isForbidden())
         .andExpect(content().string(containsString(forbidden)));
@@ -208,7 +208,7 @@ class AccessingResourcesIT extends DatabaseContainers {
         .perform(
             delete(Path.ADMIN_USERS + "/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isForbidden())
         .andExpect(content().string(containsString(forbidden)));
   }
@@ -228,7 +228,7 @@ class AccessingResourcesIT extends DatabaseContainers {
         .perform(
             get(Path.ROLES)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isForbidden())
         .andExpect(content().string(containsString(forbidden)));
   }

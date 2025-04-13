@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import org.bugzkit.api.user.payload.dto.RoleDTO;
 
 public class JwtUtil {
-  private static final String BEARER = "Bearer ";
-
   private JwtUtil() {}
 
   public static void verify(String token, String secret, JwtPurpose purpose) {
@@ -21,14 +19,6 @@ public class JwtUtil {
 
   public static Algorithm getAlgorithm(String secret) {
     return Algorithm.HMAC512(secret.getBytes());
-  }
-
-  public static String removeBearer(String token) {
-    return token.replace(BEARER, "");
-  }
-
-  public static boolean isBearer(String token) {
-    return token.startsWith(BEARER);
   }
 
   public static Long getUserId(String token) {
