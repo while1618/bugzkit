@@ -138,7 +138,7 @@ services:
     depends_on:
       - bugzkit-api
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${UI_PORT:-5173}"]
+      test: [ "CMD", "curl", "-f", "http://localhost:${UI_PORT:-5173}" ]
       start_period: 10s
       interval: 30s
       retries: 3
@@ -151,7 +151,7 @@ services:
       - web
     labels:
       - traefik.enable=true
-      - traefik.http.routers.bugzkit-ui.rule=Host(`bugzkit.com`)
+      - traefik.http.routers.bugzkit-ui.rule=Host(`bugzkit.com`, `www.bugzkit.com`)
       - traefik.http.routers.bugzkit-ui.entrypoints=websecure
       - traefik.http.routers.bugzkit-ui.tls=true
       - traefik.http.services.bugzkit-ui.loadbalancer.server.port=5173
