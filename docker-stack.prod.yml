@@ -151,7 +151,7 @@ services:
       - web
     labels:
       - traefik.enable=true
-      - traefik.http.routers.bugzkit-ui.rule=Host(`bugzkit.com`, `www.bugzkit.com`)
+      - traefik.http.routers.bugzkit-ui.rule=Host(`bugzkit.com`)
       - traefik.http.routers.bugzkit-ui.entrypoints=websecure
       - traefik.http.routers.bugzkit-ui.tls=true
       - traefik.http.services.bugzkit-ui.loadbalancer.server.port=5173
