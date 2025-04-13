@@ -4,11 +4,13 @@ import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET = (async ({ locals, cookies }) => {
-  const response = await makeRequest({
-    method: HttpRequest.DELETE,
-    path: '/auth/tokens/devices',
-    auth: cookies.get('accessToken'),
-  });
+  const response = await makeRequest(
+    {
+      method: HttpRequest.DELETE,
+      path: '/auth/tokens/devices',
+    },
+    cookies,
+  );
 
   if ('error' in response) error(response.status, { message: response.error });
 

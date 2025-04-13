@@ -7,14 +7,15 @@ import type { LayoutServerLoad } from './$types';
 export const load = (async ({ locals, cookies }) => {
   if (!locals.userId) return { profile: null };
 
-  const accessToken = cookies.get('accessToken');
-  const response = await makeRequest({
-    method: HttpRequest.GET,
-    path: `/profile`,
-    auth: accessToken,
-  });
+  const response = await makeRequest(
+    {
+      method: HttpRequest.GET,
+      path: `/profile`,
+    },
+    cookies,
+  );
 
   if ('error' in response) error(response.status, { message: response.error });
 
-  return { profile: response as Profile, isAdmin: isAdmin(accessToken) };
+  return { profile: response as Profile, isAdmin: isAdmin(cookies.get('accessToken')) };
 }) satisfies LayoutServerLoad;

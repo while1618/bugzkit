@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
 import java.util.Set;
 import org.bugzkit.api.admin.payload.request.PatchUserRequest;
@@ -63,7 +64,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             post(Path.ADMIN_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isCreated());
   }
@@ -84,7 +85,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             post(Path.ADMIN_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("API_ERROR_USER_USERNAME_INVALID")))
@@ -108,7 +109,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             post(Path.ADMIN_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_USERNAME_EXISTS")));
@@ -130,7 +131,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             post(Path.ADMIN_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_EMAIL_EXISTS")));
@@ -142,7 +143,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             get(Path.ADMIN_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken)))
+                .cookie(new Cookie("accessToken", accessToken)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.length()").value(10))
         .andExpect(jsonPath("$.total").value(11));
@@ -165,7 +166,7 @@ class UserControllerIT extends DatabaseContainers {
             .perform(
                 get(Path.ADMIN_USERS + "/{id}", 2L)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .headers(IntegrationTestUtil.authHeader(accessToken)))
+                    .cookie(new Cookie("accessToken", accessToken)))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse()
@@ -180,7 +181,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             get(Path.ADMIN_USERS + "/{id}", 100L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken)))
+                .cookie(new Cookie("accessToken", accessToken)))
         .andExpect(status().isNotFound())
         .andExpect(content().string(containsString("API_ERROR_USER_NOT_FOUND")));
   }
@@ -201,7 +202,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             put(Path.ADMIN_USERS + "/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isOk());
   }
@@ -222,7 +223,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             put(Path.ADMIN_USERS + "/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("API_ERROR_USER_USERNAME_INVALID")))
@@ -246,7 +247,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             put(Path.ADMIN_USERS + "/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_USERNAME_EXISTS")));
@@ -268,7 +269,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             put(Path.ADMIN_USERS + "/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(userRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_EMAIL_EXISTS")));
@@ -290,7 +291,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.ADMIN_USERS + "/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(patchUserRequest)))
         .andExpect(status().isOk());
   }
@@ -311,7 +312,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.ADMIN_USERS + "/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(patchUserRequest)))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("API_ERROR_USER_USERNAME_INVALID")))
@@ -335,7 +336,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.ADMIN_USERS + "/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(patchUserRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_USERNAME_EXISTS")));
@@ -357,7 +358,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             patch(Path.ADMIN_USERS + "/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken))
+                .cookie(new Cookie("accessToken", accessToken))
                 .content(objectMapper.writeValueAsString(patchUserRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_EMAIL_EXISTS")));
@@ -369,7 +370,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(
             delete(Path.ADMIN_USERS + "/{id}", 10L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(IntegrationTestUtil.authHeader(accessToken)))
+                .cookie(new Cookie("accessToken", accessToken)))
         .andExpect(status().isNoContent());
   }
 }

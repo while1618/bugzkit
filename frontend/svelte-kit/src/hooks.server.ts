@@ -1,16 +1,10 @@
 import { env } from '$env/dynamic/private';
 import { i18n } from '$lib/i18n';
-import type { AuthTokens } from '$lib/models/auth/auth-tokens';
 import type { JwtPayload } from '$lib/models/auth/jwt-payload';
 import { RoleName } from '$lib/models/user/role';
 import { languageTag } from '$lib/paraglide/runtime';
 import { makeRequest } from '$lib/server/apis/api';
-import {
-  HttpRequest,
-  removeAuth,
-  setAccessTokenCookie,
-  setRefreshTokenCookie,
-} from '$lib/server/utils/util';
+import { HttpRequest, removeAuth } from '$lib/server/utils/util';
 import { redirect, type Cookies, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import jwt from 'jsonwebtoken';
@@ -30,18 +24,18 @@ async function tryToRefreshToken(cookies: Cookies, locals: App.Locals): Promise<
   try {
     const refreshToken = cookies.get('refreshToken') ?? '';
     jwt.verify(refreshToken, env.JWT_SECRET);
-    const response = await makeRequest({
-      method: HttpRequest.POST,
-      path: '/auth/tokens/refresh',
-      body: JSON.stringify({ refreshToken }),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.POST,
+        path: '/auth/tokens/refresh',
+      },
+      cookies,
+    );
 
     if ('error' in response) {
       removeAuth(cookies, locals);
     } else {
-      const { accessToken, refreshToken } = response as AuthTokens;
-      setAccessTokenCookie(cookies, accessToken);
-      setRefreshTokenCookie(cookies, refreshToken);
+      const accessToken = cookies.get('accessToken') ?? '';
       const { iss } = jwt.decode(accessToken) as JwtPayload;
       locals.userId = iss;
     }

@@ -16,15 +16,18 @@ export const load = (async ({ locals }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  forgotPassword: async ({ request }) => {
+  forgotPassword: async ({ request, cookies }) => {
     const form = await superValidate(request, zod(forgotPasswordSchema));
     if (!form.valid) return fail(400, { form });
 
-    const response = await makeRequest({
-      method: HttpRequest.POST,
-      path: '/auth/password/forgot',
-      body: JSON.stringify(form.data),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.POST,
+        path: '/auth/password/forgot',
+        body: JSON.stringify(form.data),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 

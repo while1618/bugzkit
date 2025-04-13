@@ -18,7 +18,7 @@ export const load = (async ({ locals, url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  resetPassword: async ({ request }) => {
+  resetPassword: async ({ request, cookies }) => {
     const form = await superValidate(request, zod(resetPasswordSchema));
     if (!form.valid) return fail(400, { form });
 
@@ -28,11 +28,14 @@ export const actions = {
       return setError(form, m.auth_tokenInvalid());
     }
 
-    const response = await makeRequest({
-      method: HttpRequest.POST,
-      path: '/auth/password/reset',
-      body: JSON.stringify(form.data),
-    });
+    const response = await makeRequest(
+      {
+        method: HttpRequest.POST,
+        path: '/auth/password/reset',
+        body: JSON.stringify(form.data),
+      },
+      cookies,
+    );
 
     if ('error' in response) return apiErrors(response, form);
 
