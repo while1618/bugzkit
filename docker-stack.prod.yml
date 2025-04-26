@@ -201,3 +201,7 @@ secrets:
     external: true
   user_password:
     external: true
+  google_client_id:
+    external: true
+  google_client_secret:
+    external: true
