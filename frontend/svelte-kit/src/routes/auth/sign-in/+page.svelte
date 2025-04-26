@@ -1,8 +1,12 @@
 <script lang="ts">
+  import { page } from '$app/state';
+  import { PUBLIC_API_URL } from '$env/static/public';
+  import { Button } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card';
   import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
+  import { ErrorCode } from '$lib/models/shared/error-message';
   import * as m from '$lib/paraglide/messages.js';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
@@ -15,6 +19,7 @@
     validators: zodClient(signInSchema),
   });
   const { form, errors, enhance } = superform;
+  const oauthError = page.url.searchParams.get('error');
 
   $effect(() => {
     if ($errors._errors) {
@@ -35,7 +40,7 @@
           </Card.Header>
           <Card.Content>
             <form
-              class="flex flex-col gap-2"
+              class="flex flex-col gap-3"
               method="POST"
               action="?/signIn"
               use:enhance
@@ -67,6 +72,16 @@
               </Form.Field>
 
               <Form.Button>{m.auth_signIn()}</Form.Button>
+              <Button variant="outline" href="{PUBLIC_API_URL}/oauth2/authorization/google">
+                {m.auth_singInWithGoogle()}
+              </Button>
+              {#if oauthError}
+                <Label class="text-center text-destructive">
+                  {ErrorCode[oauthError as ErrorCode]
+                    ? m[ErrorCode[oauthError as ErrorCode]]()
+                    : m.API_ERROR_UNKNOWN()}
+                </Label>
+              {/if}
 
               <div class="text-center">
                 <Label>{m.auth_doNotHaveAnAccount()}</Label>

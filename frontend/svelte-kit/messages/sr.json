@@ -27,6 +27,7 @@
   "user_bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
 
   "profile": "Profil",
+  "profile_setUsername": "Izaberi korisničko ime",
   "profile_bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
   "profile_personalInformation": "Lični podaci",
   "profile_security": "Bezbednost",
@@ -47,6 +48,7 @@
   "profile_updateSuccess": "Uspešno ažuriran profil",
 
   "auth_signIn": "Prijavi se",
+  "auth_singInWithGoogle": "Prijavi se preko Google-a",
   "auth_signUp": "Registruj se",
   "auth_usernameOrEmail": "Korisničko ime ili email",
   "auth_usernameOrEmailInvalid": "Nevalidno korisničko ime ili email",

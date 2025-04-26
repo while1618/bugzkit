@@ -21,6 +21,8 @@ services:
       REDIS_DATABASE: ${REDIS_DATABASE:-0}
       REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
       USER_PASSWORD: ${USER_PASSWORD:-qwerty123}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:client_id}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:client_secret}
       SMTP_HOST: ${SMTP_HOST:-smtp.sendgrid.net}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USER:-apikey}

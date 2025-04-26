@@ -17,6 +17,13 @@ spring:
   security:
     user:
       password: ${user_password} # remove when liquibase is added
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${google_client_id}
+            client-secret: ${google_client_secret}
+            scope: profile,email
   mail:
     password: ${smtp_password}
 

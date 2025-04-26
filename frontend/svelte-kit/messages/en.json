@@ -27,6 +27,7 @@
   "user_bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
 
   "profile": "Profile",
+  "profile_setUsername": "Choose your username",
   "profile_bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
   "profile_personalInformation": "Personal information",
   "profile_security": "Security",
@@ -47,6 +48,7 @@
   "profile_updateSuccess": "Profile updated successfully",
 
   "auth_signIn": "Sign in",
+  "auth_singInWithGoogle": "Sign in with Google",
   "auth_signUp": "Sign up",
   "auth_usernameOrEmail": "Username or email",
   "auth_usernameOrEmailInvalid": "Invalid username or email",
