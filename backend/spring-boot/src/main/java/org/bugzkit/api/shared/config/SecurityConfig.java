@@ -1,5 +1,8 @@
 package org.bugzkit.api.shared.config;
 
+import org.bugzkit.api.auth.oauth2.OAuth2FailureHandler;
+import org.bugzkit.api.auth.oauth2.OAuth2SuccessHandler;
+import org.bugzkit.api.auth.oauth2.OAuth2UserService;
 import org.bugzkit.api.auth.security.JWTFilter;
 import org.bugzkit.api.auth.security.UserDetailsServiceImpl;
 import org.bugzkit.api.shared.constants.Path;
@@ -23,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+  private static final String[] OAUTH2_WHITELIST = {"/oauth2/authorization/google"};
   private static final String[] AUTH_WHITELIST = {
     Path.AUTH + "/register",
     Path.AUTH + "/tokens",
@@ -41,14 +45,23 @@ public class SecurityConfig {
   private final JWTFilter jwtFilter;
   private final UserDetailsServiceImpl userDetailsService;
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+  private final OAuth2SuccessHandler oAuth2SuccessHandler;
+  private final OAuth2FailureHandler oAuth2FailureHandler;
+  private final OAuth2UserService oAuth2UserService;
 
   public SecurityConfig(
       JWTFilter jwtFilter,
       UserDetailsServiceImpl userDetailsService,
-      CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+      CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+      OAuth2SuccessHandler oAuth2SuccessHandler,
+      OAuth2FailureHandler oAuth2FailureHandler,
+      OAuth2UserService oAuth2UserService) {
     this.jwtFilter = jwtFilter;
     this.userDetailsService = userDetailsService;
     this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+    this.oAuth2SuccessHandler = oAuth2SuccessHandler;
+    this.oAuth2FailureHandler = oAuth2FailureHandler;
+    this.oAuth2UserService = oAuth2UserService;
   }
 
   @Bean
@@ -77,8 +90,16 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(ACTUATOR_WHITELIST)
                     .permitAll()
+                    .requestMatchers(OAUTH2_WHITELIST)
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
+        .oauth2Login(
+            oauth ->
+                oauth
+                    .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                    .successHandler(oAuth2SuccessHandler)
+                    .failureHandler(oAuth2FailureHandler))
         .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(

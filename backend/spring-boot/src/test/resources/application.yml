@@ -39,6 +39,13 @@ spring:
   security:
     user:
       password: ${USER_PASSWORD:qwerty123}
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:client_id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:client_secret}
+            scope: profile,email
   mail:
     host: ${SMTP_HOST:smtp.sendgrid.net}
     port: ${SMTP_PORT:587}

@@ -1,6 +1,6 @@
 package org.bugzkit.api.auth.security;
 
-import org.bugzkit.api.shared.error.exception.UnauthorizedException;
+import org.bugzkit.api.shared.error.exception.ResourceNotFoundException;
 import org.bugzkit.api.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     return userRepository
         .findById(userId)
         .map(UserPrincipal::create)
-        .orElseThrow(() -> new UnauthorizedException("auth.unauthorized"));
+        .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
   }
 
   @Override
@@ -29,6 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     return userRepository
         .findByUsernameOrEmail(username, username)
         .map(UserPrincipal::create)
-        .orElseThrow(() -> new UnauthorizedException("auth.unauthorized"));
+        .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
   }
 }

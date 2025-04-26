@@ -63,7 +63,7 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   private void setUsername(User user, String username) {
-    if (user.getUsername().equals(username)) return;
+    if (user.getUsername() != null && user.getUsername().equals(username)) return;
     if (userRepository.existsByUsername(username))
       throw new ConflictException("user.usernameExists");
 

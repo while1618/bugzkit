@@ -43,13 +43,12 @@ public class User implements Serializable {
   @Column(name = "user_id")
   private Long id;
 
-  @Column(unique = true, nullable = false)
+  @Column(unique = true)
   private String username;
 
   @Column(unique = true, nullable = false)
   private String email;
 
-  @Column(nullable = false)
   private String password;
 
   @Builder.Default

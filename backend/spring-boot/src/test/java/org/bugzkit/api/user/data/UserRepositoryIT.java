@@ -81,6 +81,13 @@ class UserRepositoryIT extends DatabaseContainers {
   }
 
   @Test
+  void findByEmailWithRoles() {
+    final var user = userRepository.findWithRolesByEmail("user@localhost").orElseThrow();
+    assertThat(user.getUsername()).isEqualTo("user");
+    assertThat(user.getRoles()).hasSize(1);
+  }
+
+  @Test
   void findByEmail() {
     assertThat(userRepository.findByEmail("admin@localhost")).isPresent();
   }

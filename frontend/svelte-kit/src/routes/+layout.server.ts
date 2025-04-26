@@ -1,10 +1,11 @@
 import type { Profile } from '$lib/models/user/user';
+import { languageTag } from '$lib/paraglide/runtime';
 import { makeRequest } from '$lib/server/apis/api';
-import { HttpRequest, isAdmin } from '$lib/server/utils/util';
-import { error } from '@sveltejs/kit';
+import { HttpRequest, isAdmin, removeAuth } from '$lib/server/utils/util';
+import { error, redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
-export const load = (async ({ locals, cookies }) => {
+export const load = (async ({ locals, cookies, url }) => {
   if (!locals.userId) return { profile: null };
 
   const response = await makeRequest(
@@ -15,7 +16,13 @@ export const load = (async ({ locals, cookies }) => {
     cookies,
   );
 
-  if ('error' in response) error(response.status, { message: response.error });
+  if ('error' in response) {
+    if (response.status == 401) removeAuth(cookies, locals);
+    error(response.status, { message: response.error });
+  }
 
-  return { profile: response as Profile, isAdmin: isAdmin(cookies.get('accessToken')) };
+  const profile = response as Profile;
+  if (!profile.username && url.pathname !== `/${languageTag()}/profile`) redirect(302, '/profile');
+
+  return { profile, isAdmin: isAdmin(cookies.get('accessToken')) };
 }) satisfies LayoutServerLoad;

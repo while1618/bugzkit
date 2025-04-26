@@ -57,7 +57,7 @@ public class AuthUtil {
         .secure(true)
         .path("/")
         .maxAge(maxAge)
-        .sameSite(SameSite.STRICT.attributeValue())
+        .sameSite(SameSite.LAX.attributeValue())
         .build();
   }
 }

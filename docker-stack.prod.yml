@@ -27,6 +27,8 @@ services:
       - user_password
       - smtp_password
       - jwt_secret
+      - google_client_id
+      - google_client_secret
     depends_on:
       - postgres
       - redis
