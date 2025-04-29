@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { PUBLIC_API_URL } from '$env/static/public';
   import { Button } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card';
   import * as Form from '$lib/components/ui/form';
@@ -72,7 +71,7 @@
               </Form.Field>
 
               <Form.Button>{m.auth_signIn()}</Form.Button>
-              <Button variant="outline" href="{PUBLIC_API_URL}/oauth2/authorization/google">
+              <Button variant="outline" href="https://api.bugzkit.com/oauth2/authorization/google">
                 {m.auth_singInWithGoogle()}
               </Button>
               {#if oauthError}
