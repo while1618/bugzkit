@@ -32,4 +32,4 @@ export const EMAIL_REGEX = /^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$/;
  * blaBLA23"#
  *
  * */
-export const PASSWORD_REGEX = /^(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{8,}$/;
+export const PASSWORD_REGEX = /^(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{8,40}$/;

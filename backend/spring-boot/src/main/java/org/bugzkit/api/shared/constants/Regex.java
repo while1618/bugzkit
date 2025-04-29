@@ -38,7 +38,7 @@ public class Regex {
    * blaBLA23"#
    *
    * */
-  public static final String PASSWORD = "^(?=.*\\d)(?=.*[a-z])(?=.*[a-zA-Z]).{8,}$";
+  public static final String PASSWORD = "^(?=.*\\d)(?=.*[a-z])(?=.*[a-zA-Z]).{8,40}$";
 
   private Regex() {}
 }
