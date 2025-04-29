@@ -9,21 +9,21 @@ import { zod } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { resetPasswordSchema } from './schema';
 
-export const load = (async ({ locals, url }) => {
+export const load = (async ({ locals }) => {
   if (locals.userId) redirect(302, '/');
 
-  const initialData = { token: url.searchParams.get('token') ?? '' };
-  const form = await superValidate(initialData, zod(resetPasswordSchema), { errors: false });
+  const form = await superValidate(zod(resetPasswordSchema));
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions = {
-  resetPassword: async ({ request, cookies }) => {
+  resetPassword: async ({ request, cookies, url }) => {
     const form = await superValidate(request, zod(resetPasswordSchema));
     if (!form.valid) return fail(400, { form });
 
+    const token = url.searchParams.get('token') ?? '';
     try {
-      jwt.verify(form.data.token, env.JWT_SECRET);
+      jwt.verify(token, env.JWT_SECRET);
     } catch (_) {
       return setError(form, m.auth_tokenInvalid());
     }
@@ -32,7 +32,7 @@ export const actions = {
       {
         method: HttpRequest.POST,
         path: '/auth/password/reset',
-        body: JSON.stringify(form.data),
+        body: JSON.stringify({ ...form.data, token }),
       },
       cookies,
     );

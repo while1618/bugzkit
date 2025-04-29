@@ -4,7 +4,6 @@ import { z, ZodIssueCode } from 'zod';
 
 export const resetPasswordSchema = z
   .object({
-    token: z.string(),
     password: z.string().regex(PASSWORD_REGEX, { message: m.auth_passwordInvalid() }),
     confirmPassword: z.string().regex(PASSWORD_REGEX, { message: m.auth_passwordInvalid() }),
   })
