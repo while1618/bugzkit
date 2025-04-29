@@ -7,6 +7,7 @@
   import { Label } from '$lib/components/ui/label';
   import { ErrorCode } from '$lib/models/shared/error-message';
   import * as m from '$lib/paraglide/messages.js';
+  import LoaderCircleIcon from 'lucide-svelte/icons/loader-circle';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
@@ -17,7 +18,7 @@
   const superform = superForm(data.form, {
     validators: zodClient(signInSchema),
   });
-  const { form, errors, enhance } = superform;
+  const { form, errors, enhance, submitting } = superform;
   const oauthError = page.url.searchParams.get('error');
 
   $effect(() => {
@@ -71,6 +72,14 @@
               </Form.Field>
 
               <Form.Button>{m.auth_signIn()}</Form.Button>
+              {#if $submitting}
+                <Form.Button disabled>
+                  <LoaderCircleIcon class="animate-spin" />
+                  {m.auth_signIn()}
+                </Form.Button>
+              {:else}
+                <Form.Button>{m.auth_signIn()}</Form.Button>
+              {/if}
               <Button variant="outline" href="https://api.bugzkit.com/oauth2/authorization/google">
                 {m.auth_singInWithGoogle()}
               </Button>
