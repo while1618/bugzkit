@@ -25,4 +25,4 @@ For running the API via Docker, execute:
 docker-compose -f docker-compose-api.dev.yml up --build -d
 ```
 
-**Note**: Email functionalities require SMTP configuration. Refer to the Environment Variables section for setup.
+**Note**: SMTP and Google OAuth require configuration. Refer to the Environment Variables section for setup.
