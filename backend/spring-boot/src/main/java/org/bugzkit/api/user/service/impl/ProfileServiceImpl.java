@@ -16,6 +16,7 @@ import org.bugzkit.api.user.repository.UserRepository;
 import org.bugzkit.api.user.service.ProfileService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -44,6 +45,7 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
+  @Transactional
   public UserDTO patch(PatchProfileRequest patchProfileRequest) {
     final var userId = AuthUtil.findSignedInUser().getId();
     final var user =
@@ -89,6 +91,7 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
+  @Transactional
   public void changePassword(ChangePasswordRequest changePasswordRequest) {
     final var userId = AuthUtil.findSignedInUser().getId();
     final var user =

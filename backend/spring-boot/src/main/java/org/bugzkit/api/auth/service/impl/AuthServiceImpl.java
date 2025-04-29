@@ -30,6 +30,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -62,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public UserDTO register(RegisterUserRequest registerUserRequest) {
     if (userRepository.existsByUsername(registerUserRequest.username()))
       throw new ConflictException("user.usernameExists");
@@ -134,6 +136,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
     final var user =
         userRepository
@@ -144,6 +147,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
     final var user =
         userRepository
