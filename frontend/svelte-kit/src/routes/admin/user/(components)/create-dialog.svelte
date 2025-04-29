@@ -7,6 +7,7 @@
   import { Label } from '$lib/components/ui/label';
   import { RoleName } from '$lib/models/user/role';
   import * as m from '$lib/paraglide/messages.js';
+  import LoaderCircleIcon from 'lucide-svelte/icons/loader-circle';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
@@ -18,7 +19,7 @@
   const superform = superForm(data.createForm, {
     validators: zodClient(createSchema),
   });
-  const { form, message, errors, enhance } = superform;
+  const { form, message, errors, enhance, submitting } = superform;
   let dialogOpen = $state(false);
 
   $effect(() => {
@@ -143,9 +144,16 @@
 
     <Dialog.Footer class="gap-2 sm:gap-0">
       <Button variant="outline" onclick={() => (dialogOpen = false)}>{m.general_cancel()}</Button>
-      <Form.Button form="createForm">
-        {m.general_save()}
-      </Form.Button>
+      {#if $submitting}
+        <Form.Button disabled>
+          <LoaderCircleIcon class="animate-spin" />
+          {m.general_save()}
+        </Form.Button>
+      {:else}
+        <Form.Button form="createForm">
+          {m.general_save()}
+        </Form.Button>
+      {/if}
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>

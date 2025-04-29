@@ -7,6 +7,7 @@
   import { Label } from '$lib/components/ui/label/index.js';
   import { Separator } from '$lib/components/ui/separator';
   import * as m from '$lib/paraglide/messages.js';
+  import LoaderCircleIcon from 'lucide-svelte/icons/loader-circle';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
@@ -23,6 +24,7 @@
     message: changePasswordMessage,
     errors: changePasswordErrors,
     enhance: changePasswordEnhance,
+    submitting: changePasswordSubmitting,
   } = changePasswordSuperform;
 
   const deleteSuperform = superForm(data.deleteForm, {
@@ -85,7 +87,14 @@
         <Form.FieldErrors />
       </Form.Field>
 
-      <Form.Button>{m.general_save()}</Form.Button>
+      {#if $changePasswordSubmitting}
+        <Form.Button disabled>
+          <LoaderCircleIcon class="animate-spin" />
+          {m.general_save()}
+        </Form.Button>
+      {:else}
+        <Form.Button>{m.general_save()}</Form.Button>
+      {/if}
     </form>
 
     <Separator />

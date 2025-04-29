@@ -17,7 +17,7 @@
     validators: zodClient(updateProfileSchema),
     resetForm: false,
   });
-  const { form, message, errors, enhance, delayed } = superform;
+  const { form, message, errors, enhance, submitting } = superform;
 
   $effect(() => {
     if ($message) toast.success($message);
@@ -52,7 +52,7 @@
         <Form.FieldErrors />
       </Form.Field>
 
-      {#if $delayed}
+      {#if $submitting}
         <Form.Button disabled>
           <LoaderCircleIcon class="animate-spin" />
           {m.general_save()}
