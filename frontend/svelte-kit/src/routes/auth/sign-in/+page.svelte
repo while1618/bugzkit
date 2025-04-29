@@ -71,7 +71,6 @@
                 <Form.FieldErrors />
               </Form.Field>
 
-              <Form.Button>{m.auth_signIn()}</Form.Button>
               {#if $submitting}
                 <Form.Button disabled>
                   <LoaderCircleIcon class="animate-spin" />
