@@ -55,9 +55,10 @@ public class AuthUtil {
     return ResponseCookie.from(name, value)
         .httpOnly(true)
         .secure(true)
+        .domain(".bugzkit.com")
         .path("/")
         .maxAge(maxAge)
-        .sameSite(SameSite.LAX.attributeValue())
+        .sameSite(SameSite.NONE.attributeValue())
         .build();
   }
 }
