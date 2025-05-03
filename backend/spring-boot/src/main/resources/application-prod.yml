@@ -1,6 +1,9 @@
 ui:
   url: ${UI_URL:https://bugzkit.com}
 
+server:
+  forward-headers-strategy: native
+
 spring:
   config:
     import: optional:configtree:/run/secrets/
