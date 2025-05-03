@@ -18,6 +18,8 @@ spring:
       host: ${REDIS_HOST:redis}
       password: ${redis_password}
   security:
+    cookie:
+      domain: .bugzkit.com
     user:
       password: ${user_password} # remove when liquibase is added
     oauth2:
