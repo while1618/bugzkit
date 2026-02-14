@@ -8,12 +8,12 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean install -DskipTests
 
-FROM openjdk:21-jdk AS dev
+FROM eclipse-temurin:21-jre AS dev
 WORKDIR /app
 COPY --from=build /app/target/*.jar bugzkit-api.jar
 ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "bugzkit-api.jar"]
 
-FROM openjdk:21-jdk AS prod
+FROM eclipse-temurin:21-jre AS prod
 WORKDIR /app
 COPY --from=build /app/target/*.jar bugzkit-api.jar
 ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "bugzkit-api.jar"]
