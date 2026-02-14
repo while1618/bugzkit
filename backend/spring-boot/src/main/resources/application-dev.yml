@@ -1,6 +1,9 @@
 ui:
   url: ${UI_URL:http://localhost:5173}
 
+domain:
+  name: ${DOMAIN_NAME:localhost}
+
 spring:
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:bugzkit}

@@ -1,13 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+  <configuration default="false" name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
     <option name="ACTIVE_PROFILES" value="dev" />
-    <option name="envFilePaths">
-      <option value="$PROJECT_DIR$/backend/spring-boot/.env" />
-    </option>
+    <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="api" />
-    <selectedOptions>
-      <option name="environmentVariables" />
-    </selectedOptions>
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.bugzkit.api.Application" />
     <extension name="coverage">
       <pattern>

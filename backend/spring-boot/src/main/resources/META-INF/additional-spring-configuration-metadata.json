@@ -6,6 +6,11 @@
       "description": "Application name."
     },
     {
+      "name": "domain.name",
+      "type": "java.lang.String",
+      "description": "Domain on which app is running."
+    },
+    {
       "name": "ui.url",
       "type": "java.lang.String",
       "description": "UI application URL."

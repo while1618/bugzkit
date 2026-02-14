@@ -6,6 +6,7 @@ services:
       APP_NAME: ${APP_NAME:-bugzkit}
       API_PORT: ${API_PORT:-8080}
       UI_URL: ${UI_URL:-https://bugzkit.com}
+      DOMAIN_NAME: ${DOMAIN_NAME:-.bugzkit.com}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DATABASE: ${POSTGRES_DATABASE:-bugzkit}

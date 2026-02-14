@@ -1,6 +1,9 @@
 ui:
   url: ${UI_URL:https://bugzkit.com}
 
+domain:
+  name: ${DOMAIN_NAME:.bugzkit.com}
+
 server:
   forward-headers-strategy: native
 

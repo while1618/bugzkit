@@ -51,11 +51,11 @@ public class AuthUtil {
         .orElse(null);
   }
 
-  public static ResponseCookie createCookie(String name, String value, int maxAge) {
+  public static ResponseCookie createCookie(String name, String value, String domain, int maxAge) {
     return ResponseCookie.from(name, value)
         .httpOnly(true)
         .secure(true)
-        .domain(".bugzkit.com")
+        .domain(domain)
         .path("/")
         .maxAge(maxAge)
         .sameSite(SameSite.NONE.attributeValue())

@@ -22,6 +22,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   private final RefreshTokenService refreshTokenService;
   private final CustomLogger customLogger;
 
+  @Value("${domain.name}")
+  private String domain;
+
   @Value("${ui.url}")
   private String uiUrl;
 
@@ -53,9 +56,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     final var accessToken = accessTokenService.create(userPrincipal.getId(), roleDTOs);
     final var refreshToken = refreshTokenService.create(userPrincipal.getId(), roleDTOs, ipAddress);
     final var accessTokenCookie =
-        AuthUtil.createCookie("accessToken", accessToken, accessTokenDuration);
+        AuthUtil.createCookie("accessToken", accessToken, domain, accessTokenDuration);
     final var refreshTokenCookie =
-        AuthUtil.createCookie("refreshToken", refreshToken, refreshTokenDuration);
+        AuthUtil.createCookie("refreshToken", refreshToken, domain, refreshTokenDuration);
     response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
     response.sendRedirect(uiUrl);

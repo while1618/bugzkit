@@ -27,6 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
   private final AuthService authService;
 
+  @Value("${domain.name}")
+  private String domain;
+
   @Value("${jwt.access-token.duration}")
   private int accessTokenDuration;
 
@@ -49,9 +52,11 @@ public class AuthController {
     final var ipAddress = AuthUtil.getUserIpAddress(request);
     final var authTokensDTO = authService.authenticate(authTokensRequest, ipAddress);
     final var accessTokenCookie =
-        AuthUtil.createCookie("accessToken", authTokensDTO.accessToken(), accessTokenDuration);
+        AuthUtil.createCookie(
+            "accessToken", authTokensDTO.accessToken(), domain, accessTokenDuration);
     final var refreshTokenCookie =
-        AuthUtil.createCookie("refreshToken", authTokensDTO.refreshToken(), refreshTokenDuration);
+        AuthUtil.createCookie(
+            "refreshToken", authTokensDTO.refreshToken(), domain, refreshTokenDuration);
     return ResponseEntity.noContent()
         .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
         .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
@@ -63,8 +68,8 @@ public class AuthController {
     final var accessToken = AuthUtil.getValueFromCookie("accessToken", request);
     final var ipAddress = AuthUtil.getUserIpAddress(request);
     authService.deleteTokens(accessToken, ipAddress);
-    final var accessTokenCookie = AuthUtil.createCookie("accessToken", "", 0);
-    final var refreshTokenCookie = AuthUtil.createCookie("refreshToken", "", 0);
+    final var accessTokenCookie = AuthUtil.createCookie("accessToken", "", domain, 0);
+    final var refreshTokenCookie = AuthUtil.createCookie("refreshToken", "", domain, 0);
     return ResponseEntity.noContent()
         .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
         .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
@@ -74,8 +79,8 @@ public class AuthController {
   @DeleteMapping("/tokens/devices")
   public ResponseEntity<Void> deleteTokensOnAllDevices() {
     authService.deleteTokensOnAllDevices();
-    final var accessTokenCookie = AuthUtil.createCookie("accessToken", "", 0);
-    final var refreshTokenCookie = AuthUtil.createCookie("refreshToken", "", 0);
+    final var accessTokenCookie = AuthUtil.createCookie("accessToken", "", domain, 0);
+    final var refreshTokenCookie = AuthUtil.createCookie("refreshToken", "", domain, 0);
     return ResponseEntity.noContent()
         .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
         .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
@@ -88,9 +93,11 @@ public class AuthController {
     final var ipAddress = AuthUtil.getUserIpAddress(request);
     final var authTokensDTO = authService.refreshTokens(refreshToken, ipAddress);
     final var accessTokenCookie =
-        AuthUtil.createCookie("accessToken", authTokensDTO.accessToken(), accessTokenDuration);
+        AuthUtil.createCookie(
+            "accessToken", authTokensDTO.accessToken(), domain, accessTokenDuration);
     final var refreshTokenCookie =
-        AuthUtil.createCookie("refreshToken", authTokensDTO.refreshToken(), refreshTokenDuration);
+        AuthUtil.createCookie(
+            "refreshToken", authTokensDTO.refreshToken(), domain, refreshTokenDuration);
     return ResponseEntity.noContent()
         .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
         .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
