@@ -3,12 +3,12 @@ package org.bugzkit.api.shared.util;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bugzkit.api.auth.payload.dto.AuthTokensDTO;
 import org.bugzkit.api.auth.payload.request.AuthTokensRequest;
 import org.bugzkit.api.shared.constants.Path;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 public class IntegrationTestUtil {
   private IntegrationTestUtil() {}
