@@ -1,3 +1,56 @@
 ## Deploy
 
-**This page is under construction.**
+Production deployment uses Docker Swarm with Traefik as a reverse proxy. The stack is defined in `docker-stack.prod.yml` at the repository root.
+
+### Services
+
+The production stack runs five services:
+
+| Service | Image | Role |
+| ------- | ----- | ---- |
+| **bugzkit-api** | `while1618/bugzkit-api:1.0.0` | Spring Boot API |
+| **bugzkit-ui** | `while1618/bugzkit-ui:1.0.0` | SvelteKit frontend (Node) |
+| **postgres** | `postgres:17.2-alpine` | Database |
+| **redis** | `redis:7.4.1` | Token storage and cache |
+| **traefik** | `traefik:v3.3` | Reverse proxy with automatic HTTPS |
+
+### Routing
+
+Traefik handles TLS termination and routing:
+
+- `bugzkit.com` and `www.bugzkit.com` route to the UI on port 5173.
+- `api.bugzkit.com` routes to the API on port 8080.
+- HTTP is automatically redirected to HTTPS.
+- Certificates are obtained via Let's Encrypt (HTTP challenge).
+
+Replace the domain names in `docker-stack.prod.yml` with your own.
+
+### Secrets
+
+Sensitive values are managed through Docker Swarm secrets instead of environment variables. You need to create these secrets before deploying:
+
+```bash
+echo "your_password" | docker secret create postgres_password -
+echo "your_password" | docker secret create redis_password -
+echo "your_secret" | docker secret create jwt_secret -
+echo "your_password" | docker secret create smtp_password -
+echo "your_password" | docker secret create user_password -
+echo "your_client_id" | docker secret create google_client_id -
+echo "your_client_secret" | docker secret create google_client_secret -
+```
+
+### Deploying via GitHub Actions
+
+The `deploy.yml` workflow deploys the stack via SSH. It is triggered manually and only runs on the `master` branch. It requires the following repository secrets:
+
+- `HOST` — The server address.
+- `DEPLOY_USER` — SSH user on the server.
+- `DEPLOY_SSH_PRIVATE_KEY` — SSH private key for authentication.
+
+### Manual Deploy
+
+To deploy manually on a Docker Swarm node:
+
+```bash
+docker stack deploy -c docker-stack.prod.yml bugzkit
+```

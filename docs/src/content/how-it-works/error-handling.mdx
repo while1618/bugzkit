@@ -1,0 +1,92 @@
+## Error Handling
+
+The project uses a standardized error handling system that connects backend exceptions to user-facing, translated messages on the frontend.
+
+### How It Works
+
+When something goes wrong on the backend, the flow looks like this:
+
+1. A service method throws a custom exception (e.g., `ConflictException("user.usernameExists")`).
+2. A global exception handler catches it and resolves the error key through `error-codes.properties` to get a constant like `API_ERROR_USER_USERNAME_EXISTS`.
+3. The backend responds with a structured JSON error containing an HTTP status and an array of error codes.
+4. The frontend receives the error codes and maps each one to a translated message using Paraglide.
+
+### Backend
+
+#### Custom Exceptions
+
+There are four custom exception types, each mapping to an HTTP status:
+
+| Exception                 | HTTP Status     |
+| ------------------------- | --------------- |
+| `BadRequestException`     | 400 Bad Request |
+| `UnauthorizedException`   | 401 Unauthorized|
+| `ResourceNotFoundException` | 404 Not Found |
+| `ConflictException`       | 409 Conflict    |
+
+They are thrown with a message key that references `error-codes.properties`:
+
+```java
+throw new ConflictException("user.usernameExists");
+```
+
+#### Error Codes
+
+The `error-codes.properties` file maps short keys to API error constants:
+
+```properties
+user.usernameExists=API_ERROR_USER_USERNAME_EXISTS
+auth.unauthorized=API_ERROR_AUTH_UNAUTHORIZED
+server.internalError=API_ERROR_INTERNAL_SERVER_ERROR
+```
+
+These constants are what get sent to the frontend.
+
+#### Exception Handler
+
+`CustomExceptionHandler` is a `@ControllerAdvice` that catches all exceptions and converts them into a consistent response format:
+
+```json
+{
+  "timestamp": "2025-01-15T10:30:45",
+  "status": 409,
+  "error": "Conflict",
+  "codes": ["API_ERROR_USER_USERNAME_EXISTS"]
+}
+```
+
+It also handles Spring's built-in exceptions like validation errors (`MethodArgumentNotValidException`), adding all field error codes to the `codes` array.
+
+### Frontend
+
+#### Receiving Errors
+
+The `makeRequest()` function in `src/lib/server/apis/api.ts` checks if the response is an error and returns the parsed `ErrorMessage` object.
+
+#### Displaying Errors
+
+The `apiErrors()` function takes the error codes from the response and maps each one to a user-facing message:
+
+```typescript
+if ('error' in response) return apiErrors(response, form);
+```
+
+For each code in the array, it calls the corresponding Paraglide message function (e.g., `m.API_ERROR_USER_USERNAME_EXISTS()`), which resolves to a translated string like "Username already exists" in English or the equivalent in Serbian.
+
+### Adding a New Error
+
+To add a new error to the system:
+
+1. Add a key-value pair to `error-codes.properties`:
+   ```properties
+   user.myNewError=API_ERROR_USER_MY_NEW_ERROR
+   ```
+2. Add the constant to the `ErrorCode` enum in `src/lib/models/shared/error-message.ts`.
+3. Add the translated messages to each language file in `messages/`:
+   ```json
+   "API_ERROR_USER_MY_NEW_ERROR": "Description of the error"
+   ```
+4. Throw the exception in your backend service:
+   ```java
+   throw new BadRequestException("user.myNewError");
+   ```

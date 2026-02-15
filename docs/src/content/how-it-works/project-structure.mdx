@@ -2,22 +2,40 @@
 
 ### Backend
 
-The backend follows a typical Spring Boot structure with a clear organization into the following main directories:
+The backend lives in `backend/spring-boot` and is organized by feature module. Each module follows a layered pattern with its own controllers, services, repositories, and payload classes:
 
-- **auth**: Contains authentication and authorization logic.
-- **user**: Contains user related logic.
-- **admin**: Contains admin related logic - user management.
-- **shared**: Includes shared utilities, services, configs and components used across different modules.
-- **resources**: Standard Spring Boot resources directory for configuration files, static assets, and templates.
+- **auth** — Authentication and authorization. Includes JWT token management, OAuth2 (Google) integration, and Spring Security configuration.
+- **user** — User and Role entities, repositories, and MapStruct mappers for DTO conversion.
+- **admin** — Admin-only user management (CRUD operations on users, role assignment, account locking).
+- **shared** — Cross-cutting concerns used by all modules:
+  - **config** — Spring configuration classes (security, Redis, CORS, mail, message source).
+  - **error** — Custom exceptions, global exception handler, and standardized error responses.
+  - **email** — Email sending service with MJML template support.
+  - **generic** — Generic CRUD interfaces that admin controllers and services extend.
+  - **validator** — Custom validation annotations.
 
-The **test** directory mirrors this structure, ensuring tests are organized alongside the corresponding features.
+Configuration is split across `application.yml` (shared), `application-dev.yml` (local development), and `application-prod.yml` (production).
+
+The **test** directory mirrors this structure. Unit tests (`*Test.java`) use Mockito, while integration tests (`*IT.java`) use Testcontainers with real PostgreSQL and Redis instances.
 
 ### Frontend
 
-- **messages**: Stores internationalization (i18n) files for multilingual support.
-- **src/routes**: Files here represent the routes of the web application, aligning with the file-based routing paradigm of SvelteKit.
-- **src/lib**: This directory contains reusable logic and components, organized into:
-  - **components**: UI components and building blocks.
-  - **models**: Data models and interfaces.
-  - **server**: Server-side utilities or APIs used by the frontend.
-  - **utils**: Various utility functions available at the root of `lib` directory.
+The frontend lives in `frontend/svelte-kit`:
+
+- **messages** — i18n translation files (`en.json`, `sr.json`). Keys here are used throughout the app via Paraglide.
+- **src/routes** — SvelteKit file-based routing. Main route groups:
+  - `/auth/*` — Sign in, sign up, forgot password, reset password, email verification.
+  - `/profile/*` — User profile and settings.
+  - `/admin/user` — Admin panel for user management.
+  - `/user/[name]` — Public user profiles.
+- **src/lib** — Shared code:
+  - **components** — Reusable UI components built with shadcn-svelte.
+  - **models** — TypeScript interfaces matching backend DTOs and API responses.
+  - **server** — Server-side utilities, including the `makeRequest()` API client that handles communication with the backend and cookie-based authentication.
+- **src/hooks.server.ts** — Server-side middleware chain that handles i18n, JWT verification/refresh, and protected route guards.
+
+### How Frontend Talks to Backend
+
+The frontend server-side code communicates with the backend API through the `makeRequest()` function in `src/lib/server/apis/api.ts`. Authentication tokens are passed as cookies. When the backend returns `Set-Cookie` headers (e.g., after login or token refresh), they are forwarded to the browser automatically.
+
+Protected routes are enforced on both sides: the backend via Spring Security, and the frontend via `hooks.server.ts` which checks for valid tokens and admin roles before serving pages.

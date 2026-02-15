@@ -1,0 +1,71 @@
+## Testing
+
+### Backend
+
+The backend has two types of tests, each run by a different Maven plugin.
+
+#### Unit Tests
+
+Unit tests use JUnit 5 with Mockito and don't require a running database or application context. They follow the `*Test.java` naming pattern and are run by the Maven Surefire plugin.
+
+```bash
+cd backend/spring-boot
+mvn -B test
+```
+
+To run a single test class:
+
+```bash
+mvn -B test -Dtest=MessageServiceTest
+```
+
+To run a single test method:
+
+```bash
+mvn -B test -Dtest=MessageServiceTest#getMessage
+```
+
+#### Integration Tests
+
+Integration tests use Spring Boot Test with [Testcontainers](https://testcontainers.com/) to spin up real PostgreSQL and Redis instances in Docker. They follow the `*IT.java` naming pattern and are run by the Maven Failsafe plugin.
+
+```bash
+cd backend/spring-boot
+mvn -B failsafe:integration-test failsafe:verify
+```
+
+To run a single integration test:
+
+```bash
+mvn -B failsafe:integration-test -Dit.test=AuthControllerIT failsafe:verify
+```
+
+All integration tests extend the `DatabaseContainers` base class, which defines shared PostgreSQL and Redis containers using `@ServiceConnection` for automatic Spring Boot configuration.
+
+Docker must be running for integration tests to work.
+
+### Frontend
+
+#### Unit Tests
+
+Unit tests use [Vitest](https://vitest.dev/). Test files follow the `*.{test,spec}.{js,ts}` pattern inside `src/`.
+
+```bash
+cd frontend/svelte-kit
+pnpm run test:unit
+```
+
+#### End-to-End Tests
+
+E2E tests use [Playwright](https://playwright.dev/) with Firefox. Test files are in the `tests/` directory. Playwright builds the app and starts a preview server on port 4173 before running.
+
+```bash
+cd frontend/svelte-kit
+pnpm run test:integration
+```
+
+To run both unit and E2E tests:
+
+```bash
+pnpm run test
+```

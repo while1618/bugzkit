@@ -1,0 +1,84 @@
+## Internationalization (i18n)
+
+The project supports multiple languages out of the box. The frontend uses [Paraglide.js](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) for translations, while the backend uses Spring's `MessageSource` for error code resolution.
+
+### Supported Languages
+
+- English (en) - source language
+- Serbian (sr)
+
+### Frontend
+
+#### Message Files
+
+Translations live in JSON files under `messages/`:
+
+```
+messages/
+  en.json
+  sr.json
+```
+
+Each file contains key-value pairs:
+
+```json
+{
+  "auth_signIn": "Sign In",
+  "auth_signUp": "Sign Up",
+  "API_ERROR_USER_NOT_FOUND": "User not found"
+}
+```
+
+Keys use underscore-separated naming (e.g., `auth_signIn`, `admin_userCreate`, `profile_changePassword`).
+
+#### Using Translations in Components
+
+Import the generated message functions and call them:
+
+```svelte
+<script lang="ts">
+  import * as m from '$lib/paraglide/messages.js';
+</script>
+
+<h1>{m.auth_signIn()}</h1>
+```
+
+Messages are functions, not strings. This lets Paraglide swap the language at runtime.
+
+#### Language Routing
+
+Every URL is prefixed with the language tag (e.g., `/en/profile`, `/sr/profile`). This is configured in `src/lib/i18n.ts`:
+
+```typescript
+export const i18n = createI18n(runtime, {
+  prefixDefaultLanguage: 'always',
+});
+```
+
+The `i18n.handle()` middleware in `hooks.server.ts` detects the language from the URL and sets it for the request. The `i18n.reroute()` in `hooks.ts` handles client-side navigation.
+
+#### Language Switcher
+
+The language switcher component in `src/lib/components/navbar/language-switcher.svelte` uses `i18n.route()` to get the canonical path and `i18n.resolveRoute()` to navigate to the same page in a different language.
+
+### Backend
+
+The backend does not serve translated user-facing content. Instead, it uses `MessageSource` to resolve error keys from `error-codes.properties` into error constants (e.g., `user.notFound` becomes `API_ERROR_USER_NOT_FOUND`). The frontend then maps these constants to translated messages.
+
+See the [Error Handling](/how-it-works/error-handling) section for more details.
+
+### Adding a New Language
+
+1. Create a new message file `messages/{languageCode}.json` with all the keys from `en.json` translated.
+
+2. Add the language tag to `project.inlang/settings.json`:
+   ```json
+   "languageTags": ["en", "sr", "fr"]
+   ```
+
+3. Add a label for the language in all message files:
+   ```json
+   "language_french": "French"
+   ```
+
+4. The Paraglide Vite plugin will regenerate the runtime files automatically on the next build or dev server start. The language will appear in the language switcher and be available for routing.
