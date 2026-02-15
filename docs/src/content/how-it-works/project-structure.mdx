@@ -4,15 +4,15 @@
 
 The backend lives in `backend/spring-boot` and is organized by feature module. Each module follows a layered pattern with its own controllers, services, repositories, and payload classes:
 
-- **auth** — Authentication and authorization. Includes JWT token management, OAuth2 (Google) integration, and Spring Security configuration.
-- **user** — User and Role entities, repositories, and MapStruct mappers for DTO conversion.
-- **admin** — Admin-only user management (CRUD operations on users, role assignment, account locking).
-- **shared** — Cross-cutting concerns used by all modules:
-  - **config** — Spring configuration classes (security, Redis, CORS, mail, message source).
-  - **error** — Custom exceptions, global exception handler, and standardized error responses.
-  - **email** — Email sending service with MJML template support.
-  - **generic** — Generic CRUD interfaces that admin controllers and services extend.
-  - **validator** — Custom validation annotations.
+- **auth**: Authentication and authorization. Includes JWT token management, OAuth2 (Google) integration, and Spring Security configuration.
+- **user**: User and Role entities, repositories, and MapStruct mappers for DTO conversion.
+- **admin**: Admin-only user management (CRUD operations on users, role assignment, account locking).
+- **shared**: Cross-cutting concerns used by all modules:
+  - **config**: Spring configuration classes (security, Redis, CORS, mail, message source).
+  - **error**: Custom exceptions, global exception handler, and standardized error responses.
+  - **email**: Email sending service with MJML template support.
+  - **generic**: Generic CRUD interfaces that admin controllers and services extend.
+  - **validator**: Custom validation annotations.
 
 Configuration is split across `application.yml` (shared), `application-dev.yml` (local development), and `application-prod.yml` (production).
 
@@ -22,17 +22,17 @@ The **test** directory mirrors this structure. Unit tests (`*Test.java`) use Moc
 
 The frontend lives in `frontend/svelte-kit`:
 
-- **messages** — i18n translation files (`en.json`, `sr.json`). Keys here are used throughout the app via Paraglide.
-- **src/routes** — SvelteKit file-based routing. Main route groups:
-  - `/auth/*` — Sign in, sign up, forgot password, reset password, email verification.
-  - `/profile/*` — User profile and settings.
-  - `/admin/user` — Admin panel for user management.
-  - `/user/[name]` — Public user profiles.
-- **src/lib** — Shared code:
-  - **components** — Reusable UI components built with shadcn-svelte.
-  - **models** — TypeScript interfaces matching backend DTOs and API responses.
-  - **server** — Server-side utilities, including the `makeRequest()` API client that handles communication with the backend and cookie-based authentication.
-- **src/hooks.server.ts** — Server-side middleware chain that handles i18n, JWT verification/refresh, and protected route guards.
+- **messages**: i18n translation files (`en.json`, `sr.json`). Keys here are used throughout the app via Paraglide.
+- **src/routes**: SvelteKit file-based routing. Main route groups:
+  - `/auth/*`: Sign in, sign up, forgot password, reset password, email verification.
+  - `/profile/*`: User profile and settings.
+  - `/admin/user`: Admin panel for user management.
+  - `/user/[name]`: Public user profiles.
+- **src/lib**: Shared code:
+  - **components**: Reusable UI components built with shadcn-svelte.
+  - **models**: TypeScript interfaces matching backend DTOs and API responses.
+  - **server**: Server-side utilities, including the `makeRequest()` API client that handles communication with the backend and cookie-based authentication.
+- **src/hooks.server.ts**: Server-side middleware chain that handles i18n, JWT verification/refresh, and protected route guards.
 
 ### How Frontend Talks to Backend
 

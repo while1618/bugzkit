@@ -43,9 +43,9 @@ echo "your_client_secret" | docker secret create google_client_secret -
 
 The `deploy.yml` workflow deploys the stack via SSH. It is triggered manually and only runs on the `master` branch. It requires the following repository secrets:
 
-- `HOST` — The server address.
-- `DEPLOY_USER` — SSH user on the server.
-- `DEPLOY_SSH_PRIVATE_KEY` — SSH private key for authentication.
+- `HOST`: The server address.
+- `DEPLOY_USER`: SSH user on the server.
+- `DEPLOY_SSH_PRIVATE_KEY`: SSH private key for authentication.
 
 ### Manual Deploy
 
