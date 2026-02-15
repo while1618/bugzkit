@@ -17,12 +17,12 @@ When something goes wrong on the backend, the flow looks like this:
 
 There are four custom exception types, each mapping to an HTTP status:
 
-| Exception                 | HTTP Status     |
-| ------------------------- | --------------- |
-| `BadRequestException`     | 400 Bad Request |
-| `UnauthorizedException`   | 401 Unauthorized|
-| `ResourceNotFoundException` | 404 Not Found |
-| `ConflictException`       | 409 Conflict    |
+| Exception                   | HTTP Status      |
+| --------------------------- | ---------------- |
+| `BadRequestException`       | 400 Bad Request  |
+| `UnauthorizedException`     | 401 Unauthorized |
+| `ResourceNotFoundException` | 404 Not Found    |
+| `ConflictException`         | 409 Conflict     |
 
 They are thrown with a message key that references `error-codes.properties`:
 

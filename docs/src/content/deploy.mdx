@@ -6,13 +6,13 @@ Production deployment uses Docker Swarm with Traefik as a reverse proxy. The sta
 
 The production stack runs five services:
 
-| Service | Image | Role |
-| ------- | ----- | ---- |
-| **bugzkit-api** | `while1618/bugzkit-api:1.0.0` | Spring Boot API |
-| **bugzkit-ui** | `while1618/bugzkit-ui:1.0.0` | SvelteKit frontend (Node) |
-| **postgres** | `postgres:17.2-alpine` | Database |
-| **redis** | `redis:7.4.1` | Token storage and cache |
-| **traefik** | `traefik:v3.3` | Reverse proxy with automatic HTTPS |
+| Service         | Image                         | Role                               |
+| --------------- | ----------------------------- | ---------------------------------- |
+| **bugzkit-api** | `while1618/bugzkit-api:1.0.0` | Spring Boot API                    |
+| **bugzkit-ui**  | `while1618/bugzkit-ui:1.0.0`  | SvelteKit frontend (Node)          |
+| **postgres**    | `postgres:17.2-alpine`        | Database                           |
+| **redis**       | `redis:7.4.1`                 | Token storage and cache            |
+| **traefik**     | `traefik:v3.3`                | Reverse proxy with automatic HTTPS |
 
 ### Routing
 
