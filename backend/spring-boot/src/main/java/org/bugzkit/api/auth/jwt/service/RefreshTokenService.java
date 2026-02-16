@@ -5,15 +5,15 @@ import java.util.Set;
 import org.bugzkit.api.user.payload.dto.RoleDTO;
 
 public interface RefreshTokenService {
-  String create(Long userId, Set<RoleDTO> roleDTOs, String ipAddress);
+  String create(Long userId, Set<RoleDTO> roleDTOs, String deviceId);
 
   void check(String token);
 
-  Optional<String> findByUserIdAndIpAddress(Long userId, String ipAddress);
+  Optional<String> findByUserIdAndDeviceId(Long userId, String deviceId);
 
   void delete(String token);
 
-  void deleteByUserIdAndIpAddress(Long userId, String ipAddress);
+  void deleteByUserIdAndDeviceId(Long userId, String deviceId);
 
   void deleteAllByUserId(Long userId);
 }

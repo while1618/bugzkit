@@ -3,6 +3,7 @@ package org.bugzkit.api.auth.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.UUID;
 import org.bugzkit.api.auth.security.UserPrincipal;
 import org.bugzkit.api.user.model.Role.RoleName;
 import org.springframework.boot.web.server.Cookie.SameSite;
@@ -35,10 +36,9 @@ public class AuthUtil {
     return auth.getName();
   }
 
-  public static String getUserIpAddress(HttpServletRequest request) {
-    final var ipAddress = request.getHeader("x-forwarded-for");
-    if (ipAddress == null || ipAddress.isEmpty()) return request.getRemoteAddr();
-    return ipAddress;
+  public static String getOrCreateDeviceId(HttpServletRequest request) {
+    final var deviceId = getValueFromCookie("deviceId", request);
+    return deviceId != null ? deviceId : UUID.randomUUID().toString();
   }
 
   public static String getValueFromCookie(String name, HttpServletRequest request) {

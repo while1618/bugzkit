@@ -1,6 +1,11 @@
 package org.bugzkit.api.auth.integration;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -176,7 +181,8 @@ class AuthControllerIT extends DatabaseContainers {
         .perform(
             delete(Path.AUTH + "/tokens")
                 .contentType(MediaType.APPLICATION_JSON)
-                .cookie(new Cookie("accessToken", authTokens.accessToken())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
+                .cookie(new Cookie("deviceId", authTokens.deviceId())))
         .andExpect(status().isNoContent());
     invalidAccessToken(authTokens.accessToken());
     invalidRefreshToken(authTokens.refreshToken());
@@ -224,7 +230,8 @@ class AuthControllerIT extends DatabaseContainers {
         .perform(
             post(Path.AUTH + "/tokens/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
-                .cookie(new Cookie("refreshToken", authTokens.refreshToken())))
+                .cookie(new Cookie("refreshToken", authTokens.refreshToken()))
+                .cookie(new Cookie("deviceId", authTokens.deviceId())))
         .andExpect(status().isNoContent())
         .andExpect(header().exists(HttpHeaders.SET_COOKIE));
   }
@@ -378,5 +385,41 @@ class AuthControllerIT extends DatabaseContainers {
                 .content(objectMapper.writeValueAsString(verifyEmailRequest)))
         .andExpect(status().isConflict())
         .andExpect(content().string(containsString("API_ERROR_USER_ACTIVE")));
+  }
+
+  @Test
+  void findAllDevices() throws Exception {
+    final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "user");
+    mockMvc
+        .perform(
+            get(Path.AUTH + "/tokens/devices")
+                .cookie(new Cookie("accessToken", authTokens.accessToken()))
+                .cookie(new Cookie("deviceId", authTokens.deviceId())))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
+        .andExpect(jsonPath("$[0].deviceId").exists())
+        .andExpect(jsonPath("$[0].createdAt").exists())
+        .andExpect(jsonPath("$[0].lastActiveAt").exists())
+        .andExpect(jsonPath("$[?(@.current == true)]").exists())
+        .andExpect(jsonPath("$[*].deviceId", everyItem(is(notNullValue()))));
+  }
+
+  @Test
+  void deleteDevice() throws Exception {
+    final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "update3");
+    mockMvc
+        .perform(
+            delete(Path.AUTH + "/tokens/devices/" + authTokens.deviceId())
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
+        .andExpect(status().isNoContent());
+    // After revoking, the access token is blacklisted, so re-authenticate
+    final var freshTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "update3");
+    mockMvc
+        .perform(
+            get(Path.AUTH + "/tokens/devices")
+                .cookie(new Cookie("accessToken", freshTokens.accessToken()))
+                .cookie(new Cookie("deviceId", freshTokens.deviceId())))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 }

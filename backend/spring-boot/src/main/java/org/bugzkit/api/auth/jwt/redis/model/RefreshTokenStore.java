@@ -21,7 +21,7 @@ public class RefreshTokenStore implements Serializable {
 
   @Indexed private Long userId;
 
-  @Indexed private String ipAddress;
+  @Indexed private String deviceId;
 
   @TimeToLive private long timeToLive;
 }

@@ -15,12 +15,16 @@ const tryToGetSignedInUser: Handle = async ({ event, resolve }) => {
     const { iss } = jwt.verify(accessToken, env.JWT_SECRET) as JwtPayload;
     event.locals.userId = iss;
   } catch (_) {
-    await tryToRefreshToken(event.cookies, event.locals);
+    await tryToRefreshToken(event.cookies, event.locals, event.request);
   }
   return await resolve(event);
 };
 
-async function tryToRefreshToken(cookies: Cookies, locals: App.Locals): Promise<void> {
+async function tryToRefreshToken(
+  cookies: Cookies,
+  locals: App.Locals,
+  request: Request,
+): Promise<void> {
   try {
     const refreshToken = cookies.get('refreshToken') ?? '';
     jwt.verify(refreshToken, env.JWT_SECRET);
@@ -30,6 +34,7 @@ async function tryToRefreshToken(cookies: Cookies, locals: App.Locals): Promise<
         path: '/auth/tokens/refresh',
       },
       cookies,
+      request,
     );
 
     if ('error' in response) {

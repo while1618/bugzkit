@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
-  import { Button, buttonVariants } from '$lib/components/ui/button';
+  import { buttonVariants } from '$lib/components/ui/button';
+  import Button from '$lib/components/ui/button/button.svelte';
   import * as Card from '$lib/components/ui/card/index.js';
   import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input/index.js';
@@ -12,20 +13,15 @@
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import type { PageData } from '../$types';
-  import { changePasswordSchema, deleteSchema } from '../schema';
+  import { deleteSchema, updateProfileSchema } from '../schema';
 
   const { data }: { data: PageData } = $props();
 
-  const changePasswordSuperform = superForm(data.changePasswordForm, {
-    validators: zodClient(changePasswordSchema),
+  const superform = superForm(data.updateProfileForm, {
+    validators: zodClient(updateProfileSchema),
+    resetForm: false,
   });
-  const {
-    form: changePasswordForm,
-    message: changePasswordMessage,
-    errors: changePasswordErrors,
-    enhance: changePasswordEnhance,
-    submitting: changePasswordSubmitting,
-  } = changePasswordSuperform;
+  const { form, message, errors, enhance, submitting } = superform;
 
   const deleteSuperform = superForm(data.deleteForm, {
     validators: zodClient(deleteSchema),
@@ -34,9 +30,9 @@
   let deleteDialogOpen = $state(false);
 
   $effect(() => {
-    if ($changePasswordMessage) toast.success($changePasswordMessage);
-    if ($changePasswordErrors._errors) {
-      for (const error of $changePasswordErrors._errors) {
+    if ($message) toast.success($message);
+    if ($errors._errors) {
+      for (const error of $errors._errors) {
         toast.error(error);
       }
     }
@@ -48,46 +44,30 @@
   });
 </script>
 
-<Card.Root class="w-[350px]">
+<Card.Root class="w-[500px]">
   <Card.Content class="flex flex-col gap-5">
-    <form
-      class="flex flex-col gap-2"
-      method="POST"
-      action="?/changePassword&username={data.profile?.username}"
-      use:changePasswordEnhance
-      novalidate
-    >
-      <Form.Field form={changePasswordSuperform} name="currentPassword">
+    <form class="flex flex-col gap-3" method="POST" action="?/updateProfile" use:enhance novalidate>
+      <Form.Field form={superform} name="username">
         <Form.Control>
           {#snippet children({ props })}
-            <Label>{m.profile_currentPassword()}</Label>
-            <Input type="password" {...props} bind:value={$changePasswordForm.currentPassword} />
+            <Label>{m.auth_username()}</Label>
+            <Input {...props} bind:value={$form.username} />
           {/snippet}
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
 
-      <Form.Field form={changePasswordSuperform} name="newPassword">
+      <Form.Field form={superform} name="email">
         <Form.Control>
           {#snippet children({ props })}
-            <Label>{m.profile_newPassword()}</Label>
-            <Input type="password" {...props} bind:value={$changePasswordForm.newPassword} />
+            <Label>{m.auth_email()}</Label>
+            <Input type="email" {...props} bind:value={$form.email} />
           {/snippet}
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
 
-      <Form.Field form={changePasswordSuperform} name="confirmNewPassword">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Label>{m.profile_confirmNewPassword()}</Label>
-            <Input type="password" {...props} bind:value={$changePasswordForm.confirmNewPassword} />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-
-      {#if $changePasswordSubmitting}
+      {#if $submitting}
         <Form.Button disabled>
           <LoaderCircleIcon class="animate-spin" />
           {m.general_save()}
@@ -96,12 +76,6 @@
         <Form.Button>{m.general_save()}</Form.Button>
       {/if}
     </form>
-
-    <Separator />
-
-    <Button href="/auth/sign-out-from-all-devices" class="w-full" variant="destructive">
-      {m.profile_signOutFromAllDevices()}
-    </Button>
 
     <Separator />
 

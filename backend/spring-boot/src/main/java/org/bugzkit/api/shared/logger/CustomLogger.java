@@ -14,10 +14,9 @@ public class CustomLogger {
   public void info(String message) {
     final var logDetails = new LogDetails();
     log.info(
-        "REQUEST_ID: {}, USER: {}, IP: {}, ENDPOINT: {} {}, MESSAGE: {}",
+        "REQUEST_ID: {}, USER: {}, ENDPOINT: {} {}, MESSAGE: {}",
         logDetails.getRequestId(),
         logDetails.getUsername(),
-        logDetails.getIpAddress(),
         logDetails.getRequestMethod(),
         logDetails.getRequestUrl(),
         message);
@@ -26,10 +25,9 @@ public class CustomLogger {
   public void error(String message, Exception e) {
     final var logDetails = new LogDetails();
     log.error(
-        "REQUEST_ID: {}, USER: {}, IP: {}, ENDPOINT: {} {}, MESSAGE: {}",
+        "REQUEST_ID: {}, USER: {}, ENDPOINT: {} {}, MESSAGE: {}",
         logDetails.getRequestId(),
         logDetails.getUsername(),
-        logDetails.getIpAddress(),
         logDetails.getRequestMethod(),
         logDetails.getRequestUrl(),
         message,
@@ -39,7 +37,6 @@ public class CustomLogger {
   @Getter
   private static class LogDetails {
     private final String username;
-    private final String ipAddress;
     private final String requestId;
     private final String requestMethod;
     private final String requestUrl;
@@ -48,7 +45,6 @@ public class CustomLogger {
       final var request =
           ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
       username = AuthUtil.getAuthName();
-      ipAddress = AuthUtil.getUserIpAddress(request);
       requestId = MDC.get("REQUEST_ID");
       requestMethod = request.getMethod();
       requestUrl = request.getRequestURL().toString();

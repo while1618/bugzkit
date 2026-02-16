@@ -3,6 +3,7 @@ package org.bugzkit.api.user.service.impl;
 import org.bugzkit.api.auth.jwt.service.AccessTokenService;
 import org.bugzkit.api.auth.jwt.service.RefreshTokenService;
 import org.bugzkit.api.auth.jwt.service.VerificationTokenService;
+import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.shared.error.exception.BadRequestException;
 import org.bugzkit.api.shared.error.exception.ConflictException;
@@ -25,18 +26,21 @@ public class ProfileServiceImpl implements ProfileService {
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
   private final VerificationTokenService verificationTokenService;
+  private final DeviceService deviceService;
 
   public ProfileServiceImpl(
       UserRepository userRepository,
       PasswordEncoder bCryptPasswordEncoder,
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
-      VerificationTokenService verificationTokenService) {
+      VerificationTokenService verificationTokenService,
+      DeviceService deviceService) {
     this.userRepository = userRepository;
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
     this.verificationTokenService = verificationTokenService;
+    this.deviceService = deviceService;
   }
 
   @Override
@@ -84,8 +88,10 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
+  @Transactional
   public void delete() {
     final var userId = AuthUtil.findSignedInUser().getId();
+    deviceService.deleteAllByUserId(userId);
     deleteAuthTokens(userId);
     userRepository.deleteById(userId);
   }

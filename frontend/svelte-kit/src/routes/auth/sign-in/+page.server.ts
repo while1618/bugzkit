@@ -26,6 +26,7 @@ export const actions = {
         body: JSON.stringify(form.data),
       },
       cookies,
+      request,
     );
 
     if ('error' in response) return apiErrors(response, form);
