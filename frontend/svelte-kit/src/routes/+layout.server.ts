@@ -1,7 +1,7 @@
 import type { Profile } from '$lib/models/user/user';
 import { languageTag } from '$lib/paraglide/runtime';
 import { makeRequest } from '$lib/server/apis/api';
-import { HttpRequest, isAdmin, removeAuth } from '$lib/server/utils/util';
+import { HttpRequest, isAdmin } from '$lib/server/utils/util';
 import { error, redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
@@ -17,7 +17,7 @@ export const load = (async ({ locals, cookies, url }) => {
   );
 
   if ('error' in response) {
-    if (response.status == 401) removeAuth(cookies, locals);
+    if (response.status == 401) cookies.delete('accessToken', { path: '/' });
     error(response.status, { message: response.error });
   }
 

@@ -91,6 +91,34 @@ paths:
                   - "accessToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0"
                   - "refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=0"
   /auth/tokens/devices:
+    get:
+      tags:
+        - auth
+      summary: Get all logged-in devices
+      security:
+        - cookieAuth: [ ]
+      responses:
+        200:
+          description: Devices retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeviceDTO"
+              example:
+                - deviceId: "550e8400-e29b-41d4-a716-446655440000"
+                  userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
+                  createdAt: "2024-01-15T10:30:00"
+                  lastActiveAt: "2024-01-15T12:00:00"
+                  current: true
+                - deviceId: "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+                  userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0)"
+                  createdAt: "2024-01-14T08:00:00"
+                  lastActiveAt: "2024-01-14T20:00:00"
+                  current: false
+        401:
+          $ref: "#/components/responses/Unauthorized"
     delete:
       tags:
         - auth
@@ -109,6 +137,26 @@ paths:
                 example:
                   - "accessToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0"
                   - "refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=0"
+  /auth/tokens/devices/{deviceId}:
+    delete:
+      tags:
+        - auth
+      summary: Delete a specific device session
+      security:
+        - cookieAuth: [ ]
+      parameters:
+        - name: deviceId
+          in: path
+          description: Device ID to delete
+          required: true
+          schema:
+            type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        204:
+          description: Device session deleted successfully
+        401:
+          $ref: "#/components/responses/Unauthorized"
   /auth/tokens/refresh:
     post:
       tags:
@@ -1037,6 +1085,27 @@ components:
           enum:
             - USER
             - ADMIN
+    DeviceDTO:
+      type: object
+      required:
+        - deviceId
+        - createdAt
+        - lastActiveAt
+        - current
+      properties:
+        deviceId:
+          type: string
+        userAgent:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        lastActiveAt:
+          type: string
+          format: date-time
+        current:
+          type: boolean
     AvailabilityDTO:
       type: object
       required:

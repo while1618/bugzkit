@@ -9,6 +9,7 @@ import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.error.handling.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -30,7 +31,6 @@ public class SecurityConfig {
   private static final String[] AUTH_WHITELIST = {
     Path.AUTH + "/register",
     Path.AUTH + "/tokens",
-    Path.AUTH + "/tokens/devices",
     Path.AUTH + "/tokens/refresh",
     Path.AUTH + "/password/forgot",
     Path.AUTH + "/password/reset",
@@ -82,6 +82,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(AUTH_WHITELIST)
+                    .permitAll()
+                    .requestMatchers(HttpMethod.DELETE, Path.AUTH + "/tokens/devices")
                     .permitAll()
                     .requestMatchers(USERS_WHITELIST)
                     .permitAll()

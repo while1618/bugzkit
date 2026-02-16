@@ -24,3 +24,7 @@ export const changePasswordSchema = z
   });
 
 export const deleteSchema = z.object({});
+
+export const revokeDeviceSchema = z.object({
+  deviceId: z.string(),
+});

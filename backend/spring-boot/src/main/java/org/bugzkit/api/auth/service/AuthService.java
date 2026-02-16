@@ -1,6 +1,6 @@
 package org.bugzkit.api.auth.service;
 
-import org.bugzkit.api.auth.payload.dto.AuthTokensDTO;
+import org.bugzkit.api.auth.AuthTokens;
 import org.bugzkit.api.auth.payload.request.AuthTokensRequest;
 import org.bugzkit.api.auth.payload.request.ForgotPasswordRequest;
 import org.bugzkit.api.auth.payload.request.RegisterUserRequest;
@@ -12,13 +12,13 @@ import org.bugzkit.api.user.payload.dto.UserDTO;
 public interface AuthService {
   UserDTO register(RegisterUserRequest registerUserRequest);
 
-  AuthTokensDTO authenticate(AuthTokensRequest authTokensRequest, String ipAddress);
+  AuthTokens authenticate(AuthTokensRequest authTokensRequest, String deviceId, String userAgent);
 
-  void deleteTokens(String accessToken, String ipAddress);
+  void deleteTokens(String accessToken, String deviceId);
 
   void deleteTokensOnAllDevices();
 
-  AuthTokensDTO refreshTokens(String refreshToken, String ipAddress);
+  AuthTokens refreshTokens(String refreshToken, String deviceId, String userAgent);
 
   void forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
 

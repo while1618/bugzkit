@@ -232,4 +232,22 @@ class AccessingResourcesIT extends DatabaseContainers {
         .andExpect(status().isForbidden())
         .andExpect(content().string(containsString(forbidden)));
   }
+
+  @Test
+  void findAllDevices_throwUnauthorized_userNotSignedIn() throws Exception {
+    mockMvc
+        .perform(get(Path.AUTH + "/tokens/devices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().string(containsString(unauthorized)));
+  }
+
+  @Test
+  void deleteDevice_throwUnauthorized_userNotSignedIn() throws Exception {
+    mockMvc
+        .perform(
+            delete(Path.AUTH + "/tokens/devices/{deviceId}", "some-device-id")
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().string(containsString(unauthorized)));
+  }
 }

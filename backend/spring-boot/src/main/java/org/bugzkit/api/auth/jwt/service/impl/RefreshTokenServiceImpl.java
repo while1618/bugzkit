@@ -30,7 +30,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   }
 
   @Override
-  public String create(Long userId, Set<RoleDTO> roleDTOs, String ipAddress) {
+  public String create(Long userId, Set<RoleDTO> roleDTOs, String deviceId) {
     final var token =
         JWT.create()
             .withIssuer(userId.toString())
@@ -39,8 +39,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             .withIssuedAt(Instant.now())
             .withExpiresAt(Instant.now().plusSeconds(tokenDuration))
             .sign(JwtUtil.getAlgorithm(secret));
-    refreshTokenStoreRepository.save(
-        new RefreshTokenStore(token, userId, ipAddress, tokenDuration));
+    refreshTokenStoreRepository.save(new RefreshTokenStore(token, userId, deviceId, tokenDuration));
     return token;
   }
 
@@ -64,9 +63,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   }
 
   @Override
-  public Optional<String> findByUserIdAndIpAddress(Long userId, String ipAddress) {
+  public Optional<String> findByUserIdAndDeviceId(Long userId, String deviceId) {
     return refreshTokenStoreRepository
-        .findByUserIdAndIpAddress(userId, ipAddress)
+        .findByUserIdAndDeviceId(userId, deviceId)
         .map(RefreshTokenStore::getRefreshToken);
   }
 
@@ -76,9 +75,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   }
 
   @Override
-  public void deleteByUserIdAndIpAddress(Long userId, String ipAddress) {
+  public void deleteByUserIdAndDeviceId(Long userId, String deviceId) {
     refreshTokenStoreRepository
-        .findByUserIdAndIpAddress(userId, ipAddress)
+        .findByUserIdAndDeviceId(userId, deviceId)
         .ifPresent(refreshTokenStoreRepository::delete);
   }
 

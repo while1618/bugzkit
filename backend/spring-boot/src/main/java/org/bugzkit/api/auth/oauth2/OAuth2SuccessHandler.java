@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 import org.bugzkit.api.auth.jwt.service.AccessTokenService;
 import org.bugzkit.api.auth.jwt.service.RefreshTokenService;
+import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.shared.logger.CustomLogger;
 import org.bugzkit.api.user.payload.dto.RoleDTO;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
+  private final DeviceService deviceService;
   private final CustomLogger customLogger;
 
   @Value("${domain.name}")
@@ -37,9 +39,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   public OAuth2SuccessHandler(
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
+      DeviceService deviceService,
       CustomLogger customLogger) {
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
+    this.deviceService = deviceService;
     this.customLogger = customLogger;
   }
 
@@ -52,15 +56,20 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         userPrincipal.getAuthorities().stream()
             .map(authority -> new RoleDTO(authority.getAuthority()))
             .collect(Collectors.toSet());
-    final var ipAddress = AuthUtil.getUserIpAddress(request);
+    final var deviceId = AuthUtil.getOrCreateDeviceId(request);
     final var accessToken = accessTokenService.create(userPrincipal.getId(), roleDTOs);
-    final var refreshToken = refreshTokenService.create(userPrincipal.getId(), roleDTOs, ipAddress);
+    final var refreshToken = refreshTokenService.create(userPrincipal.getId(), roleDTOs, deviceId);
+    final var userAgent = request.getHeader("User-Agent");
+    deviceService.createOrUpdate(userPrincipal.getId(), deviceId, userAgent);
     final var accessTokenCookie =
         AuthUtil.createCookie("accessToken", accessToken, domain, accessTokenDuration);
     final var refreshTokenCookie =
         AuthUtil.createCookie("refreshToken", refreshToken, domain, refreshTokenDuration);
+    final var deviceIdCookie =
+        AuthUtil.createCookie("deviceId", deviceId, domain, refreshTokenDuration);
     response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+    response.addHeader(HttpHeaders.SET_COOKIE, deviceIdCookie.toString());
     response.sendRedirect(uiUrl);
     customLogger.info("Finished");
     MDC.remove("REQUEST_ID");

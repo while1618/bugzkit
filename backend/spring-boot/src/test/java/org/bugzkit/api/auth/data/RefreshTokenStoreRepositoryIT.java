@@ -23,9 +23,9 @@ class RefreshTokenStoreRepositoryIT extends DatabaseContainers {
   @BeforeEach
   void setUp() {
     refreshTokenStoreRepository.deleteAll();
-    final var first = new RefreshTokenStore("token1", 1L, "ip1", 1000);
-    final var second = new RefreshTokenStore("token2", 2L, "ip2", 1000);
-    final var third = new RefreshTokenStore("token3", 2L, "ip3", 1000);
+    final var first = new RefreshTokenStore("token1", 1L, "device1", 1000);
+    final var second = new RefreshTokenStore("token2", 2L, "device2", 1000);
+    final var third = new RefreshTokenStore("token3", 2L, "device3", 1000);
     refreshTokenStoreRepository.saveAll(List.of(first, second, third));
   }
 
@@ -35,8 +35,8 @@ class RefreshTokenStoreRepositoryIT extends DatabaseContainers {
   }
 
   @Test
-  void findByUserIdAndIpAddress() {
-    assertThat(refreshTokenStoreRepository.findByUserIdAndIpAddress(1L, "ip1")).isPresent();
+  void findByUserIdAndDeviceId() {
+    assertThat(refreshTokenStoreRepository.findByUserIdAndDeviceId(1L, "device1")).isPresent();
   }
 
   @Test
