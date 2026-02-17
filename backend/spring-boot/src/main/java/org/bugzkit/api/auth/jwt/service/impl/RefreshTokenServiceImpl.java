@@ -2,7 +2,6 @@ package org.bugzkit.api.auth.jwt.service.impl;
 
 import com.auth0.jwt.JWT;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.Set;
 import org.bugzkit.api.auth.jwt.redis.model.RefreshTokenStore;
 import org.bugzkit.api.auth.jwt.redis.repository.RefreshTokenStoreRepository;
@@ -61,13 +60,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   private void isInRefreshTokenStore(String token) {
     if (!refreshTokenStoreRepository.existsById(token))
       throw new BadRequestException("auth.tokenInvalid");
-  }
-
-  @Override
-  public Optional<String> findByUserIdAndDeviceId(Long userId, String deviceId) {
-    return refreshTokenStoreRepository
-        .findByUserIdAndDeviceId(userId, deviceId)
-        .map(RefreshTokenStore::getRefreshToken);
   }
 
   @Override

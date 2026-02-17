@@ -93,10 +93,7 @@ public class AuthServiceImpl implements AuthService {
             .orElseThrow(() -> new UnauthorizedException("auth.unauthorized"));
     final var roleDTOs = UserMapper.INSTANCE.rolesToRoleDTOs(user.getRoles());
     final var accessToken = accessTokenService.create(user.getId(), roleDTOs, deviceId);
-    final var refreshToken =
-        refreshTokenService
-            .findByUserIdAndDeviceId(user.getId(), deviceId)
-            .orElse(refreshTokenService.create(user.getId(), roleDTOs, deviceId));
+    final var refreshToken = refreshTokenService.create(user.getId(), roleDTOs, deviceId);
     deviceService.createOrUpdate(user.getId(), deviceId, userAgent);
     return new AuthTokens(accessToken, refreshToken);
   }
