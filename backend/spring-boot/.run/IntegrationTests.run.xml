@@ -6,12 +6,7 @@
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="pattern" />
     <patterns>
-      <pattern testClass="org.bugzkit.api.user.integration.UserControllerIT" />
-      <pattern testClass="org.bugzkit.api.user.integration.RoleControllerIT" />
-      <pattern testClass="org.bugzkit.api.user.integration.ProfileControllerIT" />
-      <pattern testClass="org.bugzkit.api.auth.integration.AuthControllerIT" />
-      <pattern testClass="org.bugzkit.api.admin.integration.UserControllerIT" />
-      <pattern testClass="org.bugzkit.api.shared.integration.AccessingResourcesIT" />
+      <pattern testClass="org.bugzkit.api.*IT" />
     </patterns>
     <method v="2">
       <option name="Make" enabled="true" />

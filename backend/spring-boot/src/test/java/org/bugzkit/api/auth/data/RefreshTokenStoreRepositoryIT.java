@@ -3,8 +3,8 @@ package org.bugzkit.api.auth.data;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.bugzkit.api.auth.jwt.redis.model.RefreshTokenStore;
-import org.bugzkit.api.auth.jwt.redis.repository.RefreshTokenStoreRepository;
+import org.bugzkit.api.auth.redis.model.RefreshTokenStore;
+import org.bugzkit.api.auth.redis.repository.RefreshTokenStoreRepository;
 import org.bugzkit.api.shared.config.DatabaseContainers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
