@@ -7,13 +7,14 @@ When a user signs in, two tokens are created:
 - **Access Token**: used to access protected resources within the app.
 - **Refresh Token**: used to silently obtain a new access token when the current one expires, allowing the user to stay signed in without re-entering their password.
 
-Tokens are generated on the backend. When the request is made from SvelteKit server, tokens will be returned in the response body.
-Both access and refresh tokens will then be saved in HTTP-only cookie and they will be used to keep the user authenticated.
+A unique **device ID** is generated for each sign-in and embedded in both tokens. This device ID is used to track sessions across devices.
+
+Tokens are set as HTTP-only cookies directly by the backend via `Set-Cookie` headers. The frontend (`hooks.server.ts`) reads and forwards these cookies on subsequent requests.
 
 #### Token Storage and Lifetime
 
 - **Access Token**: Not stored in a database, valid for 15 minutes.
-- **Refresh Token**: Stored in Redis, valid for 7 days.
+- **Refresh Token**: Stored in Redis (indexed by user ID and device ID), valid for 7 days.
 
 You can change expiration times through environment variables.
 
@@ -25,6 +26,8 @@ In SvelteKit, each API request is intercepted and modified using the `hooks.serv
 - Check that access token is valid.
 - If the token is invalid, try to refresh it by sending a request to the API with the refresh token from the HTTP-only cookie.
 - If refreshing fails, the user is considered unauthenticated and redirected if necessary.
+
+When tokens are refreshed, the device's `lastActiveAt` timestamp is updated and the User-Agent is recorded.
 
 Refer to `hooks.server.ts` to see how this is implemented.
 
@@ -38,9 +41,10 @@ For more details, see [Auth0's docs on refresh token rotation](https://auth0.com
 
 When a user signs out:
 
-- Tokens are removed from HTTP-only cookies.
-- The refresh token is deleted from Redis.
+- The refresh token for the current device is deleted from Redis.
 - The access token is blacklisted in Redis.
+- The device record is removed from the database.
+- Auth cookies are cleared via `Set-Cookie` headers with a max-age of 0.
 
 #### Why Blacklist Access Tokens?
 
@@ -54,9 +58,52 @@ For more details, check [this Stack Overflow discussion](https://stackoverflow.c
 
 When a user signs out from all devices:
 
-- All user's refresh tokens will be deleted.
+- All refresh tokens for the user are deleted from Redis.
 - The user's ID and the time of the request are stored in Redis. This is used to ensure that all access tokens created before the sign-out-from-all-devices request are invalid.
   Again, this data will only be stored in Redis for the access token lifetime (15 minutes).
+- All device records for the user are removed from the database.
+
+### Devices
+
+Each sign-in creates or updates a **device** record in PostgreSQL. A device stores:
+
+- **deviceId**: A unique identifier generated at sign-in and embedded in the JWT.
+- **userAgent**: The User-Agent header from the request, used to display device info (browser, OS) to the user.
+- **createdAt**: When the device was first seen.
+- **lastActiveAt**: Updated on every token refresh, used to track activity.
+
+Users can view and manage their active devices from the profile settings page. Revoking a device will:
+
+- Delete the device record from PostgreSQL.
+- Delete the device's refresh token from Redis.
+- Invalidate all of the user's access tokens (since access tokens cannot be selectively revoked by device).
+
+#### Inactive Device Cleanup
+
+Devices that have been inactive longer than the refresh token lifetime are automatically cleaned up from the database. This happens during sign-in and token refresh operations, ensuring that stale device records don't accumulate.
+
+### Google OAuth2
+
+Users can sign in with their Google account as an alternative to email/password authentication. The flow uses Spring Security's built-in OAuth2 support.
+
+#### How It Works
+
+1. The user clicks "Sign in with Google" on the sign-in page, which navigates them to `/oauth2/authorization/google` on the backend.
+2. Spring Security redirects the user to Google's consent screen.
+3. After the user grants access, Google redirects back to the backend with an authorization code.
+4. Spring Security exchanges the code for user info via `OAuth2UserService`:
+   - The user's email and `email_verified` status are read from Google's response.
+   - If the email is not verified by Google, authentication is rejected.
+   - If a user with that email already exists, they are loaded from the database.
+   - If no user exists, a new account is created automatically with the `USER` role and marked as active (no email verification needed since Google already verified it).
+5. On success, `OAuth2SuccessHandler` generates access and refresh tokens (same as regular sign-in), creates a device record, sets auth cookies via `Set-Cookie` headers, and redirects the user to the frontend.
+6. On failure, `OAuth2FailureHandler` redirects to the sign-in page with an `error` query parameter that maps to an i18n error message.
+
+#### Notes
+
+- OAuth2 users are created without a password or username. On first sign-in, the user is prompted to set a username on the frontend.
+- The same device tracking, token rotation, and cookie-based auth apply to OAuth2 sessions — there is no difference in behavior after the initial sign-in.
+- Google OAuth2 requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` environment variables to be configured.
 
 ### Account Verification
 
@@ -75,6 +122,7 @@ All JWTs share the following structure:
 - **expireAt**: Timestamp of when the token expires.
 - **purpose**: Describes the token's purpose (`access_token`, `refresh_token`, `reset_password_token`, `verify_email_token`).
 
-Access and refresh tokens include an additional claim:
+Access and refresh tokens include additional claims:
 
 - **roles**: Represents the roles assigned to the user.
+- **deviceId**: Identifies the device/session the token belongs to.
