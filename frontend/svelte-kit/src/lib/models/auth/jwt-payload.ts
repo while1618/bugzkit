@@ -6,12 +6,10 @@ export interface JwtPayload {
   exp: number;
   purpose: JwtPurpose;
   roles?: RoleName[];
-  deviceId?: string;
+  deviceId: string;
 }
 
 export enum JwtPurpose {
   ACCESS_TOKEN = 'ACCESS_TOKEN',
   REFRESH_TOKEN = 'REFRESH_TOKEN',
-  VERIFY_EMAIL_TOKEN = 'VERIFY_EMAIL_TOKEN',
-  RESET_PASSWORD_TOKEN = 'RESET_PASSWORD_TOKEN',
 }

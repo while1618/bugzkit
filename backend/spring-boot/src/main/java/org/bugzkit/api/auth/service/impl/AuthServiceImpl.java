@@ -3,20 +3,20 @@ package org.bugzkit.api.auth.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.bugzkit.api.auth.AuthTokens;
-import org.bugzkit.api.auth.jwt.service.AccessTokenService;
-import org.bugzkit.api.auth.jwt.service.RefreshTokenService;
-import org.bugzkit.api.auth.jwt.service.ResetPasswordTokenService;
-import org.bugzkit.api.auth.jwt.service.VerificationTokenService;
-import org.bugzkit.api.auth.jwt.util.JwtUtil;
 import org.bugzkit.api.auth.payload.request.AuthTokensRequest;
 import org.bugzkit.api.auth.payload.request.ForgotPasswordRequest;
 import org.bugzkit.api.auth.payload.request.RegisterUserRequest;
 import org.bugzkit.api.auth.payload.request.ResetPasswordRequest;
 import org.bugzkit.api.auth.payload.request.VerificationEmailRequest;
 import org.bugzkit.api.auth.payload.request.VerifyEmailRequest;
+import org.bugzkit.api.auth.service.AccessTokenService;
 import org.bugzkit.api.auth.service.AuthService;
 import org.bugzkit.api.auth.service.DeviceService;
+import org.bugzkit.api.auth.service.RefreshTokenService;
+import org.bugzkit.api.auth.service.ResetPasswordTokenService;
+import org.bugzkit.api.auth.service.VerificationTokenService;
 import org.bugzkit.api.auth.util.AuthUtil;
+import org.bugzkit.api.auth.util.JwtUtil;
 import org.bugzkit.api.shared.error.exception.BadRequestException;
 import org.bugzkit.api.shared.error.exception.ConflictException;
 import org.bugzkit.api.shared.error.exception.UnauthorizedException;
@@ -158,10 +158,10 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional
   public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
-    resetPasswordTokenService.check(resetPasswordRequest.token());
+    final var userId = resetPasswordTokenService.checkAndConsume(resetPasswordRequest.token());
     final var user =
         userRepository
-            .findById(JwtUtil.getUserId(resetPasswordRequest.token()))
+            .findById(userId)
             .orElseThrow(() -> new BadRequestException("auth.tokenInvalid"));
     user.setPassword(bCryptPasswordEncoder.encode(resetPasswordRequest.password()));
     accessTokenService.invalidateAllByUserId(user.getId());
@@ -183,10 +183,10 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public void verifyEmail(VerifyEmailRequest verifyEmailRequest) {
-    verificationTokenService.check(verifyEmailRequest.token());
+    final var userId = verificationTokenService.checkAndConsume(verifyEmailRequest.token());
     final var user =
         userRepository
-            .findById(JwtUtil.getUserId(verifyEmailRequest.token()))
+            .findById(userId)
             .orElseThrow(() -> new BadRequestException("auth.tokenInvalid"));
     if (Boolean.TRUE.equals(user.getActive())) return;
     user.setActive(true);

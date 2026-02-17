@@ -1,9 +1,9 @@
 package org.bugzkit.api.user.service.impl;
 
-import org.bugzkit.api.auth.jwt.service.AccessTokenService;
-import org.bugzkit.api.auth.jwt.service.RefreshTokenService;
-import org.bugzkit.api.auth.jwt.service.VerificationTokenService;
+import org.bugzkit.api.auth.service.AccessTokenService;
 import org.bugzkit.api.auth.service.DeviceService;
+import org.bugzkit.api.auth.service.RefreshTokenService;
+import org.bugzkit.api.auth.service.VerificationTokenService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.shared.error.exception.BadRequestException;
 import org.bugzkit.api.shared.error.exception.ConflictException;

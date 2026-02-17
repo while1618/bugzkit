@@ -146,7 +146,7 @@ class UserControllerIT extends DatabaseContainers {
                 .cookie(new Cookie("accessToken", accessToken)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.length()").value(10))
-        .andExpect(jsonPath("$.total").value(11));
+        .andExpect(jsonPath("$.total").value(12));
   }
 
   @Test

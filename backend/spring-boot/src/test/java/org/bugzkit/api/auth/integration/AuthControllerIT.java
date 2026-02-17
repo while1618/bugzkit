@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,15 +20,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import jakarta.servlet.http.Cookie;
-import org.bugzkit.api.auth.jwt.service.impl.ResetPasswordTokenServiceImpl;
-import org.bugzkit.api.auth.jwt.service.impl.VerificationTokenServiceImpl;
-import org.bugzkit.api.auth.jwt.util.JwtUtil;
 import org.bugzkit.api.auth.payload.request.AuthTokensRequest;
 import org.bugzkit.api.auth.payload.request.ForgotPasswordRequest;
 import org.bugzkit.api.auth.payload.request.RegisterUserRequest;
 import org.bugzkit.api.auth.payload.request.ResetPasswordRequest;
 import org.bugzkit.api.auth.payload.request.VerificationEmailRequest;
 import org.bugzkit.api.auth.payload.request.VerifyEmailRequest;
+import org.bugzkit.api.auth.redis.repository.RefreshTokenStoreRepository;
+import org.bugzkit.api.auth.service.impl.ResetPasswordTokenServiceImpl;
+import org.bugzkit.api.auth.service.impl.VerificationTokenServiceImpl;
+import org.bugzkit.api.auth.util.JwtUtil;
 import org.bugzkit.api.shared.config.DatabaseContainers;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.email.service.EmailService;
@@ -57,6 +60,7 @@ class AuthControllerIT extends DatabaseContainers {
   @Autowired private VerificationTokenServiceImpl verificationTokenService;
   @Autowired private ResetPasswordTokenServiceImpl resetPasswordService;
   @Autowired private UserRepository userRepository;
+  @Autowired private RefreshTokenStoreRepository refreshTokenStoreRepository;
 
   @MockitoBean private EmailService emailService;
 
@@ -345,6 +349,7 @@ class AuthControllerIT extends DatabaseContainers {
   @Test
   void verifyEmail() throws Exception {
     final var user = userRepository.findByUsername("deactivated2").orElseThrow();
+    assertFalse(user.getActive());
     final var token = verificationTokenService.create(user.getId());
     final var verifyEmailRequest = new VerifyEmailRequest(token);
     mockMvc
@@ -353,6 +358,8 @@ class AuthControllerIT extends DatabaseContainers {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(verifyEmailRequest)))
         .andExpect(status().isNoContent());
+    final var updateUser = userRepository.findByUsername("deactivated2").orElseThrow();
+    assertTrue(updateUser.getActive());
   }
 
   @Test
@@ -383,9 +390,54 @@ class AuthControllerIT extends DatabaseContainers {
   }
 
   @Test
+  void verifyEmail_secondUseOfSameToken_throwBadRequest() throws Exception {
+    final var user = userRepository.findByUsername("deactivated3").orElseThrow();
+    final var token = verificationTokenService.create(user.getId());
+    final var verifyEmailRequest = new VerifyEmailRequest(token);
+    // First use should succeed
+    mockMvc
+        .perform(
+            post(Path.AUTH + "/verify-email")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(verifyEmailRequest)))
+        .andExpect(status().isNoContent());
+    // Second use of same token should fail (consumed)
+    mockMvc
+        .perform(
+            post(Path.AUTH + "/verify-email")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(verifyEmailRequest)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(containsString("API_ERROR_AUTH_TOKEN_INVALID")));
+  }
+
+  @Test
+  void resetPassword_secondUseOfSameToken_throwBadRequest() throws Exception {
+    final var user = userRepository.findByUsername("update4").orElseThrow();
+    final var token = resetPasswordService.create(user.getId());
+    final var resetPasswordRequest = new ResetPasswordRequest(token, "qwerty12345", "qwerty12345");
+    // First use should succeed
+    mockMvc
+        .perform(
+            post(Path.AUTH + "/password/reset")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(resetPasswordRequest)))
+        .andExpect(status().isNoContent());
+    // Second use of same token should fail (consumed)
+    mockMvc
+        .perform(
+            post(Path.AUTH + "/password/reset")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(resetPasswordRequest)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(containsString("API_ERROR_AUTH_TOKEN_INVALID")));
+  }
+
+  @Test
   void refreshToken_secondUseOfSameToken_throwBadRequest() throws Exception {
     final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "update2");
     final var refreshToken = authTokens.refreshToken();
+    Thread.sleep(1000);
     // First use should succeed
     mockMvc
         .perform(

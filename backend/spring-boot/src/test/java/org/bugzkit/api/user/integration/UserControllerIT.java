@@ -41,7 +41,7 @@ class UserControllerIT extends DatabaseContainers {
         .perform(get(Path.USERS).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.length()").value(10))
-        .andExpect(jsonPath("$.total").value(11));
+        .andExpect(jsonPath("$.total").value(12));
   }
 
   @Test

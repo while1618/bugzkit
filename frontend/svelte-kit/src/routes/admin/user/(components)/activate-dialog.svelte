@@ -46,7 +46,7 @@
               e.preventDefault();
               toast.error(m.admin_cannotModifySelf());
             }
-          : undefined}
+          : props.onclick}
         class={user.active
           ? 'text-green-500 hover:text-green-500/90'
           : 'text-red-500 hover:text-red-500/90'}

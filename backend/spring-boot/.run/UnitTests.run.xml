@@ -6,8 +6,7 @@
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="pattern" />
     <patterns>
-      <pattern testClass="org.bugzkit.api.shared.unit.EmailServiceTest" />
-      <pattern testClass="org.bugzkit.api.shared.unit.MessageServiceTest" />
+      <pattern testClass="org.bugzkit.api.*Test" />
     </patterns>
     <method v="2">
       <option name="Make" enabled="true" />

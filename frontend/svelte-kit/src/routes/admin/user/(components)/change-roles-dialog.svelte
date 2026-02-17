@@ -47,7 +47,7 @@
               e.preventDefault();
               toast.error(m.admin_cannotModifySelf());
             }
-          : undefined}
+          : props.onclick}
         class="text-blue-500 hover:text-blue-500/90"
       >
         <PencilIcon />

@@ -2,13 +2,13 @@ package org.bugzkit.api.auth.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.bugzkit.api.auth.jwt.service.AccessTokenService;
-import org.bugzkit.api.auth.jwt.service.RefreshTokenService;
 import org.bugzkit.api.auth.mapper.AuthMapper;
 import org.bugzkit.api.auth.model.Device;
 import org.bugzkit.api.auth.payload.dto.DeviceDTO;
 import org.bugzkit.api.auth.repository.DeviceRepository;
+import org.bugzkit.api.auth.service.AccessTokenService;
 import org.bugzkit.api.auth.service.DeviceService;
+import org.bugzkit.api.auth.service.RefreshTokenService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;

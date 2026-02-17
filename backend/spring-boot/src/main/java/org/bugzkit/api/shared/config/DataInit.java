@@ -114,6 +114,14 @@ public class DataInit implements ApplicationRunner {
                 .roles(Collections.singleton(userRole))
                 .build(),
             User.builder()
+                .username("deactivated3")
+                .email("deactivated3@localhost")
+                .password(bCryptPasswordEncoder.encode(password))
+                .active(false)
+                .lock(false)
+                .roles(Collections.singleton(userRole))
+                .build(),
+            User.builder()
                 .username("locked")
                 .email("locked@localhost")
                 .password(bCryptPasswordEncoder.encode(password))
