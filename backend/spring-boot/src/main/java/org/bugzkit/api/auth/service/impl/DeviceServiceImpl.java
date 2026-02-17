@@ -11,6 +11,7 @@ import org.bugzkit.api.auth.repository.DeviceRepository;
 import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,9 @@ public class DeviceServiceImpl implements DeviceService {
   private final UserRepository userRepository;
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
+
+  @Value("${jwt.refresh-token.duration}")
+  private int refreshTokenDuration;
 
   public DeviceServiceImpl(
       DeviceRepository deviceRepository,
@@ -43,6 +47,8 @@ public class DeviceServiceImpl implements DeviceService {
   @Override
   @Transactional
   public void createOrUpdate(Long userId, String deviceId, String userAgent) {
+    deviceRepository.deleteByUserIdAndLastActiveAtBefore(
+        userId, LocalDateTime.now().minusSeconds(refreshTokenDuration));
     final var existing = deviceRepository.findByUserIdAndDeviceId(userId, deviceId);
     if (existing.isPresent()) {
       final var device = existing.get();

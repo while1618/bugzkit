@@ -1,5 +1,6 @@
 package org.bugzkit.api.auth.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.bugzkit.api.auth.model.Device;
@@ -13,4 +14,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
   void deleteByUserIdAndDeviceId(Long userId, String deviceId);
 
   void deleteAllByUserId(Long userId);
+
+  void deleteByUserIdAndLastActiveAtBefore(Long userId, LocalDateTime cutoff);
 }
