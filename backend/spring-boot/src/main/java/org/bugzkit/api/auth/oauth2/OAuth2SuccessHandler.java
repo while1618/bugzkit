@@ -56,8 +56,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         userPrincipal.getAuthorities().stream()
             .map(authority -> new RoleDTO(authority.getAuthority()))
             .collect(Collectors.toSet());
-    final var deviceId = AuthUtil.getOrCreateDeviceId(request);
-    final var accessToken = accessTokenService.create(userPrincipal.getId(), roleDTOs);
+    final var deviceId = AuthUtil.generateDeviceId();
+    final var accessToken = accessTokenService.create(userPrincipal.getId(), roleDTOs, deviceId);
     final var refreshToken = refreshTokenService.create(userPrincipal.getId(), roleDTOs, deviceId);
     final var userAgent = request.getHeader("User-Agent");
     deviceService.createOrUpdate(userPrincipal.getId(), deviceId, userAgent);
@@ -65,11 +65,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         AuthUtil.createCookie("accessToken", accessToken, domain, accessTokenDuration);
     final var refreshTokenCookie =
         AuthUtil.createCookie("refreshToken", refreshToken, domain, refreshTokenDuration);
-    final var deviceIdCookie =
-        AuthUtil.createCookie("deviceId", deviceId, domain, refreshTokenDuration);
     response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-    response.addHeader(HttpHeaders.SET_COOKIE, deviceIdCookie.toString());
     response.sendRedirect(uiUrl);
     customLogger.info("Finished");
     MDC.remove("REQUEST_ID");

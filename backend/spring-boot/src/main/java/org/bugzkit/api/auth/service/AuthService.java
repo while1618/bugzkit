@@ -14,11 +14,11 @@ public interface AuthService {
 
   AuthTokens authenticate(AuthTokensRequest authTokensRequest, String deviceId, String userAgent);
 
-  void deleteTokens(String accessToken, String deviceId);
+  void deleteTokens(String accessToken);
 
   void deleteTokensOnAllDevices();
 
-  AuthTokens refreshTokens(String refreshToken, String deviceId, String userAgent);
+  AuthTokens refreshTokens(String refreshToken, String userAgent);
 
   void forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
 

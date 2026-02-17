@@ -92,13 +92,13 @@ public class AuthServiceImpl implements AuthService {
             .findWithRolesByUsername(auth.getName())
             .orElseThrow(() -> new UnauthorizedException("auth.unauthorized"));
     final var roleDTOs = UserMapper.INSTANCE.rolesToRoleDTOs(user.getRoles());
-    final var accessToken = accessTokenService.create(user.getId(), roleDTOs);
+    final var accessToken = accessTokenService.create(user.getId(), roleDTOs, deviceId);
     final var refreshToken =
         refreshTokenService
             .findByUserIdAndDeviceId(user.getId(), deviceId)
             .orElse(refreshTokenService.create(user.getId(), roleDTOs, deviceId));
     deviceService.createOrUpdate(user.getId(), deviceId, userAgent);
-    return new AuthTokens(accessToken, refreshToken, deviceId);
+    return new AuthTokens(accessToken, refreshToken);
   }
 
   private User createUser(RegisterUserRequest registerUserRequest) {
@@ -116,9 +116,10 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   @Transactional
-  public void deleteTokens(String accessToken, String deviceId) {
+  public void deleteTokens(String accessToken) {
     if (!AuthUtil.isSignedIn()) return;
     final var id = AuthUtil.findSignedInUser().getId();
+    final var deviceId = JwtUtil.getDeviceId(accessToken);
     refreshTokenService.deleteByUserIdAndDeviceId(id, deviceId);
     accessTokenService.invalidate(accessToken);
     deviceService.deleteByUserIdAndDeviceId(id, deviceId);
@@ -135,15 +136,16 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public AuthTokens refreshTokens(String refreshToken, String deviceId, String userAgent) {
+  public AuthTokens refreshTokens(String refreshToken, String userAgent) {
     refreshTokenService.check(refreshToken);
     final var userId = JwtUtil.getUserId(refreshToken);
     final var roleDTOs = JwtUtil.getRoleDTOs(refreshToken);
+    final var deviceId = JwtUtil.getDeviceId(refreshToken);
     refreshTokenService.delete(refreshToken);
-    final var newAccessToken = accessTokenService.create(userId, roleDTOs);
+    final var newAccessToken = accessTokenService.create(userId, roleDTOs, deviceId);
     final var newRefreshToken = refreshTokenService.create(userId, roleDTOs, deviceId);
     deviceService.createOrUpdate(userId, deviceId, userAgent);
-    return new AuthTokens(newAccessToken, newRefreshToken, deviceId);
+    return new AuthTokens(newAccessToken, newRefreshToken);
   }
 
   @Override

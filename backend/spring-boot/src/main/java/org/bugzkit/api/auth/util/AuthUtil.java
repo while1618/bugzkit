@@ -36,9 +36,8 @@ public class AuthUtil {
     return auth.getName();
   }
 
-  public static String getOrCreateDeviceId(HttpServletRequest request) {
-    final var deviceId = getValueFromCookie("deviceId", request);
-    return deviceId != null ? deviceId : UUID.randomUUID().toString();
+  public static String generateDeviceId() {
+    return UUID.randomUUID().toString();
   }
 
   public static String getValueFromCookie(String name, HttpServletRequest request) {

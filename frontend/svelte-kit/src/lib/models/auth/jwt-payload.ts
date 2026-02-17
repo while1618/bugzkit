@@ -6,6 +6,7 @@ export interface JwtPayload {
   exp: number;
   purpose: JwtPurpose;
   roles?: RoleName[];
+  deviceId?: string;
 }
 
 export enum JwtPurpose {

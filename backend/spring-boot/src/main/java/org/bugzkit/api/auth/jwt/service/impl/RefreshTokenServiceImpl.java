@@ -36,6 +36,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             .withIssuer(userId.toString())
             .withClaim("roles", roleDTOs.stream().map(RoleDTO::name).toList())
             .withClaim("purpose", PURPOSE.name())
+            .withClaim("deviceId", deviceId)
             .withIssuedAt(Instant.now())
             .withExpiresAt(Instant.now().plusSeconds(tokenDuration))
             .sign(JwtUtil.getAlgorithm(secret));

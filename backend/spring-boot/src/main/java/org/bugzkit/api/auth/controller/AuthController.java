@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.bugzkit.api.auth.AuthTokens;
+import org.bugzkit.api.auth.jwt.util.JwtUtil;
 import org.bugzkit.api.auth.payload.dto.DeviceDTO;
 import org.bugzkit.api.auth.payload.request.AuthTokensRequest;
 import org.bugzkit.api.auth.payload.request.ForgotPasswordRequest;
@@ -57,7 +58,7 @@ public class AuthController {
   @PostMapping("/tokens")
   public ResponseEntity<Void> authenticate(
       @Valid @RequestBody AuthTokensRequest authTokensRequest, HttpServletRequest request) {
-    final var deviceId = AuthUtil.getOrCreateDeviceId(request);
+    final var deviceId = AuthUtil.generateDeviceId();
     final var userAgent = request.getHeader("User-Agent");
     final var authTokens = authService.authenticate(authTokensRequest, deviceId, userAgent);
     return buildTokenResponse(authTokens);
@@ -66,23 +67,21 @@ public class AuthController {
   @DeleteMapping("/tokens")
   public ResponseEntity<Void> deleteTokens(HttpServletRequest request) {
     final var accessToken = AuthUtil.getValueFromCookie("accessToken", request);
-    final var deviceId = AuthUtil.getValueFromCookie("deviceId", request);
-    authService.deleteTokens(accessToken, deviceId);
-    final var authTokens = new AuthTokens("", "", "");
-    return buildTokenResponse(authTokens);
+    authService.deleteTokens(accessToken);
+    return buildTokenResponse(new AuthTokens("", ""));
   }
 
   @GetMapping("/tokens/devices")
   public ResponseEntity<List<DeviceDTO>> findAllDevices(HttpServletRequest request) {
-    final var deviceId = AuthUtil.getValueFromCookie("deviceId", request);
+    final var accessToken = AuthUtil.getValueFromCookie("accessToken", request);
+    final var deviceId = JwtUtil.getDeviceId(accessToken);
     return ResponseEntity.ok(deviceService.findAll(deviceId));
   }
 
   @DeleteMapping("/tokens/devices")
   public ResponseEntity<Void> deleteTokensOnAllDevices() {
     authService.deleteTokensOnAllDevices();
-    final var authTokens = new AuthTokens("", "", "");
-    return buildTokenResponse(authTokens);
+    return buildTokenResponse(new AuthTokens("", ""));
   }
 
   @DeleteMapping("/tokens/devices/{deviceId}")
@@ -94,9 +93,8 @@ public class AuthController {
   @PostMapping("/tokens/refresh")
   public ResponseEntity<Void> refreshTokens(HttpServletRequest request) {
     final var refreshToken = AuthUtil.getValueFromCookie("refreshToken", request);
-    final var deviceId = AuthUtil.getOrCreateDeviceId(request);
     final var userAgent = request.getHeader("User-Agent");
-    final var authTokens = authService.refreshTokens(refreshToken, deviceId, userAgent);
+    final var authTokens = authService.refreshTokens(refreshToken, userAgent);
     return buildTokenResponse(authTokens);
   }
 
@@ -134,12 +132,9 @@ public class AuthController {
     final var refreshTokenCookie =
         AuthUtil.createCookie(
             "refreshToken", authTokens.refreshToken(), domain, refreshTokenDuration);
-    final var deviceIdCookie =
-        AuthUtil.createCookie("deviceId", authTokens.deviceId(), domain, refreshTokenDuration);
     return ResponseEntity.noContent()
         .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
         .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-        .header(HttpHeaders.SET_COOKIE, deviceIdCookie.toString())
         .build();
   }
 }

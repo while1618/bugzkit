@@ -21,10 +21,8 @@ export async function makeRequest(
 
   const accessToken = cookies.get('accessToken');
   const refreshToken = cookies.get('refreshToken');
-  const deviceId = cookies.get('deviceId');
   if (accessToken) headers.append('Cookie', `accessToken=${accessToken}`);
   if (refreshToken) headers.append('Cookie', `refreshToken=${refreshToken}`);
-  if (deviceId) headers.append('Cookie', `deviceId=${deviceId}`);
 
   const userAgent = request?.headers.get('User-Agent');
   if (userAgent) headers.set('User-Agent', userAgent);
