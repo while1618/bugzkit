@@ -61,14 +61,14 @@ public class AuthController {
     final var deviceId = AuthUtil.generateDeviceId();
     final var userAgent = request.getHeader("User-Agent");
     final var authTokens = authService.authenticate(authTokensRequest, deviceId, userAgent);
-    return buildTokenResponse(authTokens);
+    return setAuthTokenCookies(authTokens);
   }
 
   @DeleteMapping("/tokens")
   public ResponseEntity<Void> deleteTokens(HttpServletRequest request) {
     final var accessToken = AuthUtil.getValueFromCookie("accessToken", request);
     authService.deleteTokens(accessToken);
-    return buildTokenResponse(new AuthTokens("", ""));
+    return removeAuthTokenCookies();
   }
 
   @GetMapping("/tokens/devices")
@@ -81,7 +81,7 @@ public class AuthController {
   @DeleteMapping("/tokens/devices")
   public ResponseEntity<Void> deleteTokensOnAllDevices() {
     authService.deleteTokensOnAllDevices();
-    return buildTokenResponse(new AuthTokens("", ""));
+    return removeAuthTokenCookies();
   }
 
   @DeleteMapping("/tokens/devices/{deviceId}")
@@ -95,7 +95,7 @@ public class AuthController {
     final var refreshToken = AuthUtil.getValueFromCookie("refreshToken", request);
     final var userAgent = request.getHeader("User-Agent");
     final var authTokens = authService.refreshTokens(refreshToken, userAgent);
-    return buildTokenResponse(authTokens);
+    return setAuthTokenCookies(authTokens);
   }
 
   @PostMapping("/password/forgot")
@@ -126,12 +126,21 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
-  private ResponseEntity<Void> buildTokenResponse(AuthTokens authTokens) {
+  private ResponseEntity<Void> setAuthTokenCookies(AuthTokens authTokens) {
     final var accessTokenCookie =
         AuthUtil.createCookie("accessToken", authTokens.accessToken(), domain, accessTokenDuration);
     final var refreshTokenCookie =
         AuthUtil.createCookie(
             "refreshToken", authTokens.refreshToken(), domain, refreshTokenDuration);
+    return ResponseEntity.noContent()
+        .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+        .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+        .build();
+  }
+
+  private ResponseEntity<Void> removeAuthTokenCookies() {
+    final var accessTokenCookie = AuthUtil.createCookie("accessToken", "", domain, 0);
+    final var refreshTokenCookie = AuthUtil.createCookie("refreshToken", "", domain, 0);
     return ResponseEntity.noContent()
         .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
         .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
