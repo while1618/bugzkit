@@ -64,8 +64,8 @@ paths:
                 items:
                   type: string
                 example:
-                  - "accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=9000"
-                  - "refreshToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=604800"
+                  - "accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=9000"
+                  - "refreshToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=604800"
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -76,8 +76,6 @@ paths:
       tags:
         - auth
       summary: Delete access and refresh tokens
-      security:
-        - cookieAuth: [ ]
       responses:
         204:
           description: Access and refresh tokens deleted successfully
@@ -88,8 +86,8 @@ paths:
                 items:
                   type: string
                 example:
-                  - "accessToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0"
-                  - "refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=0"
+                  - "accessToken=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0"
+                  - "refreshToken=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0"
   /auth/tokens/devices:
     get:
       tags:
@@ -123,8 +121,6 @@ paths:
       tags:
         - auth
       summary: Delete access and refresh tokens on all devices
-      security:
-        - cookieAuth: [ ]
       responses:
         204:
           description: Access and refresh tokens deleted successfully on all devices
@@ -135,8 +131,8 @@ paths:
                 items:
                   type: string
                 example:
-                  - "accessToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0"
-                  - "refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=0"
+                  - "accessToken=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0"
+                  - "refreshToken=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0"
   /auth/tokens/devices/{deviceId}:
     delete:
       tags:
@@ -178,8 +174,8 @@ paths:
                 items:
                   type: string
                 example:
-                  - "accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=9000"
-                  - "refreshToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ; HttpOnly; Secure; SameSite=Strict; Path=/auth/refresh; Max-Age=604800"
+                  - "accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=9000"
+                  - "refreshToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=604800"
         400:
           $ref: "#/components/responses/BadRequest"
   /auth/password/forgot:
@@ -815,21 +811,6 @@ components:
           example:
             usernameOrEmail: user
             password: qwerty123
-    RefreshAuthTokensRequest:
-      description: Refresh auth tokens request
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - refreshToken
-            properties:
-              refreshToken:
-                type: string
-                format: JWT
-          example:
-            refreshToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ
     ForgotPasswordRequest:
       description: Forgot password request
       required: true
