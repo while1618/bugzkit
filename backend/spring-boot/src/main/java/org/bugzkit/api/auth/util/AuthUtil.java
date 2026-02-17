@@ -57,7 +57,7 @@ public class AuthUtil {
         .domain(domain)
         .path("/")
         .maxAge(maxAge)
-        .sameSite(SameSite.NONE.attributeValue())
+        .sameSite(SameSite.LAX.attributeValue())
         .build();
   }
 }
