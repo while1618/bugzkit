@@ -61,14 +61,14 @@ public class AuthController {
     final var deviceId = AuthUtil.generateDeviceId();
     final var userAgent = request.getHeader("User-Agent");
     final var authTokens = authService.authenticate(authTokensRequest, deviceId, userAgent);
-    return setAuthTokenCookies(authTokens);
+    return setAuthCookies(authTokens);
   }
 
   @DeleteMapping("/tokens")
   public ResponseEntity<Void> deleteTokens(HttpServletRequest request) {
     final var accessToken = AuthUtil.getValueFromCookie("accessToken", request);
     authService.deleteTokens(accessToken);
-    return removeAuthTokenCookies();
+    return removeAuthCookies();
   }
 
   @GetMapping("/tokens/devices")
@@ -81,7 +81,7 @@ public class AuthController {
   @DeleteMapping("/tokens/devices")
   public ResponseEntity<Void> deleteTokensOnAllDevices() {
     authService.deleteTokensOnAllDevices();
-    return removeAuthTokenCookies();
+    return removeAuthCookies();
   }
 
   @DeleteMapping("/tokens/devices/{deviceId}")
@@ -95,7 +95,7 @@ public class AuthController {
     final var refreshToken = AuthUtil.getValueFromCookie("refreshToken", request);
     final var userAgent = request.getHeader("User-Agent");
     final var authTokens = authService.refreshTokens(refreshToken, userAgent);
-    return setAuthTokenCookies(authTokens);
+    return setAuthCookies(authTokens);
   }
 
   @PostMapping("/password/forgot")
@@ -126,7 +126,7 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
-  private ResponseEntity<Void> setAuthTokenCookies(AuthTokens authTokens) {
+  private ResponseEntity<Void> setAuthCookies(AuthTokens authTokens) {
     final var accessTokenCookie =
         AuthUtil.createCookie("accessToken", authTokens.accessToken(), domain, accessTokenDuration);
     final var refreshTokenCookie =
@@ -138,7 +138,7 @@ public class AuthController {
         .build();
   }
 
-  private ResponseEntity<Void> removeAuthTokenCookies() {
+  private ResponseEntity<Void> removeAuthCookies() {
     final var accessTokenCookie = AuthUtil.createCookie("accessToken", "", domain, 0);
     final var refreshTokenCookie = AuthUtil.createCookie("refreshToken", "", domain, 0);
     return ResponseEntity.noContent()
