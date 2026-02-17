@@ -43,7 +43,6 @@ export function setCookieFromString(cookie: string, cookies: Cookies) {
 export function removeAuth(cookies: Cookies, locals: App.Locals): void {
   cookies.delete('accessToken', { path: '/' });
   cookies.delete('refreshToken', { path: '/' });
-  cookies.delete('deviceId', { path: '/' });
   locals.userId = null;
 }
 

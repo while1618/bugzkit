@@ -4,7 +4,7 @@ import java.util.Set;
 import org.bugzkit.api.user.payload.dto.RoleDTO;
 
 public interface AccessTokenService {
-  String create(Long userId, Set<RoleDTO> roleDTOs);
+  String create(Long userId, Set<RoleDTO> roleDTOs, String deviceId);
 
   void check(String token);
 

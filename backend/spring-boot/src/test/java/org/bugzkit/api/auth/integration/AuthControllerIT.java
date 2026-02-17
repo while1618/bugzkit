@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import jakarta.servlet.http.Cookie;
 import org.bugzkit.api.auth.jwt.service.impl.ResetPasswordTokenServiceImpl;
 import org.bugzkit.api.auth.jwt.service.impl.VerificationTokenServiceImpl;
+import org.bugzkit.api.auth.jwt.util.JwtUtil;
 import org.bugzkit.api.auth.payload.request.AuthTokensRequest;
 import org.bugzkit.api.auth.payload.request.ForgotPasswordRequest;
 import org.bugzkit.api.auth.payload.request.RegisterUserRequest;
@@ -181,8 +182,7 @@ class AuthControllerIT extends DatabaseContainers {
         .perform(
             delete(Path.AUTH + "/tokens")
                 .contentType(MediaType.APPLICATION_JSON)
-                .cookie(new Cookie("accessToken", authTokens.accessToken()))
-                .cookie(new Cookie("deviceId", authTokens.deviceId())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isNoContent());
     invalidAccessToken(authTokens.accessToken());
     invalidRefreshToken(authTokens.refreshToken());
@@ -230,8 +230,7 @@ class AuthControllerIT extends DatabaseContainers {
         .perform(
             post(Path.AUTH + "/tokens/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
-                .cookie(new Cookie("refreshToken", authTokens.refreshToken()))
-                .cookie(new Cookie("deviceId", authTokens.deviceId())))
+                .cookie(new Cookie("refreshToken", authTokens.refreshToken())))
         .andExpect(status().isNoContent())
         .andExpect(header().exists(HttpHeaders.SET_COOKIE));
   }
@@ -393,8 +392,7 @@ class AuthControllerIT extends DatabaseContainers {
     mockMvc
         .perform(
             get(Path.AUTH + "/tokens/devices")
-                .cookie(new Cookie("accessToken", authTokens.accessToken()))
-                .cookie(new Cookie("deviceId", authTokens.deviceId())))
+                .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
         .andExpect(jsonPath("$[0].deviceId").exists())
@@ -407,9 +405,10 @@ class AuthControllerIT extends DatabaseContainers {
   @Test
   void deleteDevice() throws Exception {
     final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "update3");
+    final var deviceId = JwtUtil.getDeviceId(authTokens.accessToken());
     mockMvc
         .perform(
-            delete(Path.AUTH + "/tokens/devices/" + authTokens.deviceId())
+            delete(Path.AUTH + "/tokens/devices/" + deviceId)
                 .cookie(new Cookie("accessToken", authTokens.accessToken())))
         .andExpect(status().isNoContent());
     // After revoking, the access token is blacklisted, so re-authenticate
@@ -417,8 +416,7 @@ class AuthControllerIT extends DatabaseContainers {
     mockMvc
         .perform(
             get(Path.AUTH + "/tokens/devices")
-                .cookie(new Cookie("accessToken", freshTokens.accessToken()))
-                .cookie(new Cookie("deviceId", freshTokens.deviceId())))
+                .cookie(new Cookie("accessToken", freshTokens.accessToken())))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
   }

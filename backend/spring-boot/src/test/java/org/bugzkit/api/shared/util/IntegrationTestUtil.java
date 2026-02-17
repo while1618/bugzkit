@@ -27,7 +27,6 @@ public class IntegrationTestUtil {
             .getResponse();
     return new AuthTokens(
         response.getCookie("accessToken").getValue(),
-        response.getCookie("refreshToken").getValue(),
-        response.getCookie("deviceId").getValue());
+        response.getCookie("refreshToken").getValue());
   }
 }

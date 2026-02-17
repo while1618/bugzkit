@@ -30,6 +30,10 @@ public class JwtUtil {
     return roles.stream().map(RoleDTO::new).collect(Collectors.toSet());
   }
 
+  public static String getDeviceId(String token) {
+    return JWT.decode(token).getClaim("deviceId").asString();
+  }
+
   public static Instant getIssuedAt(String token) {
     return JWT.decode(token).getIssuedAtAsInstant();
   }
