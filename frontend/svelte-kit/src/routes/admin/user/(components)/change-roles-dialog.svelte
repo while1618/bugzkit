@@ -24,6 +24,7 @@
   });
   const { message, errors, enhance } = superform;
   let dialogOpen = $state(false);
+  const isSelf = user.id === data.profile?.id;
 
   $effect(() => {
     if ($message) toast.success($message);
@@ -38,7 +39,17 @@
 <Dialog.Root bind:open={dialogOpen}>
   <Dialog.Trigger>
     {#snippet child({ props })}
-      <Button {...props} variant="ghost" class="text-blue-500 hover:text-blue-500/90">
+      <Button
+        {...props}
+        variant="ghost"
+        onclick={isSelf
+          ? (e) => {
+              e.preventDefault();
+              toast.error(m.admin_cannotModifySelf());
+            }
+          : undefined}
+        class="text-blue-500 hover:text-blue-500/90"
+      >
         <PencilIcon />
       </Button>
     {/snippet}

@@ -6,6 +6,7 @@ import org.bugzkit.api.admin.payload.request.UserRequest;
 import org.bugzkit.api.admin.service.UserService;
 import org.bugzkit.api.auth.jwt.service.AccessTokenService;
 import org.bugzkit.api.auth.jwt.service.RefreshTokenService;
+import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.shared.error.exception.BadRequestException;
 import org.bugzkit.api.shared.error.exception.ConflictException;
 import org.bugzkit.api.shared.error.exception.ResourceNotFoundException;
@@ -87,14 +88,20 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDTO update(Long id, UserRequest userRequest) {
-    final var user = userRepository.findWithRolesById(id).orElse(new User());
+    final var user =
+        userRepository
+            .findWithRolesById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
 
     setUsername(user, userRequest.username());
     setEmail(user, userRequest.email());
     setPassword(user, userRequest.password());
-    setActive(user, userRequest.active());
-    setLock(user, userRequest.lock());
-    setRoles(user, userRequest.roleNames());
+
+    if (!isSelf(id)) {
+      setActive(user, userRequest.active());
+      setLock(user, userRequest.lock());
+      setRoles(user, userRequest.roleNames());
+    }
 
     return UserMapper.INSTANCE.userToAdminUserDTO(userRepository.save(user));
   }
@@ -109,11 +116,18 @@ public class UserServiceImpl implements UserService {
     if (patchUserRequest.username() != null) setUsername(user, patchUserRequest.username());
     if (patchUserRequest.email() != null) setEmail(user, patchUserRequest.email());
     if (patchUserRequest.password() != null) setPassword(user, patchUserRequest.password());
-    if (patchUserRequest.active() != null) setActive(user, patchUserRequest.active());
-    if (patchUserRequest.lock() != null) setLock(user, patchUserRequest.lock());
-    if (patchUserRequest.roleNames() != null) setRoles(user, patchUserRequest.roleNames());
+
+    if (!isSelf(id)) {
+      if (patchUserRequest.active() != null) setActive(user, patchUserRequest.active());
+      if (patchUserRequest.lock() != null) setLock(user, patchUserRequest.lock());
+      if (patchUserRequest.roleNames() != null) setRoles(user, patchUserRequest.roleNames());
+    }
 
     return UserMapper.INSTANCE.userToAdminUserDTO(userRepository.save(user));
+  }
+
+  private boolean isSelf(Long id) {
+    return AuthUtil.findSignedInUser().getId().equals(id);
   }
 
   private void deleteAuthTokens(Long userId) {
@@ -122,7 +136,7 @@ public class UserServiceImpl implements UserService {
   }
 
   private void setUsername(User user, String username) {
-    if (user.getUsername().equals(username)) return;
+    if (username.equals(user.getUsername())) return;
     if (userRepository.existsByUsername(username))
       throw new ConflictException("user.usernameExists");
 
@@ -130,17 +144,18 @@ public class UserServiceImpl implements UserService {
   }
 
   private void setEmail(User user, String email) {
-    if (user.getEmail().equals(email)) return;
+    if (email.equals(user.getEmail())) return;
     if (userRepository.existsByEmail(email)) throw new ConflictException("user.emailExists");
 
     user.setEmail(email);
   }
 
   private void setPassword(User user, String password) {
-    if (bCryptPasswordEncoder.matches(password, user.getPassword())) return;
+    if (user.getPassword() != null && bCryptPasswordEncoder.matches(password, user.getPassword()))
+      return;
 
     user.setPassword(bCryptPasswordEncoder.encode(password));
-    deleteAuthTokens(user.getId());
+    if (user.getId() != null) deleteAuthTokens(user.getId());
   }
 
   private void setActive(User user, Boolean active) {

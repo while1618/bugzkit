@@ -208,6 +208,28 @@ class UserControllerIT extends DatabaseContainers {
   }
 
   @Test
+  void updateUser_throwResourceNotFound_userNotFound() throws Exception {
+    final var userRequest =
+        UserRequest.builder()
+            .username("test999")
+            .email("test999@localhost")
+            .password("qwerty123")
+            .confirmPassword("qwerty123")
+            .active(true)
+            .lock(false)
+            .roleNames(Set.of(RoleName.USER))
+            .build();
+    mockMvc
+        .perform(
+            put(Path.ADMIN_USERS + "/{id}", 999L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie("accessToken", accessToken))
+                .content(objectMapper.writeValueAsString(userRequest)))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string(containsString("API_ERROR_USER_NOT_FOUND")));
+  }
+
+  @Test
   void updateUser_throwBadRequest_invalidParameters() throws Exception {
     final var userRequest =
         UserRequest.builder()

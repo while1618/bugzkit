@@ -33,7 +33,7 @@ public class RedisConfig {
   private int timeout;
 
   @Bean
-  JedisConnectionFactory lettuceConnectionFactory() {
+  JedisConnectionFactory jedisConnectionFactory() {
     final var redisStandaloneConfiguration = new RedisStandaloneConfiguration();
     redisStandaloneConfiguration.setHostName(host);
     redisStandaloneConfiguration.setPort(port);
@@ -47,7 +47,7 @@ public class RedisConfig {
   @Bean
   public RedisTemplate<String, Object> redisTemplate() {
     final var template = new RedisTemplate<String, Object>();
-    template.setConnectionFactory(lettuceConnectionFactory());
+    template.setConnectionFactory(jedisConnectionFactory());
     return template;
   }
 }

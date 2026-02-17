@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bugzkit.api.user.model.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
 @Setter
@@ -44,9 +45,9 @@ public class Device {
 
   private String userAgent;
 
-  @Builder.Default
-  @Column(nullable = false)
-  private LocalDateTime createdAt = LocalDateTime.now();
+  @CreationTimestamp
+  @Column(nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
   @Builder.Default
   @Column(nullable = false)

@@ -23,6 +23,7 @@
   });
   const { message, errors, enhance } = superform;
   let dialogOpen = $state(false);
+  const isSelf = user.id === data.profile?.id;
 
   $effect(() => {
     if ($message) toast.success($message);
@@ -40,6 +41,12 @@
       <Button
         {...props}
         variant="ghost"
+        onclick={isSelf
+          ? (e) => {
+              e.preventDefault();
+              toast.error(m.admin_cannotModifySelf());
+            }
+          : undefined}
         class={user.active
           ? 'text-green-500 hover:text-green-500/90'
           : 'text-red-500 hover:text-red-500/90'}

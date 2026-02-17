@@ -8,7 +8,7 @@ Bugzkit is a production-ready full-stack web application template with a Spring 
 
 ## Common Commands
 
-### Backend (Spring Boot — `backend/`)
+### Backend (Spring Boot — `backend/spring-boot/`)
 
 | Task | Command |
 |---|---|
@@ -21,7 +21,7 @@ Bugzkit is a production-ready full-stack web application template with a Spring 
 
 Integration tests use `*IT.java` suffix and run via Maven Failsafe. They require Testcontainers (Docker must be running).
 
-### Frontend (SvelteKit — `frontend/`)
+### Frontend (SvelteKit — `frontend/svelte-kit/`)
 
 | Task | Command |
 |---|---|
@@ -42,7 +42,7 @@ Integration tests use `*IT.java` suffix and run via Maven Failsafe. They require
 
 ## Architecture
 
-### Backend (`backend/src/main/java/org/bugzkit/api/`)
+### Backend (`backend/spring-boot/src/main/java/org/bugzkit/api/`)
 
 Organized by feature module, each with controller/service/repository/payload layers:
 
@@ -53,7 +53,13 @@ Organized by feature module, each with controller/service/repository/payload lay
 
 Security: Stateless sessions, JWT filter chain, role-based access (ADMIN/USER). Public endpoints are whitelisted in `SecurityConfig.java`; everything else requires authentication.
 
-### Frontend (`frontend/src/`)
+**Important design decisions:**
+- OAuth2 users (Google) have **null `username` and `password`** — any code touching User fields must null-check these.
+- Device revocation (`DeviceService.revoke()`) intentionally invalidates **all** access tokens via `UserBlacklist`, not just the revoked device's token. Active sessions auto-refresh silently via their refresh tokens. This is by design to avoid an extra Redis lookup on every request.
+- Access token validation (`AccessTokenService.check()`) runs on every authenticated request — keep it minimal (JWT verify + blacklist check + user blacklist check).
+- Token data (userId, roles, deviceId) must only be extracted from a JWT **after** signature verification.
+
+### Frontend (`frontend/svelte-kit/src/`)
 
 - **`routes/`** — SvelteKit file-based routing: `/auth/*` (sign-in, sign-up, forgot-password, etc.), `/profile/`, `/user/[name]/`, `/admin/user/`.
 - **`lib/server/apis/api.ts`** — HTTP client (`makeRequest()`) that communicates with the backend, handling cookie-based auth and Set-Cookie propagation.

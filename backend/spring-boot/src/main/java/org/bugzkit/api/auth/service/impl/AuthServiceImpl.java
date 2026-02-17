@@ -19,7 +19,6 @@ import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.shared.error.exception.BadRequestException;
 import org.bugzkit.api.shared.error.exception.ConflictException;
-import org.bugzkit.api.shared.error.exception.ResourceNotFoundException;
 import org.bugzkit.api.shared.error.exception.UnauthorizedException;
 import org.bugzkit.api.user.mapper.UserMapper;
 import org.bugzkit.api.user.model.Role.RoleName;
@@ -134,11 +133,10 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public AuthTokens refreshTokens(String refreshToken, String userAgent) {
-    refreshTokenService.check(refreshToken);
+    refreshTokenService.checkAndConsume(refreshToken);
     final var userId = JwtUtil.getUserId(refreshToken);
     final var roleDTOs = JwtUtil.getRoleDTOs(refreshToken);
     final var deviceId = JwtUtil.getDeviceId(refreshToken);
-    refreshTokenService.delete(refreshToken);
     final var newAccessToken = accessTokenService.create(userId, roleDTOs, deviceId);
     final var newRefreshToken = refreshTokenService.create(userId, roleDTOs, deviceId);
     deviceService.createOrUpdate(userId, deviceId, userAgent);
@@ -148,22 +146,23 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional
   public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-    final var user =
-        userRepository
-            .findByEmail(forgotPasswordRequest.email())
-            .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
-    final var token = resetPasswordTokenService.create(user.getId());
-    resetPasswordTokenService.sendToEmail(user, token);
+    userRepository
+        .findByEmail(forgotPasswordRequest.email())
+        .ifPresent(
+            user -> {
+              final var token = resetPasswordTokenService.create(user.getId());
+              resetPasswordTokenService.sendToEmail(user, token);
+            });
   }
 
   @Override
   @Transactional
   public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
+    resetPasswordTokenService.check(resetPasswordRequest.token());
     final var user =
         userRepository
             .findById(JwtUtil.getUserId(resetPasswordRequest.token()))
             .orElseThrow(() -> new BadRequestException("auth.tokenInvalid"));
-    resetPasswordTokenService.check(resetPasswordRequest.token());
     user.setPassword(bCryptPasswordEncoder.encode(resetPasswordRequest.password()));
     accessTokenService.invalidateAllByUserId(user.getId());
     refreshTokenService.deleteAllByUserId(user.getId());
@@ -172,23 +171,24 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public void sendVerificationMail(VerificationEmailRequest request) {
-    final var user =
-        userRepository
-            .findByUsernameOrEmail(request.usernameOrEmail(), request.usernameOrEmail())
-            .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
-    if (Boolean.TRUE.equals(user.getActive())) throw new ConflictException("user.active");
-    final var token = verificationTokenService.create(user.getId());
-    verificationTokenService.sendToEmail(user, token);
+    userRepository
+        .findByUsernameOrEmail(request.usernameOrEmail(), request.usernameOrEmail())
+        .filter(user -> Boolean.FALSE.equals(user.getActive()))
+        .ifPresent(
+            user -> {
+              final var token = verificationTokenService.create(user.getId());
+              verificationTokenService.sendToEmail(user, token);
+            });
   }
 
   @Override
   public void verifyEmail(VerifyEmailRequest verifyEmailRequest) {
+    verificationTokenService.check(verifyEmailRequest.token());
     final var user =
         userRepository
             .findById(JwtUtil.getUserId(verifyEmailRequest.token()))
             .orElseThrow(() -> new BadRequestException("auth.tokenInvalid"));
-    if (Boolean.TRUE.equals(user.getActive())) throw new ConflictException("user.active");
-    verificationTokenService.check(verifyEmailRequest.token());
+    if (Boolean.TRUE.equals(user.getActive())) return;
     user.setActive(true);
     userRepository.save(user);
   }

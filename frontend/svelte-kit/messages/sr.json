@@ -110,6 +110,7 @@
   "admin_lockUserConfirmation": "Da li si siguran da želiš da zaključaš {username}?",
   "admin_selectUserRoles": "Izaberi permisije za {username}",
   "admin_rolesSuccess": "Uspešno promenjene role",
+  "admin_cannotModifySelf": "Ne možeš menjati ovo polje na sopstvenom nalogu",
 
   "API_ERROR_AUTH_UNAUTHORIZED": "Pogrešni kredencijali",
   "API_ERROR_AUTH_FORBIDDEN": "Zabranjen pristup",

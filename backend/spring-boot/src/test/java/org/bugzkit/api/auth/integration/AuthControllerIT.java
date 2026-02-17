@@ -249,15 +249,14 @@ class AuthControllerIT extends DatabaseContainers {
   }
 
   @Test
-  void forgotPassword_throwResourceNotFound_userNotFound() throws Exception {
+  void forgotPassword_returnsNoContent_userNotFound() throws Exception {
     final var forgotPasswordRequest = new ForgotPasswordRequest("unknown@localhost");
     mockMvc
         .perform(
             post(Path.AUTH + "/password/forgot")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(forgotPasswordRequest)))
-        .andExpect(status().isNotFound())
-        .andExpect(content().string(containsString("API_ERROR_USER_NOT_FOUND")));
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -322,27 +321,25 @@ class AuthControllerIT extends DatabaseContainers {
   }
 
   @Test
-  void sendVerificationMail_throwResourceNotFound_userNotFound() throws Exception {
+  void sendVerificationMail_returnsNoContent_userNotFound() throws Exception {
     final var verificationMailRequest = new VerificationEmailRequest("unknown");
     mockMvc
         .perform(
             post(Path.AUTH + "/verification-email")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(verificationMailRequest)))
-        .andExpect(status().isNotFound())
-        .andExpect(content().string(containsString("API_ERROR_USER_NOT_FOUND")));
+        .andExpect(status().isNoContent());
   }
 
   @Test
-  void sendVerificationMail_throwConflict_userAlreadyActivated() throws Exception {
+  void sendVerificationMail_returnsNoContent_userAlreadyActivated() throws Exception {
     final var verificationMailRequest = new VerificationEmailRequest("user");
     mockMvc
         .perform(
             post(Path.AUTH + "/verification-email")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(verificationMailRequest)))
-        .andExpect(status().isConflict())
-        .andExpect(content().string(containsString("API_ERROR_USER_ACTIVE")));
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -373,7 +370,7 @@ class AuthControllerIT extends DatabaseContainers {
   }
 
   @Test
-  void verifyEmail_throwConflict_userAlreadyActivated() throws Exception {
+  void verifyEmail_returnsNoContent_userAlreadyActivated() throws Exception {
     final var user = userRepository.findByUsername("user").orElseThrow();
     final var token = verificationTokenService.create(user.getId());
     final var verifyEmailRequest = new VerifyEmailRequest(token);
@@ -382,8 +379,29 @@ class AuthControllerIT extends DatabaseContainers {
             post(Path.AUTH + "/verify-email")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(verifyEmailRequest)))
-        .andExpect(status().isConflict())
-        .andExpect(content().string(containsString("API_ERROR_USER_ACTIVE")));
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void refreshToken_secondUseOfSameToken_throwBadRequest() throws Exception {
+    final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "update2");
+    final var refreshToken = authTokens.refreshToken();
+    // First use should succeed
+    mockMvc
+        .perform(
+            post(Path.AUTH + "/tokens/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie("refreshToken", refreshToken)))
+        .andExpect(status().isNoContent())
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
+    // Second use of same token should fail (consumed)
+    mockMvc
+        .perform(
+            post(Path.AUTH + "/tokens/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie("refreshToken", refreshToken)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(containsString("API_ERROR_AUTH_TOKEN_INVALID")));
   }
 
   @Test

@@ -110,6 +110,7 @@
   "admin_lockUserConfirmation": "Are you sure you want to lock {username}?",
   "admin_selectUserRoles": "Select roles for {username}",
   "admin_rolesSuccess": "Roles changed successfully",
+  "admin_cannotModifySelf": "You cannot modify this field for your own account",
 
   "API_ERROR_AUTH_UNAUTHORIZED": "Invalid credentials",
   "API_ERROR_AUTH_FORBIDDEN": "Forbidden",

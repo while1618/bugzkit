@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
 @Setter
@@ -59,9 +60,9 @@ public class User implements Serializable {
   @Column(nullable = false)
   private Boolean lock = false;
 
-  @Builder.Default
-  @Column(nullable = false)
-  private LocalDateTime createdAt = LocalDateTime.now();
+  @CreationTimestamp
+  @Column(nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
@@ -76,17 +77,15 @@ public class User implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     User user = (User) o;
-    return active == user.active
-        && lock == user.lock
+    return Objects.equal(active, user.active)
+        && Objects.equal(lock, user.lock)
         && Objects.equal(id, user.id)
         && Objects.equal(username, user.username)
-        && Objects.equal(email, user.email)
-        && Objects.equal(password, user.password)
-        && Objects.equal(roles, user.roles);
+        && Objects.equal(email, user.email);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, username, email, password, active, lock, roles);
+    return Objects.hashCode(id, username, email, active, lock);
   }
 }

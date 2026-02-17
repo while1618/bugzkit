@@ -25,8 +25,8 @@ public record UserDTO(
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     UserDTO userDTO = (UserDTO) o;
-    return active == userDTO.active
-        && lock == userDTO.lock
+    return Objects.equal(active, userDTO.active)
+        && Objects.equal(lock, userDTO.lock)
         && Objects.equal(id, userDTO.id)
         && Objects.equal(username, userDTO.username)
         && Objects.equal(email, userDTO.email)

@@ -1,8 +1,5 @@
 package org.bugzkit.api.shared.error;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,14 +27,19 @@ public class ErrorMessage {
 
   @Override
   public String toString() {
-    return new GsonBuilder()
-        .setPrettyPrinting()
-        .registerTypeAdapter(
-            LocalDateTime.class,
-            (JsonSerializer<LocalDateTime>)
-                (localDateTime, type, jsonSerializationContext) ->
-                    new JsonPrimitive(localDateTime.format(DateTimeFormatter.ISO_DATE_TIME)))
-        .create()
-        .toJson(this);
+    StringBuilder sb = new StringBuilder();
+    sb.append("{\"timestamp\":\"");
+    sb.append(timestamp.format(DateTimeFormatter.ISO_DATE_TIME));
+    sb.append("\",\"status\":");
+    sb.append(status);
+    sb.append(",\"error\":\"");
+    sb.append(error);
+    sb.append("\",\"codes\":[");
+    for (int i = 0; i < codes.size(); i++) {
+      if (i > 0) sb.append(",");
+      sb.append("\"").append(codes.get(i)).append("\"");
+    }
+    sb.append("]}");
+    return sb.toString();
   }
 }

@@ -44,9 +44,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   }
 
   @Override
-  public void check(String token) {
+  public void checkAndConsume(String token) {
     verifyToken(token);
-    isInRefreshTokenStore(token);
+    if (!refreshTokenStoreRepository.existsById(token))
+      throw new BadRequestException("auth.tokenInvalid");
+    refreshTokenStoreRepository.deleteById(token);
   }
 
   private void verifyToken(String token) {
@@ -55,16 +57,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     } catch (RuntimeException e) {
       throw new BadRequestException("auth.tokenInvalid");
     }
-  }
-
-  private void isInRefreshTokenStore(String token) {
-    if (!refreshTokenStoreRepository.existsById(token))
-      throw new BadRequestException("auth.tokenInvalid");
-  }
-
-  @Override
-  public void delete(String token) {
-    refreshTokenStoreRepository.deleteById(token);
   }
 
   @Override

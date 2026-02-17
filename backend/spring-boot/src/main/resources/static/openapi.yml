@@ -188,10 +188,6 @@ paths:
       responses:
         204:
           description: Forgot password email sent successfully
-        400:
-          $ref: "#/components/responses/BadRequest"
-        404:
-          $ref: "#/components/responses/NotFound"
   /auth/password/reset:
     post:
       tags:
@@ -214,12 +210,6 @@ paths:
       responses:
         204:
           description: Verification email sent successfully
-        400:
-          $ref: "#/components/responses/BadRequest"
-        404:
-          $ref: "#/components/responses/NotFound"
-        409:
-          $ref: "#/components/responses/Conflict"
   /auth/verify-email:
     post:
       tags:
@@ -232,8 +222,6 @@ paths:
           description: Email verified successfully
         400:
           $ref: "#/components/responses/BadRequest"
-        409:
-          $ref: "#/components/responses/Conflict"
   /profile:
     get:
       tags:
