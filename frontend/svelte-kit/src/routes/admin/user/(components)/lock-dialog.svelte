@@ -41,12 +41,13 @@
       <Button
         {...props}
         variant="ghost"
-        onclick={isSelf
-          ? (e) => {
-              e.preventDefault();
-              toast.error(m.admin_cannotModifySelf());
-            }
-          : props.onclick}
+        onclick={() => {
+          if (isSelf) {
+            toast.error(m.admin_cannotModifySelf());
+          } else {
+            dialogOpen = true;
+          }
+        }}
         class={user.lock
           ? 'text-red-500 hover:text-red-500/90'
           : 'text-blue-500 hover:text-blue-500/90'}
