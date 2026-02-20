@@ -828,13 +828,12 @@ components:
             properties:
               token:
                 type: string
-                format: JWT
               password:
                 type: string
               confirmPassword:
                 type: string
           example:
-            token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw
+            token: 550e8400-e29b-41d4-a716-446655440000
             password: qwerty321
             confirmPassword: qwerty321
     VerificationEmailRequest:
@@ -863,9 +862,8 @@ components:
             properties:
               token:
                 type: string
-                format: JWT
           example:
-            token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0yMFQxNDozMzo0NC43MDcyOTMzMDlaIiwiZXhwIjoxNjM0NzQxMzI0LCJ1c2VySWQiOjJ9.uXOVA1q-o2DtHmwBAzEfqEm8GLpAhXrYo0rlZ_6NFbBGILhkV74x-Iu9W2uSfSlwp1IfKPCHlR6zWVPvAbhWVw
+            token: 550e8400-e29b-41d4-a716-446655440000
     PatchProfileRequest:
       description: Patch profile request
       required: true
