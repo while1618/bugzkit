@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 
 @ExtendWith(MockitoExtension.class)
-class AuthEmailServiceTest {
+class EmailServiceTest {
   @Mock private JavaMailSender mailSender;
   @InjectMocks private EmailServiceImpl emailService;
 
