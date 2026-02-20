@@ -107,22 +107,19 @@ Users can sign in with their Google account as an alternative to email/password 
 
 ### Account Verification
 
-When a user signs up, a JWT with the purpose `verify_email_token` is created and sent to the user via email as part of a verification link.
+When a user signs up, a random opaque token (UUID) is generated and stored in Redis alongside the user's ID. The token is sent to the user via email as part of a verification link. When the user clicks the link, the token is looked up in Redis to identify the user, then immediately deleted (one-time use). The token automatically expires via Redis TTL if unused.
 
 ### Password Reset
 
-When a user requests a password reset, a JWT with the purpose `reset_password` is generated and sent to the user via email as part of a reset link.
+When a user requests a password reset, a random opaque token (UUID) is generated and stored in Redis alongside the user's ID. The token is sent to the user via email as part of a reset link. When the user submits a new password with the token, it is looked up in Redis, then immediately deleted (one-time use). The token automatically expires via Redis TTL if unused.
 
 ### JWT Structure
 
-All JWTs share the following structure:
+Access and refresh tokens are JWTs with the following structure:
 
 - **issuer**: ID of a user who created the token.
 - **issuedAt**: Timestamp of when the token was created.
 - **expireAt**: Timestamp of when the token expires.
-- **purpose**: Describes the token's purpose (`access_token`, `refresh_token`, `reset_password_token`, `verify_email_token`).
-
-Access and refresh tokens include additional claims:
-
+- **purpose**: Describes the token's purpose (`access_token`, `refresh_token`).
 - **roles**: Represents the roles assigned to the user.
 - **deviceId**: Identifies the device/session the token belongs to.
