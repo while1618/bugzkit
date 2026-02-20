@@ -5,7 +5,7 @@ export interface JwtPayload {
   iat: number;
   exp: number;
   purpose: JwtPurpose;
-  roles?: RoleName[];
+  roles: RoleName[];
   deviceId: string;
 }
 
