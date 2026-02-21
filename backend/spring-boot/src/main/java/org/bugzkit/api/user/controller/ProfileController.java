@@ -2,6 +2,7 @@ package org.bugzkit.api.user.controller;
 
 import jakarta.validation.Valid;
 import org.bugzkit.api.shared.constants.Path;
+import org.bugzkit.api.shared.ratelimit.RateLimit;
 import org.bugzkit.api.user.payload.dto.UserDTO;
 import org.bugzkit.api.user.payload.request.ChangePasswordRequest;
 import org.bugzkit.api.user.payload.request.PatchProfileRequest;
@@ -40,6 +41,7 @@ public class ProfileController {
     return ResponseEntity.noContent().build();
   }
 
+  @RateLimit(requests = 5, duration = 60)
   @PatchMapping("/password")
   public ResponseEntity<Void> changePassword(
       @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {

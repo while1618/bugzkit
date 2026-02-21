@@ -1,0 +1,52 @@
+## Rate Limiting
+
+The backend uses IP-based rate limiting to protect sensitive endpoints from brute force attacks and abuse. It is built with [Bucket4j](https://github.com/bucket4j/bucket4j) (token bucket algorithm) and [Caffeine](https://github.com/ben-manes/caffeine) cache for in-memory bucket storage.
+
+### How It Works
+
+A custom `@RateLimit` annotation is applied to controller methods that need throttling:
+
+```java
+@RateLimit(requests = 10, duration = 60)
+@PostMapping("/authenticate")
+public ResponseEntity<Void> authenticate(...) { ... }
+```
+
+- `requests` — maximum number of requests allowed in the window.
+- `duration` — window size in seconds.
+
+When a request comes in, the `RateLimitInterceptor` checks if the handler method has a `@RateLimit` annotation. If it does, a token bucket is resolved for the client's IP and endpoint combination. If the bucket is exhausted, a `429 Too Many Requests` response is returned with a `Retry-After` header.
+
+### Client IP Resolution
+
+The client IP is resolved from the `X-Forwarded-For` header (for deployments behind a reverse proxy), falling back to `request.getRemoteAddr()` for direct connections.
+
+### Rate-Limited Endpoints
+
+| Endpoint | Limit |
+|---|---|
+| `POST /auth/authenticate` | 10 req / 60s |
+| `POST /auth/register` | 5 req / 60s |
+| `POST /auth/tokens/refresh` | 10 req / 60s |
+| `POST /auth/password/forgot` | 3 req / 60s |
+| `POST /auth/password/reset` | 5 req / 60s |
+| `POST /auth/verification-email` | 3 req / 60s |
+| `POST /auth/verify-email` | 5 req / 60s |
+| `POST /users/username/availability` | 10 req / 60s |
+| `POST /users/email/availability` | 10 req / 60s |
+| `PATCH /profile/password` | 5 req / 60s |
+
+### Bucket Isolation
+
+Each rate limit bucket is scoped to a **specific endpoint + client IP** combination. This means:
+
+- Different endpoints have independent limits — exhausting the login limit does not affect forgot-password.
+- Different IPs have independent limits — one client being throttled does not affect others.
+
+### Configuration
+
+Rate limiting is enabled by default. It can be disabled by setting `rate-limit.enabled` to `false` in `application.yml`. This is used in the test profile to prevent interference with integration tests.
+
+### Storage
+
+Buckets are stored in-memory using Caffeine caches with automatic eviction after the rate limit window plus one minute of inactivity. This is suitable for single-instance deployments. For multi-instance deployments, the bucket storage can be swapped to a distributed backend (e.g., Redis) without changing the annotation-based API.

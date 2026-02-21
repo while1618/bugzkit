@@ -49,7 +49,7 @@ Organized by feature module, each with controller/service/repository/payload lay
 - **`auth/`** — JWT authentication, OAuth2 (Google), token management (access, refresh, verify-email, reset-password). Tokens stored in Redis. JWT sent via HTTP-only cookies.
 - **`user/`** — User/Role JPA entities, repositories, MapStruct mappers for DTO conversion.
 - **`admin/`** — Admin user management endpoints.
-- **`shared/`** — Cross-cutting: security config (`SecurityConfig.java`), error handling (standardized error codes in `error-codes.properties` mapped to frontend i18n keys), email service (MJML templates), data initialization (`DataInit.java`), Redis config, i18n messages.
+- **`shared/`** — Cross-cutting: security config (`SecurityConfig.java`), error handling (standardized error codes in `error-codes.properties` mapped to frontend i18n keys), email service (MJML templates), data initialization (`DataInit.java`), Redis config, i18n messages, rate limiting (`shared/ratelimit/`).
 
 Security: Stateless sessions, JWT filter chain, role-based access (ADMIN/USER). Public endpoints are whitelisted in `SecurityConfig.java`; everything else requires authentication.
 
@@ -58,6 +58,7 @@ Security: Stateless sessions, JWT filter chain, role-based access (ADMIN/USER). 
 - Device revocation (`DeviceService.revoke()`) intentionally invalidates **all** access tokens via `UserBlacklist`, not just the revoked device's token. Active sessions auto-refresh silently via their refresh tokens. This is by design to avoid an extra Redis lookup on every request.
 - Access token validation (`AccessTokenService.check()`) runs on every authenticated request — keep it minimal (JWT verify + blacklist check + user blacklist check).
 - Token data (userId, roles, deviceId) must only be extracted from a JWT **after** signature verification.
+- **Rate limiting** uses Bucket4j (token bucket algorithm) with per-IP Caffeine-cached buckets. Apply the `@RateLimit(requests, duration)` annotation to controller methods. Configurable via `rate-limit.enabled` (defaults to `true`, disabled in tests). Rate-limited endpoints return `429 Too Many Requests` with a `Retry-After` header.
 
 ### Frontend (`frontend/svelte-kit/src/`)
 

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.payload.dto.AvailabilityDTO;
 import org.bugzkit.api.shared.payload.dto.PageableDTO;
+import org.bugzkit.api.shared.ratelimit.RateLimit;
 import org.bugzkit.api.user.payload.dto.UserDTO;
 import org.bugzkit.api.user.payload.request.EmailAvailabilityRequest;
 import org.bugzkit.api.user.payload.request.UsernameAvailabilityRequest;
@@ -41,12 +42,14 @@ public class UserController {
     return ResponseEntity.ok(userService.findByUsername(username));
   }
 
+  @RateLimit(requests = 10, duration = 60)
   @PostMapping("/username/availability")
   public ResponseEntity<AvailabilityDTO> usernameAvailability(
       @Valid @RequestBody UsernameAvailabilityRequest usernameAvailabilityRequest) {
     return ResponseEntity.ok(userService.usernameAvailability(usernameAvailabilityRequest));
   }
 
+  @RateLimit(requests = 10, duration = 60)
   @PostMapping("/email/availability")
   public ResponseEntity<AvailabilityDTO> emailAvailability(
       @Valid @RequestBody EmailAvailabilityRequest emailAvailabilityRequest) {

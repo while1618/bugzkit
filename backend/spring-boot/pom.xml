@@ -25,6 +25,7 @@
     <jedis.version>7.2.1</jedis.version>
     <springdoc.version>3.0.1</springdoc.version>
     <datafaker.version>2.5.4</datafaker.version>
+    <bucket4j.version>8.16.1</bucket4j.version>
     <jacoco.version>0.8.14</jacoco.version>
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <spotless.version>3.2.1</spotless.version>
@@ -100,6 +101,15 @@
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
       <version>${jedis.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.bucket4j</groupId>
+      <artifactId>bucket4j_jdk17-core</artifactId>
+      <version>${bucket4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springdoc</groupId>

@@ -16,6 +16,7 @@ import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.auth.util.JwtUtil;
 import org.bugzkit.api.shared.constants.Path;
+import org.bugzkit.api.shared.ratelimit.RateLimit;
 import org.bugzkit.api.user.payload.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -49,12 +50,14 @@ public class AuthController {
     this.deviceService = deviceService;
   }
 
+  @RateLimit(requests = 5, duration = 60)
   @PostMapping("/register")
   public ResponseEntity<UserDTO> register(
       @Valid @RequestBody RegisterUserRequest registerUserRequest) {
     return new ResponseEntity<>(authService.register(registerUserRequest), HttpStatus.CREATED);
   }
 
+  @RateLimit(requests = 10, duration = 60)
   @PostMapping("/tokens")
   public ResponseEntity<Void> authenticate(
       @Valid @RequestBody AuthTokensRequest authTokensRequest, HttpServletRequest request) {
@@ -90,6 +93,7 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
+  @RateLimit(requests = 10, duration = 60)
   @PostMapping("/tokens/refresh")
   public ResponseEntity<Void> refreshTokens(HttpServletRequest request) {
     final var refreshToken = AuthUtil.getValueFromCookie("refreshToken", request);
@@ -98,6 +102,7 @@ public class AuthController {
     return setAuthCookies(authTokens);
   }
 
+  @RateLimit(requests = 3, duration = 60)
   @PostMapping("/password/forgot")
   public ResponseEntity<Void> forgotPassword(
       @Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
@@ -105,6 +110,7 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
+  @RateLimit(requests = 5, duration = 60)
   @PostMapping("/password/reset")
   public ResponseEntity<Void> resetPassword(
       @Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
@@ -112,6 +118,7 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
+  @RateLimit(requests = 3, duration = 60)
   @PostMapping("/verification-email")
   public ResponseEntity<Void> sendVerificationMail(
       @Valid @RequestBody VerificationEmailRequest verificationEmailRequest) {
@@ -119,6 +126,7 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
+  @RateLimit(requests = 5, duration = 60)
   @PostMapping("/verify-email")
   public ResponseEntity<Void> verifyEmail(
       @Valid @RequestBody VerifyEmailRequest verifyEmailRequest) {

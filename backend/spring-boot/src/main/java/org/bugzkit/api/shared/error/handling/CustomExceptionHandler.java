@@ -5,6 +5,7 @@ import org.bugzkit.api.shared.error.ErrorMessage;
 import org.bugzkit.api.shared.error.exception.BadRequestException;
 import org.bugzkit.api.shared.error.exception.ConflictException;
 import org.bugzkit.api.shared.error.exception.ResourceNotFoundException;
+import org.bugzkit.api.shared.error.exception.TooManyRequestsException;
 import org.bugzkit.api.shared.error.exception.UnauthorizedException;
 import org.bugzkit.api.shared.logger.CustomLogger;
 import org.bugzkit.api.shared.message.service.MessageService;
@@ -85,6 +86,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler({ConflictException.class})
   public ResponseEntity<Object> handleConflictException(ConflictException e) {
     customLogger.error("Conflict", e);
+    return createError(e.getStatus(), messageService.getMessage(e.getMessage()));
+  }
+
+  @ExceptionHandler({TooManyRequestsException.class})
+  public ResponseEntity<Object> handleTooManyRequestsException(TooManyRequestsException e) {
+    customLogger.error("Too many requests", e);
     return createError(e.getStatus(), messageService.getMessage(e.getMessage()));
   }
 

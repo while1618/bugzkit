@@ -39,6 +39,11 @@
       "name": "jwt.reset-password-token.duration",
       "type": "java.lang.String",
       "description": "Reset password token duration time."
+    },
+    {
+      "name": "rate-limit.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable or disable rate limiter."
     }
   ]
 }
