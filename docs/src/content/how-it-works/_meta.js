@@ -4,6 +4,7 @@ const config = {
   auth: 'Auth',
   'error-handling': 'Error Handling',
   i18n: 'Internationalization',
+  'rate-limiting': 'Rate Limiting',
   email: 'Email',
   testing: 'Testing',
 };

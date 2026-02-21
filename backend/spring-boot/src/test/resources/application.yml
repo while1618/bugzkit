@@ -72,6 +72,9 @@ jwt:
   reset-password-token:
     duration: ${RESET_PASSWORD_TOKEN_DURATION:900}
 
+rate-limit:
+  enabled: false
+
 springdoc:
   swagger-ui:
     url: /openapi.yml

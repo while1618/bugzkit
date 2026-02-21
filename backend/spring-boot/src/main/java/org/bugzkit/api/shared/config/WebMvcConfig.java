@@ -1,6 +1,7 @@
 package org.bugzkit.api.shared.config;
 
 import org.bugzkit.api.shared.interceptor.RequestInterceptor;
+import org.bugzkit.api.shared.ratelimit.RateLimitInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -11,6 +12,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
   @Value("${ui.url}")
   private String uiUrl;
+
+  private final RateLimitInterceptor rateLimitInterceptor;
+  private final RequestInterceptor requestInterceptor;
+
+  public WebMvcConfig(
+      RateLimitInterceptor rateLimitInterceptor, RequestInterceptor requestInterceptor) {
+    this.rateLimitInterceptor = rateLimitInterceptor;
+    this.requestInterceptor = requestInterceptor;
+  }
 
   @Override
   public void addCorsMappings(CorsRegistry registry) {
@@ -24,6 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(new RequestInterceptor());
+    registry.addInterceptor(rateLimitInterceptor);
+    registry.addInterceptor(requestInterceptor);
   }
 }

@@ -47,6 +47,8 @@ paths:
           $ref: "#/components/responses/BadRequest"
         409:
           $ref: "#/components/responses/Conflict"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /auth/tokens:
     post:
       tags:
@@ -72,6 +74,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         403:
           $ref: "#/components/responses/Forbidden"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - auth
@@ -178,6 +182,8 @@ paths:
                   - "refreshToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlzc3VlZEF0IjoiMjAyMS0xMC0xOVQxMzowMDowMy45MDYzNDQyMDJaIiwiZXhwIjoxNjM1MjUzMjAzLCJ1c2VySWQiOjJ9.RHzh6qyGJEKYdvCuCF7wPoUGBSrDGeoY8dSTBhuv21Fzw_CPEa5KeI3MOYgSN3zA1o_ZlKwjHgpSsPM3xAO_DQ; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800"
         400:
           $ref: "#/components/responses/BadRequest"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /auth/password/forgot:
     post:
       tags:
@@ -188,6 +194,8 @@ paths:
       responses:
         204:
           description: Forgot password email sent successfully
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /auth/password/reset:
     post:
       tags:
@@ -200,6 +208,8 @@ paths:
           description: Password reset successfully
         400:
           $ref: "#/components/responses/BadRequest"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /auth/verification-email:
     post:
       tags:
@@ -210,6 +220,8 @@ paths:
       responses:
         204:
           description: Verification email sent successfully
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /auth/verify-email:
     post:
       tags:
@@ -222,6 +234,8 @@ paths:
           description: Email verified successfully
         400:
           $ref: "#/components/responses/BadRequest"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /profile:
     get:
       tags:
@@ -296,6 +310,8 @@ paths:
           $ref: "#/components/responses/BadRequest"
         401:
           $ref: "#/components/responses/Unauthorized"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /users:
     get:
       tags:
@@ -397,6 +413,8 @@ paths:
                 available: true
         400:
           $ref: "#/components/responses/BadRequest"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /users/email/availability:
     post:
       tags:
@@ -415,6 +433,8 @@ paths:
                 available: true
         400:
           $ref: "#/components/responses/BadRequest"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
   /roles:
     get:
       tags:
@@ -711,6 +731,23 @@ components:
             error: Conflict
             codes:
               - API_ERROR_1
+    TooManyRequests:
+      description: Too Many Requests
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until the rate limit resets
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ErrorMessage"
+          example:
+            timestamp: 2023-05-18T00:51:50.758738
+            status: 429
+            error: Too Many Requests
+            codes:
+              - API_ERROR_REQUEST_TOO_MANY_REQUESTS
   parameters:
     id:
       name: id
