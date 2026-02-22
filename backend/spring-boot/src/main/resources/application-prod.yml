@@ -6,6 +6,7 @@ domain:
 
 server:
   forward-headers-strategy: native
+  client-ip-header: ${CLIENT_IP_HEADER:CF-Connecting-IP}
 
 spring:
   config:

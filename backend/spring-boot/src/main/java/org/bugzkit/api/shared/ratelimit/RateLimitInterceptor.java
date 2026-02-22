@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.bugzkit.api.shared.error.ErrorMessage;
 import org.bugzkit.api.shared.message.service.MessageService;
+import org.bugzkit.api.shared.util.Utils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializingSingleton {
   private final MessageService messageService;
   private final boolean enabled;
+  private final String clientIpHeader;
   private final RedisClient lettuceClient;
   private final ApplicationContext applicationContext;
   private final Map<String, BucketConfiguration> configCache = new ConcurrentHashMap<>();
@@ -44,10 +46,12 @@ public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializi
   public RateLimitInterceptor(
       MessageService messageService,
       @Value("${rate-limit.enabled}") boolean enabled,
+      @Value("${server.client-ip-header:}") String clientIpHeader,
       RedisClient lettuceClient,
       ApplicationContext applicationContext) {
     this.messageService = messageService;
     this.enabled = enabled;
+    this.clientIpHeader = clientIpHeader;
     this.lettuceClient = lettuceClient;
     this.applicationContext = applicationContext;
   }
@@ -86,7 +90,7 @@ public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializi
     final var rateLimit = handlerMethod.getMethodAnnotation(RateLimit.class);
     if (rateLimit == null) return true;
 
-    final var ip = resolveClientIp(request);
+    final var ip = Utils.resolveClientIp(request, clientIpHeader);
     final var endpointKey =
         handlerMethod.getBeanType().getSimpleName() + ":" + handlerMethod.getMethod().getName();
     final var bucketKey = "rate-limit:" + endpointKey + ":" + ip;
@@ -108,14 +112,6 @@ public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializi
             .refillGreedy(rateLimit.requests(), Duration.ofSeconds(rateLimit.duration()))
             .build();
     return BucketConfiguration.builder().addLimit(bandwidth).build();
-  }
-
-  private String resolveClientIp(HttpServletRequest request) {
-    final var forwarded = request.getHeader("X-Forwarded-For");
-    if (forwarded != null && !forwarded.isEmpty()) {
-      return forwarded.split(",")[0].trim();
-    }
-    return request.getRemoteAddr();
   }
 
   private void writeRateLimitResponse(HttpServletResponse response, ConsumptionProbe probe)
