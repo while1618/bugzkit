@@ -22,7 +22,6 @@
     <guava.version>33.5.0-jre</guava.version>
     <jwt.version>4.5.0</jwt.version>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <jedis.version>7.2.1</jedis.version>
     <springdoc.version>3.0.1</springdoc.version>
     <datafaker.version>2.5.4</datafaker.version>
     <bucket4j.version>8.16.1</bucket4j.version>
@@ -98,18 +97,14 @@
       <version>${mapstruct.version}</version>
     </dependency>
     <dependency>
-      <groupId>redis.clients</groupId>
-      <artifactId>jedis</artifactId>
-      <version>${jedis.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.bucket4j</groupId>
       <artifactId>bucket4j_jdk17-core</artifactId>
       <version>${bucket4j.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.ben-manes.caffeine</groupId>
-      <artifactId>caffeine</artifactId>
+      <groupId>com.bucket4j</groupId>
+      <artifactId>bucket4j_jdk17-lettuce</artifactId>
+      <version>${bucket4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springdoc</groupId>
