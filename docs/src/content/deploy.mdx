@@ -54,3 +54,22 @@ To deploy manually on a Docker Swarm node:
 ```bash
 docker stack deploy -c docker-stack.prod.yml bugzkit
 ```
+
+### Client IP Resolution
+
+The production profile is configured for a Cloudflare + Traefik setup out of the box:
+
+- `server.forward-headers-strategy: native` — Tomcat resolves the real client IP from `X-Forwarded-For` set by Traefik.
+- `server.client-ip-header: CF-Connecting-IP` — the API reads Cloudflare's header for the real visitor IP, which cannot be spoofed by clients.
+
+If you use a different CDN or no CDN at all, override the `CLIENT_IP_HEADER` environment variable:
+
+| Setup                    | `CLIENT_IP_HEADER` |
+| ------------------------ | ------------------ |
+| Cloudflare (default)     | `CF-Connecting-IP` |
+| Fastly                   | `Fastly-Client-IP` |
+| Akamai                   | `True-Client-IP`   |
+| nginx (`real_ip` module) | `X-Real-IP`        |
+| Traefik only (no CDN)    | _(unset)_          |
+
+When unset, the server falls back to `getRemoteAddr()` resolved by Tomcat from `X-Forwarded-For`, which is correct for a Traefik-only deployment.

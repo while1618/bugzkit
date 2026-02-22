@@ -1,6 +1,6 @@
 ## Rate Limiting
 
-The backend uses IP-based rate limiting to protect sensitive endpoints from brute force attacks and abuse. It is built with [Bucket4j](https://github.com/bucket4j/bucket4j) (token bucket algorithm) and [Caffeine](https://github.com/ben-manes/caffeine) cache for in-memory bucket storage.
+The backend uses IP-based rate limiting to protect sensitive endpoints from brute force attacks and abuse. It is built with [Bucket4j](https://github.com/bucket4j/bucket4j) (token bucket algorithm) and Redis for distributed bucket storage.
 
 ### How It Works
 
@@ -19,22 +19,22 @@ When a request comes in, the `RateLimitInterceptor` checks if the handler method
 
 ### Client IP Resolution
 
-The client IP is resolved from the `X-Forwarded-For` header (for deployments behind a reverse proxy), falling back to `request.getRemoteAddr()` for direct connections.
+The client IP is resolved via `HttpRequestUtil.resolveClientIp()`. It checks the configured `server.client-ip-header` first (a CDN-specific header such as `CF-Connecting-IP` for Cloudflare), falling back to `request.getRemoteAddr()`. In production, Tomcat's `RemoteIpValve` (`server.forward-headers-strategy: native`) ensures `getRemoteAddr()` reflects the real client IP from `X-Forwarded-For` set by Traefik. See the [Deploy](/deploy) page for configuration details.
 
 ### Rate-Limited Endpoints
 
-| Endpoint | Limit |
-|---|---|
-| `POST /auth/authenticate` | 10 req / 60s |
-| `POST /auth/register` | 5 req / 60s |
-| `POST /auth/tokens/refresh` | 10 req / 60s |
-| `POST /auth/password/forgot` | 3 req / 60s |
-| `POST /auth/password/reset` | 5 req / 60s |
-| `POST /auth/verification-email` | 3 req / 60s |
-| `POST /auth/verify-email` | 5 req / 60s |
+| Endpoint                            | Limit        |
+| ----------------------------------- | ------------ |
+| `POST /auth/authenticate`           | 10 req / 60s |
+| `POST /auth/register`               | 5 req / 60s  |
+| `POST /auth/tokens/refresh`         | 10 req / 60s |
+| `POST /auth/password/forgot`        | 3 req / 60s  |
+| `POST /auth/password/reset`         | 5 req / 60s  |
+| `POST /auth/verification-email`     | 3 req / 60s  |
+| `POST /auth/verify-email`           | 5 req / 60s  |
 | `POST /users/username/availability` | 10 req / 60s |
-| `POST /users/email/availability` | 10 req / 60s |
-| `PATCH /profile/password` | 5 req / 60s |
+| `POST /users/email/availability`    | 10 req / 60s |
+| `PATCH /profile/password`           | 5 req / 60s  |
 
 ### Bucket Isolation
 
@@ -49,4 +49,4 @@ Rate limiting is enabled by default. It can be disabled by setting `rate-limit.e
 
 ### Storage
 
-Buckets are stored in-memory using Caffeine caches with automatic eviction after the rate limit window plus one minute of inactivity. This is suitable for single-instance deployments. For multi-instance deployments, the bucket storage can be swapped to a distributed backend (e.g., Redis) without changing the annotation-based API.
+Buckets are stored in Redis via Bucket4j's Lettuce integration. Redis keys are namespaced as `rate-limit:<Controller>:<method>:<ip>` and expire automatically using a `basedOnTimeForRefillingBucketUpToMax` strategy — keys live only as long as the longest configured rate limit window. Since buckets are stored in the same Redis instance used for token storage, no additional infrastructure is required. This also makes rate limiting work correctly across multiple API instances.
