@@ -1,10 +1,15 @@
 package org.bugzkit.api.shared.ratelimit;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
+import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
+import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy;
+import io.github.bucket4j.redis.lettuce.Bucket4jLettuce;
+import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.codec.ByteArrayCodec;
+import io.lettuce.core.codec.RedisCodec;
+import io.lettuce.core.codec.StringCodec;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,12 +30,23 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class RateLimitInterceptor implements HandlerInterceptor {
   private final MessageService messageService;
   private final boolean enabled;
-  private final Map<String, Cache<String, Bucket>> caches = new ConcurrentHashMap<>();
+  private final LettuceBasedProxyManager<String> proxyManager;
+  private final Map<String, BucketConfiguration> configCache = new ConcurrentHashMap<>();
 
   public RateLimitInterceptor(
-      MessageService messageService, @Value("${rate-limit.enabled:true}") boolean enabled) {
+      MessageService messageService,
+      @Value("${rate-limit.enabled:true}") boolean enabled,
+      RedisClient lettuceClient) {
     this.messageService = messageService;
     this.enabled = enabled;
+    final var connection =
+        lettuceClient.connect(RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE));
+    this.proxyManager =
+        Bucket4jLettuce.casBasedBuilder(connection)
+            .expirationAfterWrite(
+                ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(
+                    Duration.ofSeconds(60)))
+            .build();
   }
 
   @Override
@@ -44,17 +60,13 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     final var rateLimit = handlerMethod.getMethodAnnotation(RateLimit.class);
     if (rateLimit == null) return true;
 
-    final var key = resolveClientIp(request);
-    final var cacheKey =
+    final var ip = resolveClientIp(request);
+    final var endpointKey =
         handlerMethod.getBeanType().getSimpleName() + ":" + handlerMethod.getMethod().getName();
-    final var cache =
-        caches.computeIfAbsent(
-            cacheKey,
-            k ->
-                Caffeine.newBuilder()
-                    .expireAfterAccess(rateLimit.duration() + 60, TimeUnit.SECONDS)
-                    .build());
-    final var bucket = cache.get(key, k -> createBucket(rateLimit));
+    final var bucketKey = "rate-limit:" + endpointKey + ":" + ip;
+    final var config =
+        configCache.computeIfAbsent(endpointKey, k -> buildBucketConfiguration(rateLimit));
+    final var bucket = proxyManager.getProxy(bucketKey, () -> config);
     final var probe = bucket.tryConsumeAndReturnRemaining(1);
 
     if (probe.isConsumed()) return true;
@@ -63,13 +75,13 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     return false;
   }
 
-  private Bucket createBucket(RateLimit rateLimit) {
+  private BucketConfiguration buildBucketConfiguration(RateLimit rateLimit) {
     final var bandwidth =
         Bandwidth.builder()
             .capacity(rateLimit.requests())
             .refillGreedy(rateLimit.requests(), Duration.ofSeconds(rateLimit.duration()))
             .build();
-    return Bucket.builder().addLimit(bandwidth).build();
+    return BucketConfiguration.builder().addLimit(bandwidth).build();
   }
 
   private String resolveClientIp(HttpServletRequest request) {

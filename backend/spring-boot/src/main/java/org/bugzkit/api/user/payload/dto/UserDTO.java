@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
-import com.google.gson.annotations.SerializedName;
 import java.time.LocalDateTime;
 import java.util.Set;
 import lombok.Builder;
@@ -17,8 +16,7 @@ public record UserDTO(
     @JsonInclude(Include.NON_NULL) Boolean active,
     @JsonInclude(Include.NON_NULL) Boolean lock,
     LocalDateTime createdAt,
-    @JsonInclude(Include.NON_NULL) @JsonProperty("roles") @SerializedName("roles")
-        Set<RoleDTO> roleDTOs) {
+    @JsonInclude(Include.NON_NULL) @JsonProperty("roles") Set<RoleDTO> roleDTOs) {
 
   @Override
   public boolean equals(Object o) {
