@@ -43,7 +43,7 @@ public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializi
 
   public RateLimitInterceptor(
       MessageService messageService,
-      @Value("${rate-limit.enabled:true}") boolean enabled,
+      @Value("${rate-limit.enabled}") boolean enabled,
       RedisClient lettuceClient,
       ApplicationContext applicationContext) {
     this.messageService = messageService;
