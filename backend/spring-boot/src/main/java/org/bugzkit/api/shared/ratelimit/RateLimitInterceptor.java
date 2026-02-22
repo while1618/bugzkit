@@ -14,39 +14,65 @@ import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.bugzkit.api.shared.error.ErrorMessage;
 import org.bugzkit.api.shared.message.service.MessageService;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
-public class RateLimitInterceptor implements HandlerInterceptor {
+public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializingSingleton {
   private final MessageService messageService;
   private final boolean enabled;
-  private final LettuceBasedProxyManager<String> proxyManager;
+  private final RedisClient lettuceClient;
+  private final ApplicationContext applicationContext;
   private final Map<String, BucketConfiguration> configCache = new ConcurrentHashMap<>();
+  private LettuceBasedProxyManager<String> proxyManager;
 
   public RateLimitInterceptor(
       MessageService messageService,
       @Value("${rate-limit.enabled:true}") boolean enabled,
-      RedisClient lettuceClient) {
+      RedisClient lettuceClient,
+      ApplicationContext applicationContext) {
     this.messageService = messageService;
     this.enabled = enabled;
+    this.lettuceClient = lettuceClient;
+    this.applicationContext = applicationContext;
+  }
+
+  @Override
+  public void afterSingletonsInstantiated() {
     final var connection =
         lettuceClient.connect(RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE));
+    final var maxDuration = resolveMaxRateLimitDuration();
     this.proxyManager =
         Bucket4jLettuce.casBasedBuilder(connection)
             .expirationAfterWrite(
                 ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(
-                    Duration.ofSeconds(60)))
+                    Duration.ofSeconds(maxDuration)))
             .build();
+  }
+
+  private long resolveMaxRateLimitDuration() {
+    return applicationContext.getBeansWithAnnotation(Controller.class).values().stream()
+        .flatMap(bean -> Arrays.stream(AopUtils.getTargetClass(bean).getMethods()))
+        .map(method -> method.getAnnotation(RateLimit.class))
+        .filter(Objects::nonNull)
+        .mapToLong(RateLimit::duration)
+        .max()
+        .orElse(60L);
   }
 
   @Override
