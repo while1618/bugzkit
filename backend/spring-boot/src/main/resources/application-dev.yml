@@ -4,6 +4,9 @@ ui:
 domain:
   name: ${DOMAIN_NAME:localhost}
 
+server:
+  client-ip-header: ${CLIENT_IP_HEADER:}
+
 spring:
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:bugzkit}

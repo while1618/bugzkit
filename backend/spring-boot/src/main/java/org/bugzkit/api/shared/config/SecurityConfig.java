@@ -90,6 +90,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(OAUTH2_WHITELIST)
                     .permitAll()
+                    .requestMatchers("/favicon.ico")
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
         .oauth2Login(

@@ -36,22 +36,22 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializingSingleton {
   private final MessageService messageService;
-  private final boolean enabled;
-  private final String clientIpHeader;
   private final RedisClient lettuceClient;
   private final ApplicationContext applicationContext;
   private final Map<String, BucketConfiguration> configCache = new ConcurrentHashMap<>();
   private LettuceBasedProxyManager<String> proxyManager;
 
+  @Value("${rate-limit.enabled}")
+  private boolean enabled;
+
+  @Value("${server.client-ip-header}")
+  private String clientIpHeader;
+
   public RateLimitInterceptor(
       MessageService messageService,
-      @Value("${rate-limit.enabled}") boolean enabled,
-      @Value("${server.client-ip-header:}") String clientIpHeader,
       RedisClient lettuceClient,
       ApplicationContext applicationContext) {
     this.messageService = messageService;
-    this.enabled = enabled;
-    this.clientIpHeader = clientIpHeader;
     this.lettuceClient = lettuceClient;
     this.applicationContext = applicationContext;
   }
