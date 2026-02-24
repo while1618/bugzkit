@@ -58,7 +58,7 @@ Security: Stateless sessions, JWT filter chain, role-based access (ADMIN/USER). 
 - Device revocation (`DeviceService.revoke()`) intentionally invalidates **all** access tokens via `UserBlacklist`, not just the revoked device's token. Active sessions auto-refresh silently via their refresh tokens. This is by design to avoid an extra Redis lookup on every request.
 - Access token validation (`AccessTokenService.check()`) runs on every authenticated request — keep it minimal (JWT verify + blacklist check + user blacklist check).
 - Token data (userId, roles, deviceId) must only be extracted from a JWT **after** signature verification.
-- **Rate limiting** uses Bucket4j (token bucket algorithm) with per-IP Caffeine-cached buckets. Apply the `@RateLimit(requests, duration)` annotation to controller methods. Configurable via `rate-limit.enabled` (defaults to `true`, disabled in tests). Rate-limited endpoints return `429 Too Many Requests` with a `Retry-After` header.
+- **Rate limiting** uses Bucket4j (token bucket algorithm) with Redis (Lettuce) as the distributed bucket store. Apply the `@RateLimit(requests, duration)` annotation to controller methods. Buckets are keyed as `rate-limit:{EndpointName}:{ClientIP}` in Redis. Configurable via `rate-limit.enabled` (defaults to `true`, disabled in tests, except @RateLimitIT). Rate-limited endpoints return `429 Too Many Requests` with a `Retry-After` header.
 
 ### Frontend (`frontend/svelte-kit/src/`)
 
@@ -93,7 +93,7 @@ The `JWT_SECRET` must match between frontend and backend for token verification.
 ## Testing
 
 - **Backend unit tests**: JUnit 5, pattern `*Test.java`.
-- **Backend integration tests**: JUnit 5 + Testcontainers (PostgreSQL, Redis via `@ServiceConnection`), pattern `*IT.java`. Base class: `DatabaseContainers`.
+- **Backend integration tests**: JUnit 5 + Testcontainers, pattern `*IT.java`. Base class: `DatabaseContainers`.
 - **Frontend unit tests**: Vitest, pattern `src/**/*.{test,spec}.{js,ts}`.
 - **Frontend E2E**: Playwright with Firefox, builds then runs preview server on port 4173.
 
