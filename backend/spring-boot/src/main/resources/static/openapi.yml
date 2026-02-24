@@ -681,8 +681,8 @@ components:
             status: 400
             error: Bad Request
             codes:
-              - API_ERROR_1
-              - API_ERROR_2
+              - API_ERROR_X_REQUIRED
+              - API_ERROR_X_INVALID
     Unauthorized:
       description: Unauthorized
       content:
@@ -694,7 +694,7 @@ components:
             status: 401
             error: Unauthorized
             codes:
-              - API_ERROR_1
+              - API_ERROR_AUTH_UNAUTHORIZED
     Forbidden:
       description: Forbidden
       content:
@@ -706,7 +706,7 @@ components:
             status: 403
             error: Forbidden
             codes:
-              - API_ERROR_1
+              - API_ERROR_AUTH_FORBIDDEN
     NotFound:
       description: Not Found
       content:
@@ -718,7 +718,7 @@ components:
             status: 404
             error: Not Found
             codes:
-              - API_ERROR_1
+              - API_ERROR_X_NOT_FOUND
     Conflict:
       description: Conflict
       content:
@@ -730,7 +730,7 @@ components:
             status: 409
             error: Conflict
             codes:
-              - API_ERROR_1
+              - API_ERROR_X_EXISTS
     TooManyRequests:
       description: Too Many Requests
       headers:
