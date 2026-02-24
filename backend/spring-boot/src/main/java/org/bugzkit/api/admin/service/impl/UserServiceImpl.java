@@ -1,5 +1,6 @@
 package org.bugzkit.api.admin.service.impl;
 
+import java.util.HashSet;
 import java.util.Set;
 import org.bugzkit.api.admin.payload.request.PatchUserRequest;
 import org.bugzkit.api.admin.payload.request.UserRequest;
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService {
             .password(bCryptPasswordEncoder.encode(userRequest.password()))
             .active(userRequest.active())
             .lock(userRequest.lock())
-            .roles(Set.copyOf(roleRepository.findAllByNameIn(userRequest.roleNames())))
+            .roles(new HashSet<>(roleRepository.findAllByNameIn(userRequest.roleNames())))
             .build();
     return UserMapper.INSTANCE.userToAdminUserDTO(userRepository.save(user));
   }
@@ -70,6 +71,7 @@ public class UserServiceImpl implements UserService {
    * https://vladmihalcea.com/join-fetch-pagination-spring/
    * */
   @Override
+  @Transactional(readOnly = true)
   public PageableDTO<UserDTO> findAll(Pageable pageable) {
     final var userIds = userRepository.findAllUserIds(pageable);
     final var users =
@@ -179,7 +181,7 @@ public class UserServiceImpl implements UserService {
   private void setRoles(User user, Set<RoleName> roleNames) {
     if (roleNames.isEmpty()) throw new BadRequestException("user.rolesEmpty");
 
-    final var roles = Set.copyOf(roleRepository.findAllByNameIn(roleNames));
+    final var roles = new HashSet<>(roleRepository.findAllByNameIn(roleNames));
     if (user.getRoles().equals(roles)) return;
 
     user.setRoles(roles);
