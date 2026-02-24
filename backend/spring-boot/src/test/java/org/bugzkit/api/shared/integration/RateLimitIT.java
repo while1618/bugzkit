@@ -14,6 +14,7 @@ import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.email.service.EmailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -33,6 +34,7 @@ class RateLimitIT extends DatabaseContainers {
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
   @MockitoBean private EmailService emailService;
+  @Value("${server.client-ip-header}") private String clientIpHeader;
 
   @Test
   void forgotPassword_withinLimitSucceeds_exceedLimitReturns429() throws Exception {
@@ -43,7 +45,7 @@ class RateLimitIT extends DatabaseContainers {
       mockMvc
           .perform(
               post(Path.AUTH + "/password/forgot")
-                  .header("X-Forwarded-For", "10.0.0.1")
+                  .header(clientIpHeader,"10.0.0.1")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(body))
           .andExpect(status().isNoContent());
@@ -53,7 +55,7 @@ class RateLimitIT extends DatabaseContainers {
     mockMvc
         .perform(
             post(Path.AUTH + "/password/forgot")
-                .header("X-Forwarded-For", "10.0.0.1")
+                .header(clientIpHeader,"10.0.0.1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isTooManyRequests())
@@ -73,7 +75,7 @@ class RateLimitIT extends DatabaseContainers {
       mockMvc
           .perform(
               post(Path.AUTH + "/password/forgot")
-                  .header("X-Forwarded-For", "10.0.0.2")
+                  .header(clientIpHeader,"10.0.0.2")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(forgotBody))
           .andExpect(status().isNoContent());
@@ -83,7 +85,7 @@ class RateLimitIT extends DatabaseContainers {
     mockMvc
         .perform(
             post(Path.AUTH + "/password/forgot")
-                .header("X-Forwarded-For", "10.0.0.2")
+                .header(clientIpHeader,"10.0.0.2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(forgotBody))
         .andExpect(status().isTooManyRequests());
@@ -92,7 +94,7 @@ class RateLimitIT extends DatabaseContainers {
     mockMvc
         .perform(
             post(Path.AUTH + "/verification-email")
-                .header("X-Forwarded-For", "10.0.0.2")
+                .header(clientIpHeader,"10.0.0.2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(verificationBody))
         .andExpect(status().isNoContent());
@@ -107,7 +109,7 @@ class RateLimitIT extends DatabaseContainers {
       mockMvc
           .perform(
               post(Path.AUTH + "/password/forgot")
-                  .header("X-Forwarded-For", "10.0.0.3")
+                  .header(clientIpHeader,"10.0.0.3")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(body))
           .andExpect(status().isNoContent());
@@ -117,7 +119,7 @@ class RateLimitIT extends DatabaseContainers {
     mockMvc
         .perform(
             post(Path.AUTH + "/password/forgot")
-                .header("X-Forwarded-For", "10.0.0.3")
+                .header(clientIpHeader,"10.0.0.3")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isTooManyRequests());
@@ -126,7 +128,7 @@ class RateLimitIT extends DatabaseContainers {
     mockMvc
         .perform(
             post(Path.AUTH + "/password/forgot")
-                .header("X-Forwarded-For", "10.0.0.4")
+                .header(clientIpHeader,"10.0.0.4")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isNoContent());
@@ -139,7 +141,7 @@ class RateLimitIT extends DatabaseContainers {
       mockMvc
           .perform(
               delete(Path.AUTH + "/tokens")
-                  .header("X-Forwarded-For", "10.0.0.5")
+                  .header(clientIpHeader,"10.0.0.5")
                   .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNoContent());
     }
