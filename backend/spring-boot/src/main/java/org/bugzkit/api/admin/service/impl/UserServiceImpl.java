@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("adminUserService")
 @PreAuthorize("hasAuthority('ADMIN')")
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserDTO create(UserRequest userRequest) {
     if (userRepository.existsByUsername(userRequest.username()))
       throw new ConflictException("user.usernameExists");
@@ -87,6 +89,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserDTO update(Long id, UserRequest userRequest) {
     final var user =
         userRepository
@@ -107,6 +110,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserDTO patch(Long id, PatchUserRequest patchUserRequest) {
     final var user =
         userRepository

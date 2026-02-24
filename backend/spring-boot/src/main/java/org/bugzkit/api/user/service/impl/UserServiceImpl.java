@@ -11,6 +11,7 @@ import org.bugzkit.api.user.repository.UserRepository;
 import org.bugzkit.api.user.service.UserService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public PageableDTO<UserDTO> findAll(Pageable pageable) {
     final var users =
         userRepository.findAll(pageable).stream()
