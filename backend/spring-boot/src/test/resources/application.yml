@@ -2,7 +2,7 @@ app:
   name: ${APP_NAME:bugzkit}
 server:
   port: ${API_PORT:8080}
-  client-ip-header: CF-Connecting-IP
+  client-ip-header: ${CLIENT_IP_HEADER:CF-Connecting-IP}
 ui:
   url: ${UI_URL:http://localhost:5173}
 domain:
