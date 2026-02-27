@@ -3,6 +3,7 @@ package org.bugzkit.api.auth.service.impl;
 import com.auth0.jwt.JWT;
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 import org.bugzkit.api.auth.redis.model.AccessTokenBlacklist;
 import org.bugzkit.api.auth.redis.model.UserBlacklist;
 import org.bugzkit.api.auth.redis.repository.AccessTokenBlacklistRepository;
@@ -37,6 +38,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
   @Override
   public String create(Long userId, Set<RoleDTO> roleDTOs, String deviceId) {
     return JWT.create()
+        .withJWTId(UUID.randomUUID().toString())
         .withIssuer(userId.toString())
         .withClaim("roles", roleDTOs.stream().map(RoleDTO::name).toList())
         .withClaim("purpose", PURPOSE.name())
@@ -62,7 +64,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
   }
 
   private void isInAccessTokenBlacklist(String token) {
-    if (accessTokenBlacklistRepository.existsById(token))
+    if (accessTokenBlacklistRepository.existsById(JwtUtil.getJwtId(token)))
       throw new UnauthorizedException("auth.tokenInvalid");
   }
 
@@ -77,7 +79,8 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
   @Override
   public void invalidate(String token) {
-    accessTokenBlacklistRepository.save(new AccessTokenBlacklist(token, tokenDuration));
+    accessTokenBlacklistRepository.save(
+        new AccessTokenBlacklist(JwtUtil.getJwtId(token), tokenDuration));
   }
 
   @Override

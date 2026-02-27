@@ -437,7 +437,6 @@ class AuthControllerIT extends DatabaseContainers {
   void refreshToken_secondUseOfSameToken_throwBadRequest() throws Exception {
     final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "update2");
     final var refreshToken = authTokens.refreshToken();
-    Thread.sleep(1000);
     // First use should succeed
     mockMvc
         .perform(

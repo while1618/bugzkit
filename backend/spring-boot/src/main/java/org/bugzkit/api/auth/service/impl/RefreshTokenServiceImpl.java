@@ -3,6 +3,7 @@ package org.bugzkit.api.auth.service.impl;
 import com.auth0.jwt.JWT;
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 import org.bugzkit.api.auth.redis.model.RefreshTokenStore;
 import org.bugzkit.api.auth.redis.repository.RefreshTokenStoreRepository;
 import org.bugzkit.api.auth.service.RefreshTokenService;
@@ -30,8 +31,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
   @Override
   public String create(Long userId, Set<RoleDTO> roleDTOs, String deviceId) {
+    final var jti = UUID.randomUUID().toString();
     final var token =
         JWT.create()
+            .withJWTId(jti)
             .withIssuer(userId.toString())
             .withClaim("roles", roleDTOs.stream().map(RoleDTO::name).toList())
             .withClaim("purpose", PURPOSE.name())
@@ -39,16 +42,17 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             .withIssuedAt(Instant.now())
             .withExpiresAt(Instant.now().plusSeconds(tokenDuration))
             .sign(JwtUtil.getAlgorithm(secret));
-    refreshTokenStoreRepository.save(new RefreshTokenStore(token, userId, deviceId, tokenDuration));
+    refreshTokenStoreRepository.save(new RefreshTokenStore(jti, userId, deviceId, tokenDuration));
     return token;
   }
 
   @Override
   public void checkAndConsume(String token) {
     verifyToken(token);
-    if (!refreshTokenStoreRepository.existsById(token))
+    final var jti = JwtUtil.getJwtId(token);
+    if (!refreshTokenStoreRepository.existsById(jti))
       throw new BadRequestException("auth.tokenInvalid");
-    refreshTokenStoreRepository.deleteById(token);
+    refreshTokenStoreRepository.deleteById(jti);
   }
 
   private void verifyToken(String token) {

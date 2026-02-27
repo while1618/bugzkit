@@ -17,7 +17,7 @@ import org.springframework.data.redis.core.index.Indexed;
 public class RefreshTokenStore implements Serializable {
   @Serial private static final long serialVersionUID = -1997218842142407911L;
 
-  @Id private String refreshToken;
+  @Id private String jti;
 
   @Indexed private Long userId;
 

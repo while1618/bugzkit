@@ -16,7 +16,7 @@ import org.springframework.data.redis.core.TimeToLive;
 public class AccessTokenBlacklist implements Serializable {
   @Serial private static final long serialVersionUID = 7371548317284111557L;
 
-  @Id private String accessToken;
+  @Id private String jti;
 
   @TimeToLive private long timeToLive;
 }

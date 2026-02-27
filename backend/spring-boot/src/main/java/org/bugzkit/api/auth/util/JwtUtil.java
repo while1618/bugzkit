@@ -38,6 +38,10 @@ public class JwtUtil {
     return JWT.decode(token).getIssuedAtAsInstant();
   }
 
+  public static String getJwtId(String token) {
+    return JWT.decode(token).getId();
+  }
+
   public enum JwtPurpose {
     ACCESS_TOKEN,
     REFRESH_TOKEN
