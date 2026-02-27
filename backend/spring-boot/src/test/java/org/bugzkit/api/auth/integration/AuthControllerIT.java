@@ -195,6 +195,8 @@ class AuthControllerIT extends DatabaseContainers {
   @Test
   void deleteTokensOnAllDevices() throws Exception {
     final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "delete2");
+    // JWT iat has second precision; sleep ensures the token's iat is strictly before
+    // UserBlacklist.updatedAt so the isBefore check correctly rejects it.
     Thread.sleep(1000);
     mockMvc
         .perform(
