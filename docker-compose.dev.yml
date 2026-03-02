@@ -128,6 +128,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-secret}
       PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
       PUBLIC_API_URL: http://bugzkit-api:${API_PORT:-8080}
+      DOMAIN_NAME: ${DOMAIN_NAME:-localhost}
     depends_on:
       - bugzkit-api
     healthcheck:

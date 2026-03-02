@@ -116,6 +116,7 @@ services:
       ORIGIN: ${UI_URL:-https://bugzkit.com}
       PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
       PUBLIC_API_URL: http://bugzkit-api:${API_PORT:-8080}
+      DOMAIN_NAME: ${DOMAIN_NAME:-.bugzkit.com}
     secrets:
       - jwt_secret
     command:

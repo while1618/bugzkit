@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/private';
 import type { JwtPayload } from '$lib/models/auth/jwt-payload';
 import { RoleName } from '$lib/models/user/role';
 import { type Cookies } from '@sveltejs/kit';
@@ -41,8 +42,9 @@ export function setCookieFromString(cookie: string, cookies: Cookies) {
 }
 
 export function removeAuth(cookies: Cookies, locals: App.Locals): void {
-  cookies.delete('accessToken', { path: '/' });
-  cookies.delete('refreshToken', { path: '/' });
+  const opts = { path: '/', domain: env.DOMAIN_NAME };
+  cookies.delete('accessToken', opts);
+  cookies.delete('refreshToken', opts);
   locals.userId = null;
 }
 
