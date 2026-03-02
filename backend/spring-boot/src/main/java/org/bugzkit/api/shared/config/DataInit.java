@@ -45,19 +45,13 @@ public class DataInit implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    saveRoles();
+    initRoles();
     saveUsers();
   }
 
-  private void saveRoles() {
-    userRole =
-        roleRepository
-            .findByName(RoleName.USER)
-            .orElseGet(() -> roleRepository.save(new Role(RoleName.USER)));
-    adminRole =
-        roleRepository
-            .findByName(RoleName.ADMIN)
-            .orElseGet(() -> roleRepository.save(new Role(RoleName.ADMIN)));
+  private void initRoles() {
+    userRole = roleRepository.findByName(RoleName.USER).orElseThrow();
+    adminRole = roleRepository.findByName(RoleName.ADMIN).orElseThrow();
   }
 
   private void saveUsers() {

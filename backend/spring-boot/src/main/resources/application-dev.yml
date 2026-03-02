@@ -12,10 +12,10 @@ spring:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:bugzkit}
     password: ${POSTGRES_PASSWORD:root}
   flyway:
-    enabled: false
+    clean-disabled: false
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
   data:
     redis:
       host: ${REDIS_HOST:localhost}
