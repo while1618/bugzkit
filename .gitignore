@@ -31,3 +31,6 @@ build/
 .settings
 .springBeans
 .sts4-cache
+
+# Production secrets — never commit
+secrets/

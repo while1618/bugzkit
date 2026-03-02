@@ -20,11 +20,22 @@ jobs:
         if: github.actor != 'while1618'
         run: echo "This workflow can only be run by the owner." && exit 1
 
-      - name: Docker Stack Deploy
-        uses: cssnr/stack-deploy-action@v1
+      - name: Copy compose file to server
+        uses: appleboy/scp-action@v1
         with:
-          name: bugzkit
-          file: docker-stack.prod.yml
           host: ${{ secrets.HOST }}
-          user: ${{ secrets.DEPLOY_USER }}
-          ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          source: docker-compose.prod.yml
+          target: ~/bugzkit/
+
+      - name: Deploy with Docker Compose
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/bugzkit
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans

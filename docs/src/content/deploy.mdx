@@ -1,6 +1,6 @@
 ## Deploy
 
-Production deployment uses Docker Swarm with Traefik as a reverse proxy. The stack is defined in `docker-stack.prod.yml` at the repository root.
+Production deployment uses Docker Compose with Traefik as a reverse proxy. The stack is defined in `docker-compose.prod.yml` at the repository root.
 
 ### Services
 
@@ -23,21 +23,39 @@ Traefik handles TLS termination and routing:
 - HTTP is automatically redirected to HTTPS.
 - Certificates are obtained via Let's Encrypt (HTTP challenge).
 
-Replace the domain names in `docker-stack.prod.yml` with your own.
+Replace the domain names in `docker-compose.prod.yml` with your own.
 
 ### Secrets
 
-Sensitive values are managed through Docker Swarm secrets instead of environment variables. You need to create these secrets before deploying:
+Sensitive values are stored as plain files in a `secrets/` directory next to the compose file. Docker Compose mounts each file into the container at `/run/secrets/<name>`. Spring Boot reads them via `spring.config.import: configtree:/run/secrets/`.
+
+Create the directory and one file per secret before deploying:
 
 ```bash
-echo "your_password" | docker secret create postgres_password -
-echo "your_password" | docker secret create redis_password -
-echo "your_secret" | docker secret create jwt_secret -
-echo "your_password" | docker secret create smtp_password -
-echo "your_password" | docker secret create user_password -
-echo "your_client_id" | docker secret create google_client_id -
-echo "your_client_secret" | docker secret create google_client_secret -
+mkdir -m 700 secrets
+
+echo -n "your_password"       > secrets/postgres_password
+echo -n "your_password"       > secrets/redis_password
+echo -n "your_secret"         > secrets/jwt_secret        # min 32 chars
+echo -n "your_password"       > secrets/smtp_password
+echo -n "your_password"       > secrets/user_password
+echo -n "your_client_id"      > secrets/google_client_id
+echo -n "your_client_secret"  > secrets/google_client_secret
+
+chmod 400 secrets/*
 ```
+
+The `secrets/` directory is listed in `.gitignore` and must never be committed.
+
+### VPS Initialization
+
+`scripts/init-vps.sh` automates the full server setup on a fresh Debian 12 (DigitalOcean) droplet. Run it as root:
+
+```bash
+bash init-vps.sh
+```
+
+It covers: system hardening, SSH lockdown, UFW firewall, Fail2ban, automatic security updates, Docker CE, and writing all secret files with correct permissions.
 
 ### Deploying via GitHub Actions
 
@@ -47,12 +65,14 @@ The `deploy.yml` workflow deploys the stack via SSH. It is triggered manually an
 - `DEPLOY_USER`: SSH user on the server.
 - `DEPLOY_SSH_PRIVATE_KEY`: SSH private key for authentication.
 
+On each run the workflow copies `docker-compose.prod.yml` from the repository to the server, then pulls updated images and restarts only the affected containers.
+
 ### Manual Deploy
 
-To deploy manually on a Docker Swarm node:
-
 ```bash
-docker stack deploy -c docker-stack.prod.yml bugzkit
+cd ~/bugzkit
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
 ```
 
 ### Client IP Resolution
