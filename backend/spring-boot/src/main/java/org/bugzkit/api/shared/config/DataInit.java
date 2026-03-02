@@ -25,8 +25,8 @@ public class DataInit implements ApplicationRunner {
   private final PasswordEncoder bCryptPasswordEncoder;
   private final Environment environment;
   private final Faker faker;
-  private final Role userRole = new Role(RoleName.USER);
-  private final Role adminRole = new Role(RoleName.ADMIN);
+  private Role userRole;
+  private Role adminRole;
 
   @Value("${spring.security.user.password}")
   private String password;
@@ -50,28 +50,37 @@ public class DataInit implements ApplicationRunner {
   }
 
   private void saveRoles() {
-    roleRepository.saveAll(List.of(userRole, adminRole));
+    userRole =
+        roleRepository
+            .findByName(RoleName.USER)
+            .orElseGet(() -> roleRepository.save(new Role(RoleName.USER)));
+    adminRole =
+        roleRepository
+            .findByName(RoleName.ADMIN)
+            .orElseGet(() -> roleRepository.save(new Role(RoleName.ADMIN)));
   }
 
   private void saveUsers() {
-    userRepository.saveAll(
-        List.of(
-            User.builder()
-                .username("admin")
-                .email("admin@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(false)
-                .roles(Set.of(userRole, adminRole))
-                .build(),
-            User.builder()
-                .username("user")
-                .email("user@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build()));
+    if (!userRepository.existsByUsername("admin"))
+      userRepository.save(
+          User.builder()
+              .username("admin")
+              .email("admin@localhost")
+              .password(bCryptPasswordEncoder.encode(password))
+              .active(true)
+              .lock(false)
+              .roles(Set.of(userRole, adminRole))
+              .build());
+    if (!userRepository.existsByUsername("user"))
+      userRepository.save(
+          User.builder()
+              .username("user")
+              .email("user@localhost")
+              .password(bCryptPasswordEncoder.encode(password))
+              .active(true)
+              .lock(false)
+              .roles(Collections.singleton(userRole))
+              .build());
     if (environment.getActiveProfiles()[0].equals("dev")) devUsers();
     else if (environment.getActiveProfiles()[0].equals("test")) testUsers();
   }
@@ -82,7 +91,7 @@ public class DataInit implements ApplicationRunner {
             .collection(
                 () ->
                     User.builder()
-                        .username(faker.internet().username())
+                        .username(faker.name().name())
                         .email(faker.internet().emailAddress())
                         .password(bCryptPasswordEncoder.encode(password))
                         .active(true)

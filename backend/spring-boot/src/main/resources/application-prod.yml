@@ -23,7 +23,7 @@ spring:
       password: ${redis_password}
   security:
     user:
-      password: ${user_password} # remove when liquibase is added
+      password: ${user_password}
     oauth2:
       client:
         registration:
