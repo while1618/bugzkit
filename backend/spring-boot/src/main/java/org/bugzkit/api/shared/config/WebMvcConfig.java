@@ -1,10 +1,14 @@
 package org.bugzkit.api.shared.config;
 
+import java.util.List;
 import org.bugzkit.api.shared.interceptor.RequestInterceptor;
 import org.bugzkit.api.shared.ratelimit.RateLimitInterceptor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -22,14 +26,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
     this.requestInterceptor = requestInterceptor;
   }
 
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
-    registry
-        .addMapping("/**")
-        .allowedOrigins(uiUrl)
-        .allowedMethods("HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE")
-        .allowCredentials(true)
-        .maxAge(3600);
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    final var config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of(uiUrl));
+    config.setAllowedMethods(List.of("HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"));
+    config.setAllowCredentials(true);
+    config.setMaxAge(3600L);
+    final var source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
   }
 
   @Override
