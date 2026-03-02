@@ -64,6 +64,9 @@ read -rsp "  redis_password       (≥16 chars): " REDIS_PASSWORD; echo
 read -rsp "  jwt_secret           (≥32 chars): " JWT_SECRET; echo
 [[ ${#JWT_SECRET} -lt 32 ]]        && die "jwt_secret must be ≥ 32 characters."
 
+read -rsp "  deploy_user_password            : " DEPLOY_USER_PASSWORD; echo
+[[ -z "$DEPLOY_USER_PASSWORD" ]] && die "deploy_user_password cannot be empty."
+
 read -rsp "  smtp_password                   : " SMTP_PASSWORD; echo
 read -rsp "  user_password                   : " USER_PASSWORD; echo
 
@@ -100,7 +103,7 @@ if id "$DEPLOY_USER" &>/dev/null; then
   warn "User '$DEPLOY_USER' already exists — skipping creation."
 else
   useradd -m -s /bin/bash -G sudo "$DEPLOY_USER"
-  passwd -l "$DEPLOY_USER"   # lock password → key-only login
+  echo "$DEPLOY_USER:$DEPLOY_USER_PASSWORD" | chpasswd
   success "User '$DEPLOY_USER' created."
 fi
 
