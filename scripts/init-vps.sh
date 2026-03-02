@@ -61,8 +61,8 @@ read -rsp "  postgres_password    (≥16 chars): " POSTGRES_PASSWORD; echo
 read -rsp "  redis_password       (≥16 chars): " REDIS_PASSWORD; echo
 [[ ${#REDIS_PASSWORD} -lt 16 ]]    && die "redis_password must be ≥ 16 characters."
 
-read -rsp "  jwt_secret           (≥32 chars): " JWT_SECRET; echo
-[[ ${#JWT_SECRET} -lt 32 ]]        && die "jwt_secret must be ≥ 32 characters."
+read -rsp "  jwt_secret           (≥16 chars): " JWT_SECRET; echo
+[[ ${#JWT_SECRET} -lt 16 ]]        && die "jwt_secret must be ≥ 16 characters."
 
 read -rsp "  deploy_user_password            : " DEPLOY_USER_PASSWORD; echo
 [[ -z "$DEPLOY_USER_PASSWORD" ]] && die "deploy_user_password cannot be empty."
