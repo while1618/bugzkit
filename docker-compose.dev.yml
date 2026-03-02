@@ -55,7 +55,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:17.2-alpine
+    image: postgres:17.9-alpine
     ports:
       - "${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}"
     restart: always
@@ -84,7 +84,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:7.4.1
+    image: redis:8.0.6-alpine
     ports:
       - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
     restart: always

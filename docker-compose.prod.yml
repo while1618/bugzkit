@@ -52,7 +52,7 @@ services:
       - traefik.http.routers.bugzkit-api.tls.certresolver=myresolver
 
   postgres:
-    image: postgres:17.2-alpine
+    image: postgres:17.9-alpine
     restart: unless-stopped
     environment:
       PGPORT: ${POSTGRES_PORT:-5432}
@@ -81,7 +81,7 @@ services:
       - web
 
   redis:
-    image: redis:7.4.1
+    image: redis:8.0.6-alpine
     restart: unless-stopped
     environment:
       REDIS_PORT: ${REDIS_PORT:-6379}
@@ -144,7 +144,7 @@ services:
       - traefik.http.routers.bugzkit-ui.tls.certresolver=myresolver
 
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.6.1
     restart: unless-stopped
     ports:
       - "80:80"
