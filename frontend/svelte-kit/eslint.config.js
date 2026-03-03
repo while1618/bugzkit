@@ -28,10 +28,11 @@ export default [
     },
   },
   {
-    ignores: ['build/', '.svelte-kit/', 'dist/', 'src/lib/paraglide'],
+    ignores: ['build/', '.svelte-kit/', 'dist/', 'src/lib/paraglide', 'src/paraglide/'],
   },
   {
     rules: {
+      'svelte/no-navigation-without-resolve': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {

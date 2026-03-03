@@ -85,7 +85,7 @@ public class DataInit implements ApplicationRunner {
             .collection(
                 () ->
                     User.builder()
-                        .username(faker.name().name())
+                        .username(faker.credentials().username())
                         .email(faker.internet().emailAddress())
                         .password(bCryptPasswordEncoder.encode(password))
                         .active(true)

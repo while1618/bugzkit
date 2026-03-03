@@ -65,7 +65,7 @@
     <form id="changeRolesForm" method="POST" action="?/changeRoles" use:enhance>
       <div class="flex flex-col gap-3">
         <Form.Fieldset form={superform} name="roleNames">
-          {#each data.roles as role}
+          {#each data.roles as role (role.name)}
             {@const checked = user.roles.some((r) => r.name === role.name)}
             <Form.Control>
               {#snippet children({ props })}

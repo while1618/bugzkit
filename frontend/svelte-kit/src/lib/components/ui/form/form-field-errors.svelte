@@ -4,6 +4,7 @@
   import { cn } from '$lib/utils.js';
 
   let {
+    // eslint-disable-next-line no-useless-assignment
     ref = $bindable(null),
     class: className,
     errorClasses,
@@ -22,7 +23,7 @@
     {#if childrenProp}
       {@render childrenProp({ errors, errorProps })}
     {:else}
-      {#each errors as error}
+      {#each errors as error (error)}
         <div {...errorProps} class={cn(errorClasses)}>{error}</div>
       {/each}
     {/if}

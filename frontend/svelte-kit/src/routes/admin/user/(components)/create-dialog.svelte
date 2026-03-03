@@ -124,7 +124,7 @@
 
       <Form.Fieldset form={superform} name="roleNames">
         <Label>{m.admin_userRoles()}</Label>
-        {#each data.roles as role}
+        {#each data.roles as role (role.name)}
           <Form.Control>
             {#snippet children({ props })}
               <div class="flex space-x-2">

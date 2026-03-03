@@ -68,7 +68,7 @@
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each data.devices as device}
+          {#each data.devices as device (device.deviceId)}
             <Table.Row>
               <Table.Cell>
                 {parseUserAgent(device.userAgent)}
