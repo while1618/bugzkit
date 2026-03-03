@@ -114,6 +114,8 @@ services:
     environment:
       PORT: ${UI_PORT:-5173}
       ORIGIN: ${UI_URL:-https://bugzkit.com}
+      PROTOCOL_HEADER: x-forwarded-proto
+      HOST_HEADER: x-forwarded-host
       PUBLIC_APP_NAME: ${APP_NAME:-bugzkit}
       PUBLIC_API_URL: http://bugzkit-api:${API_PORT:-8080}
       DOMAIN_NAME: ${DOMAIN_NAME:-.bugzkit.com}
