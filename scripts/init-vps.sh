@@ -312,7 +312,7 @@ cat > /etc/docker/daemon.json << 'EOF'
 }
 EOF
 
-systemctl reload docker
+systemctl restart docker
 success "Docker daemon: log rotation, no-new-privileges, live-restore."
 
 # ==============================================================================
@@ -332,7 +332,9 @@ APP_DIR="$DEPLOY_HOME/bugzkit"
 SECRETS_DIR="$APP_DIR/secrets"
 
 mkdir -p "$SECRETS_DIR"
-chmod 700 "$APP_DIR" "$SECRETS_DIR"
+chown "$DEPLOY_USER:$DEPLOY_USER" "$APP_DIR"
+chmod 750 "$APP_DIR"
+chmod 700 "$SECRETS_DIR"
 
 write_secret() {
   local name="$1" value="$2"
