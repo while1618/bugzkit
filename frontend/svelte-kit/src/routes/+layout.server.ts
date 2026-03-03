@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/private';
 import type { Profile } from '$lib/models/user/user';
 import { languageTag } from '$lib/paraglide/runtime';
 import { makeRequest } from '$lib/server/apis/api';
@@ -17,7 +18,8 @@ export const load = (async ({ locals, cookies, url }) => {
   );
 
   if ('error' in response) {
-    if (response.status == 401) cookies.delete('accessToken', { path: '/' });
+    if (response.status == 401)
+      cookies.delete('accessToken', { path: '/', domain: env.DOMAIN_NAME });
     error(response.status, { message: response.error });
   }
 
