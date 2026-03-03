@@ -9,6 +9,7 @@ export async function generateMetadata(props) {
   return metadata;
 }
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
 const Wrapper = useMDXComponents().wrapper;
 
 export default async function Page(props) {
