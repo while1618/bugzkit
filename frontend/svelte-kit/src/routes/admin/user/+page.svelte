@@ -31,7 +31,7 @@
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each data.users.data as user}
+          {#each data.users.data as user (user.id)}
             <Table.Row>
               <Table.Cell>{user.id}</Table.Cell>
               <Table.Cell>
@@ -44,7 +44,7 @@
               <Table.Cell>
                 {#if user.roles}
                   <div class="flex items-center gap-2">
-                    {#each user.roles as role, i}
+                    {#each user.roles as role, i (role.name)}
                       <Label>
                         {role.name}
                         {#if i < user.roles.length - 1},{/if}

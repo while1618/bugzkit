@@ -25,7 +25,7 @@
   <Select.Content>
     <Select.Group>
       <Select.GroupHeading>{m.languages()}</Select.GroupHeading>
-      {#each availableLanguageTags as lang}
+      {#each availableLanguageTags as lang (lang)}
         <Select.Item value={lang} label={labels[lang]} />
       {/each}
     </Select.Group>
