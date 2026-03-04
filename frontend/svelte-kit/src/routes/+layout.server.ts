@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private';
 import type { Profile } from '$lib/models/user/user';
-import { languageTag } from '$lib/paraglide/runtime';
+import { deLocalizeUrl } from '$lib/paraglide/runtime.js';
 import { makeRequest } from '$lib/server/apis/api';
 import { HttpRequest, isAdmin } from '$lib/server/utils/util';
 import { error, redirect } from '@sveltejs/kit';
@@ -24,7 +24,8 @@ export const load = (async ({ locals, cookies, url }) => {
   }
 
   const profile = response as Profile;
-  if (!profile.username && url.pathname !== `/${languageTag()}/profile`) redirect(302, '/profile');
+  if (!profile.username && deLocalizeUrl(url.href).pathname !== '/profile')
+    redirect(302, '/profile');
 
   return { profile, isAdmin: isAdmin(cookies.get('accessToken')) };
 }) satisfies LayoutServerLoad;
