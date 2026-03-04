@@ -142,7 +142,7 @@
       </Form.Fieldset>
     </form>
 
-    <Dialog.Footer class="gap-2 sm:gap-0">
+    <Dialog.Footer>
       <Button variant="outline" onclick={() => (dialogOpen = false)}>{m.general_cancel()}</Button>
       {#if $submitting}
         <Form.Button disabled>
