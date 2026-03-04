@@ -1,8 +1,8 @@
 import { env } from '$env/dynamic/private';
-import { i18n } from '$lib/i18n';
 import type { JwtPayload } from '$lib/models/auth/jwt-payload';
 import { RoleName } from '$lib/models/user/role';
-import { languageTag } from '$lib/paraglide/runtime';
+import { deLocalizeUrl, getTextDirection } from '$lib/paraglide/runtime.js';
+import { paraglideMiddleware } from '$lib/paraglide/server.js';
 import { makeRequest } from '$lib/server/apis/api';
 import { HttpRequest, removeAuth } from '$lib/server/utils/util';
 import { redirect, type Cookies, type Handle } from '@sveltejs/kit';
@@ -52,13 +52,12 @@ async function tryToRefreshToken(
 const protectedRoutes = ['/profile', '/admin', '/auth/sign-out', '/auth/sign-out-from-all-devices'];
 
 const checkProtectedRoutes: Handle = async ({ event, resolve }) => {
-  const languageInPathRegex = new RegExp(`^/${languageTag()}/`);
-  const pathWithoutLanguage = event.url.pathname.replace(languageInPathRegex, '/');
-  if (protectedRoutes.some((route) => pathWithoutLanguage.startsWith(route))) {
+  const path = deLocalizeUrl(event.url.href).pathname;
+  if (protectedRoutes.some((route) => path.startsWith(route))) {
     const accessToken = event.cookies.get('accessToken');
     if (!accessToken) redirect(302, '/');
 
-    if (pathWithoutLanguage.startsWith('/admin')) {
+    if (path.startsWith('/admin')) {
       const { roles } = jwt.decode(accessToken) as JwtPayload;
       if (!roles?.includes(RoleName.ADMIN)) redirect(302, '/');
     }
@@ -66,4 +65,16 @@ const checkProtectedRoutes: Handle = async ({ event, resolve }) => {
   return await resolve(event);
 };
 
-export const handle = sequence(i18n.handle(), tryToGetSignedInUser, checkProtectedRoutes);
+const paraglideHandle: Handle = ({ event, resolve }) => {
+  return paraglideMiddleware(event.request, ({ request, locale }) => {
+    event.request = request;
+    return resolve(event, {
+      transformPageChunk: ({ html }) =>
+        html
+          .replace('%paraglide.lang%', locale)
+          .replace('%paraglide.textDirection%', getTextDirection(locale)),
+    });
+  });
+};
+
+export const handle = sequence(paraglideHandle, tryToGetSignedInUser, checkProtectedRoutes);

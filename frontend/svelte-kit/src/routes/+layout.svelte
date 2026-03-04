@@ -5,8 +5,6 @@
   import UserNavbar from '$lib/components/navbar/user-navbar.svelte';
   import Loading from '$lib/components/shared/loading.svelte';
   import { Toaster } from '$lib/components/ui/sonner';
-  import { i18n } from '$lib/i18n';
-  import { ParaglideJS } from '@inlang/paraglide-sveltekit';
   import { ModeWatcher } from 'mode-watcher';
   import '../app.css';
   import type { LayoutProps } from './$types';
@@ -18,17 +16,15 @@
   <title>{PUBLIC_APP_NAME}</title>
 </svelte:head>
 
-<ParaglideJS {i18n}>
-  {#if navigating.complete}
-    <Loading />
-  {:else if data.profile}
-    <UserNavbar isAdmin={data.isAdmin} />
-    {@render children()}
-  {:else}
-    <GuestNavbar />
-    {@render children()}
-  {/if}
-</ParaglideJS>
+{#if navigating.complete}
+  <Loading />
+{:else if data.profile}
+  <UserNavbar isAdmin={data.isAdmin} />
+  {@render children()}
+{:else}
+  <GuestNavbar />
+  {@render children()}
+{/if}
 
 <Toaster />
 <ModeWatcher />
