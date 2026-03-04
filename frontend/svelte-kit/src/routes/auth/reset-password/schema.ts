@@ -1,6 +1,6 @@
 import * as m from '$lib/paraglide/messages.js';
 import { PASSWORD_REGEX } from '$lib/regex';
-import { z, } from 'zod';
+import { z } from 'zod';
 
 export const resetPasswordSchema = z
   .object({
