@@ -76,6 +76,3 @@ jwt:
 rate-limit:
   enabled: false
 
-springdoc:
-  swagger-ui:
-    url: /openapi.yml
