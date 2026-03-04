@@ -1,6 +1,6 @@
 import * as m from '$lib/paraglide/messages.js';
 import { EMAIL_REGEX, PASSWORD_REGEX, USERNAME_REGEX } from '$lib/regex';
-import { z, ZodIssueCode } from 'zod';
+import { z } from 'zod';
 
 export const createSchema = z
   .object({
@@ -15,7 +15,7 @@ export const createSchema = z
   .superRefine(({ password, confirmPassword }, ctx) => {
     if (password !== confirmPassword) {
       ctx.addIssue({
-        code: ZodIssueCode.custom,
+        code: 'custom',
         path: ['confirmPassword'],
         error: m.auth_passwordsDoNotMatch(),
       });
