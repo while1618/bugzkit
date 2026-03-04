@@ -17,15 +17,20 @@
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write . && eslint --fix ."
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@inlang/paraglide-js": "1.11.8",
     "@inlang/paraglide-sveltekit": "0.15.5",
-    "@playwright/test": "1.49.1",
-    "@sveltejs/adapter-auto": "4.0.0",
-    "@sveltejs/adapter-node": "5.2.12",
-    "@sveltejs/kit": "2.16.1",
-    "@sveltejs/vite-plugin-svelte": "5.0.3",
+    "@playwright/test": "1.58.2",
+    "@sveltejs/adapter-auto": "7.0.1",
+    "@sveltejs/adapter-node": "5.5.4",
+    "@sveltejs/kit": "2.53.4",
+    "@sveltejs/vite-plugin-svelte": "6.2.4",
     "@types/eslint": "9.6.1",
     "@types/jsonwebtoken": "9.0.7",
     "@types/set-cookie-parser": "2.4.10",
@@ -57,8 +62,8 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.56.1",
     "ua-parser-js": "2.0.9",
-    "vite": "6.0.11",
-    "vitest": "3.0.3",
+    "vite": "7.3.1",
+    "vitest": "4.0.18",
     "zod": "3.24.1"
   }
 }

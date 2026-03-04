@@ -12,6 +12,12 @@
     "lint:fix": "prettier --write . && eslint --fix .",
     "check-updates": "npx npm-check-updates"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
   "dependencies": {
     "next": "16.1.6",
     "nextra": "4.6.1",
