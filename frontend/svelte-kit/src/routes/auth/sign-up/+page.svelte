@@ -91,7 +91,7 @@
                 <Form.Button>{m.auth_signUp()}</Form.Button>
               {/if}
 
-              <div class="text-center">
+              <div class="flex items-center justify-center gap-1">
                 <Label>{m.auth_alreadyHaveAnAccount()}</Label>
                 <a href="/auth/sign-in" class="text-sm font-medium underline">
                   {m.auth_signIn()}

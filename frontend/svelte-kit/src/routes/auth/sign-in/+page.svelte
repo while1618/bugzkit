@@ -90,7 +90,7 @@
                 </Label>
               {/if}
 
-              <div class="text-center">
+              <div class="flex items-center justify-center gap-1">
                 <Label>{m.auth_doNotHaveAnAccount()}</Label>
                 <a href="/auth/sign-up" class="text-sm font-medium underline">
                   {m.auth_signUp()}
