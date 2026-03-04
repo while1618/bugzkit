@@ -80,3 +80,14 @@ pnpm run dev
 ```
 
 You're all set!
+
+## Regenerating Frontend Models
+
+Frontend TypeScript models are auto-generated from the backend OpenAPI spec. Whenever you make changes to backend DTOs or endpoints, regenerate the models by running the backend first, then:
+
+```bash
+cd frontend/svelte-kit
+pnpm run generate:models
+```
+
+This fetches the live spec from `http://localhost:8080/v3/api-docs` and updates `src/lib/models/api.d.ts`.
