@@ -93,8 +93,8 @@ importers:
         specifier: 0.7.2
         version: 0.7.2(prettier-plugin-svelte@3.5.1(prettier@3.8.1)(svelte@5.53.7))(prettier@3.8.1)
       set-cookie-parser:
-        specifier: 2.7.1
-        version: 2.7.1
+        specifier: 3.0.1
+        version: 3.0.1
       svelte:
         specifier: 5.53.7
         version: 5.53.7
@@ -1727,9 +1727,6 @@ packages:
     resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
     engines: {node: '>=10'}
     hasBin: true
-
-  set-cookie-parser@2.7.1:
-    resolution: {integrity: sha512-IOc8uWeOZgnb3ptbCURJWNjWUPcO3ZnTTdzsurqERrP6nPyv+paC55vJM0LpOlT2ne+Ix+9+CRG1MNLlyZ4GjQ==}
 
   set-cookie-parser@3.0.1:
     resolution: {integrity: sha512-n7Z7dXZhJbwuAHhNzkTti6Aw9QDDjZtm3JTpTGATIdNzdQz5GuFs22w90BcvF4INfnrL5xrX3oGsuqO5Dx3A1Q==}
@@ -3487,8 +3484,6 @@ snapshots:
   safe-buffer@5.2.1: {}
 
   semver@7.7.4: {}
-
-  set-cookie-parser@2.7.1: {}
 
   set-cookie-parser@3.0.1: {}
 
