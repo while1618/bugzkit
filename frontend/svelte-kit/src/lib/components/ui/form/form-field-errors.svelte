@@ -1,10 +1,8 @@
 <script lang="ts">
   import * as FormPrimitive from 'formsnap';
-  import type { WithoutChild } from 'bits-ui';
-  import { cn } from '$lib/utils.js';
+  import { cn, type WithoutChild } from '$lib/utils.js';
 
   let {
-    // eslint-disable-next-line no-useless-assignment
     ref = $bindable(null),
     class: className,
     errorClasses,
@@ -16,7 +14,8 @@
 </script>
 
 <FormPrimitive.FieldErrors
-  class={cn('text-[0.8rem] font-medium text-destructive', className)}
+  bind:ref
+  class={cn('text-sm font-medium text-destructive', className)}
   {...restProps}
 >
   {#snippet children({ errors, errorProps })}
