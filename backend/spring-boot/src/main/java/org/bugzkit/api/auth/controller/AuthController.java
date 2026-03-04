@@ -1,5 +1,7 @@
 package org.bugzkit.api.auth.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "auth")
 @RestController
 @RequestMapping(Path.AUTH)
 public class AuthController {
@@ -74,6 +77,7 @@ public class AuthController {
     return removeAuthCookies();
   }
 
+  @SecurityRequirement(name = "cookieAuth")
   @GetMapping("/tokens/devices")
   public ResponseEntity<List<DeviceDTO>> findAllDevices(HttpServletRequest request) {
     final var accessToken = AuthUtil.getValueFromCookie("accessToken", request);
@@ -87,6 +91,7 @@ public class AuthController {
     return removeAuthCookies();
   }
 
+  @SecurityRequirement(name = "cookieAuth")
   @DeleteMapping("/tokens/devices/{deviceId}")
   public ResponseEntity<Void> revokeDevice(@PathVariable String deviceId) {
     deviceService.revoke(deviceId);

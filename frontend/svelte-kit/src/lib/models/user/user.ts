@@ -1,24 +1,14 @@
+import type { components } from '../api';
 import type { Role } from './role';
 
-export interface AdminUser {
-  id: number;
-  username: string;
-  email: string;
+type UserDTO = Required<components['schemas']['UserDTO']>;
+
+export type AdminUser = Omit<UserDTO, 'active' | 'lock' | 'roles'> & {
   active: boolean;
   lock: boolean;
-  createdAt: Date;
   roles: Role[];
-}
+};
 
-export interface SimplifiedUser {
-  id: number;
-  username: string;
-  createdAt: Date;
-}
+export type Profile = Pick<UserDTO, 'id' | 'username' | 'email' | 'createdAt'>;
 
-export interface Profile {
-  id: number;
-  username: string;
-  email: string;
-  createdAt: Date;
-}
+export type SimplifiedUser = Pick<UserDTO, 'id' | 'username' | 'createdAt'>;

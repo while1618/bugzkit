@@ -53,7 +53,8 @@ export function apiErrors(
   form: SuperValidated<Record<string, unknown>>,
 ) {
   for (const code of errorMessage.codes) {
-    const message = ErrorCode[code] ? m[ErrorCode[code]]() : m.API_ERROR_UNKNOWN();
+    const key = ErrorCode[code as keyof typeof ErrorCode];
+    const message = key ? m[key]() : m.API_ERROR_UNKNOWN();
     setError(form, message);
   }
   return fail(errorMessage.status, { form });
