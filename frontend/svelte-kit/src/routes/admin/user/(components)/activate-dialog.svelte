@@ -8,14 +8,14 @@
   import XIcon from 'lucide-svelte/icons/x';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import type { PageData } from '../$types';
   import { actionSchema } from '../schema';
 
   const { data, user }: { data: PageData; user: AdminUser } = $props();
 
   const superform = superForm(data.activateForm, {
-    validators: zodClient(actionSchema),
+    validators: zod4Client(actionSchema),
     id: `activate-form-${user.id}`,
     onSubmit({ formData }) {
       formData.set('id', `${user.id}`);

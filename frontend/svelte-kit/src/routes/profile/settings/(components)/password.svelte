@@ -7,14 +7,14 @@
   import LoaderCircleIcon from 'lucide-svelte/icons/loader-circle';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import type { PageData } from '../$types';
   import { changePasswordSchema } from '../schema';
 
   const { data }: { data: PageData } = $props();
 
   const changePasswordSuperform = superForm(data.changePasswordForm, {
-    validators: zodClient(changePasswordSchema),
+    validators: zod4Client(changePasswordSchema),
   });
   const {
     form: changePasswordForm,

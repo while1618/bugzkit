@@ -9,14 +9,14 @@
   import PencilIcon from 'lucide-svelte/icons/pencil';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import type { PageData } from '../$types';
   import { changeRolesSchema } from '../schema';
 
   const { data, user }: { data: PageData; user: AdminUser } = $props();
 
   const superform = superForm(data.changeRolesForm, {
-    validators: zodClient(changeRolesSchema),
+    validators: zod4Client(changeRolesSchema),
     id: `change-role-form-${user.id}`,
     onSubmit({ formData }) {
       formData.set('id', `${user.id}`);

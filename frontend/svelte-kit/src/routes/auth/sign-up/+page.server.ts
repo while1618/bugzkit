@@ -4,7 +4,7 @@ import { apiErrors, makeRequest } from '$lib/server/apis/api';
 import { HttpRequest } from '$lib/server/utils/util';
 import { fail, redirect, type Cookies } from '@sveltejs/kit';
 import { setError, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { signUpSchema } from './schema';
 
@@ -12,13 +12,13 @@ export const load = (async ({ locals }) => {
   if (locals.userId) redirect(302, '/');
 
   return {
-    form: await superValidate(zod(signUpSchema)),
+    form: await superValidate(zod4(signUpSchema)),
   };
 }) satisfies PageServerLoad;
 
 export const actions = {
   signUp: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(signUpSchema));
+    const form = await superValidate(request, zod4(signUpSchema));
     if (!form.valid) return fail(400, { form });
 
     if (!(await usernameAvailability(form.data.username, cookies))) {

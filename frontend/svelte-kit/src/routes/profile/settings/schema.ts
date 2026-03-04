@@ -3,22 +3,22 @@ import { EMAIL_REGEX, PASSWORD_REGEX, USERNAME_REGEX } from '$lib/regex';
 import { z, ZodIssueCode } from 'zod';
 
 export const updateProfileSchema = z.object({
-  username: z.string().regex(USERNAME_REGEX, { message: m.profile_usernameInvalid() }),
-  email: z.string().regex(EMAIL_REGEX, { message: m.profile_emailInvalid() }),
+  username: z.string().regex(USERNAME_REGEX, { error: m.profile_usernameInvalid() }),
+  email: z.string().regex(EMAIL_REGEX, { error: m.profile_emailInvalid() }),
 });
 
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string().regex(PASSWORD_REGEX, { message: m.profile_passwordInvalid() }),
-    newPassword: z.string().regex(PASSWORD_REGEX, { message: m.profile_passwordInvalid() }),
-    confirmNewPassword: z.string().regex(PASSWORD_REGEX, { message: m.profile_passwordInvalid() }),
+    currentPassword: z.string().regex(PASSWORD_REGEX, { error: m.profile_passwordInvalid() }),
+    newPassword: z.string().regex(PASSWORD_REGEX, { error: m.profile_passwordInvalid() }),
+    confirmNewPassword: z.string().regex(PASSWORD_REGEX, { error: m.profile_passwordInvalid() }),
   })
   .superRefine(({ newPassword, confirmNewPassword }, ctx) => {
     if (newPassword !== confirmNewPassword) {
       ctx.addIssue({
         code: ZodIssueCode.custom,
         path: ['confirmNewPassword'],
-        message: m.profile_passwordsDoNotMatch(),
+        error: m.profile_passwordsDoNotMatch(),
       });
     }
   });

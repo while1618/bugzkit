@@ -6,7 +6,7 @@ import { apiErrors, makeRequest } from '$lib/server/apis/api';
 import { HttpRequest } from '$lib/server/utils/util';
 import { error, fail } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { actionSchema, changeRolesSchema, createSchema } from './schema';
 
@@ -37,11 +37,11 @@ export const load = (async ({ cookies, url }) => {
 
   if ('error' in rolesResponse) error(rolesResponse.status, { message: rolesResponse.error });
 
-  const createForm = await superValidate(zod(createSchema));
-  const activateForm = await superValidate(zod(actionSchema));
-  const lockForm = await superValidate(zod(actionSchema));
-  const deleteForm = await superValidate(zod(actionSchema));
-  const changeRolesForm = await superValidate(zod(changeRolesSchema));
+  const createForm = await superValidate(zod4(createSchema));
+  const activateForm = await superValidate(zod4(actionSchema));
+  const lockForm = await superValidate(zod4(actionSchema));
+  const deleteForm = await superValidate(zod4(actionSchema));
+  const changeRolesForm = await superValidate(zod4(changeRolesSchema));
 
   return {
     users: usersResponse as Pageable<AdminUser>,
@@ -57,7 +57,7 @@ export const load = (async ({ cookies, url }) => {
 
 export const actions = {
   create: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(createSchema));
+    const form = await superValidate(request, zod4(createSchema));
     if (!form.valid) return fail(400, { form });
 
     const response = await makeRequest(
@@ -74,7 +74,7 @@ export const actions = {
     return message(form, m.admin_userCreatedSuccess());
   },
   activate: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(actionSchema));
+    const form = await superValidate(request, zod4(actionSchema));
 
     const response = await makeRequest(
       {
@@ -90,7 +90,7 @@ export const actions = {
     return message(form, m.admin_activateSuccess());
   },
   deactivate: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(actionSchema));
+    const form = await superValidate(request, zod4(actionSchema));
 
     const response = await makeRequest(
       {
@@ -106,7 +106,7 @@ export const actions = {
     return message(form, m.admin_deactivateSuccess());
   },
   unlock: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(actionSchema));
+    const form = await superValidate(request, zod4(actionSchema));
 
     const response = await makeRequest(
       {
@@ -122,7 +122,7 @@ export const actions = {
     return message(form, m.admin_unlockSuccess());
   },
   lock: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(actionSchema));
+    const form = await superValidate(request, zod4(actionSchema));
 
     const response = await makeRequest(
       {
@@ -138,7 +138,7 @@ export const actions = {
     return message(form, m.admin_lockSuccess());
   },
   delete: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(actionSchema));
+    const form = await superValidate(request, zod4(actionSchema));
 
     const response = await makeRequest(
       {
@@ -153,7 +153,7 @@ export const actions = {
     return message(form, m.admin_deleteUserSuccess());
   },
   changeRoles: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(changeRolesSchema));
+    const form = await superValidate(request, zod4(changeRolesSchema));
 
     const response = await makeRequest(
       {

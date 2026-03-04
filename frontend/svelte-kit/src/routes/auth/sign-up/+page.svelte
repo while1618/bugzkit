@@ -7,13 +7,13 @@
   import LoaderCircleIcon from 'lucide-svelte/icons/loader-circle';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import type { PageProps } from './$types';
   import { signUpSchema } from './schema';
 
   const { data }: PageProps = $props();
   const superform = superForm(data.form, {
-    validators: zodClient(signUpSchema),
+    validators: zod4Client(signUpSchema),
   });
   const { form, errors, enhance, submitting } = superform;
 

@@ -7,14 +7,14 @@
   import Trash2Icon from 'lucide-svelte/icons/trash-2';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import type { PageData } from '../$types';
   import { actionSchema } from '../schema';
 
   const { data, user }: { data: PageData; user: AdminUser } = $props();
 
   const superform = superForm(data.deleteForm, {
-    validators: zodClient(actionSchema),
+    validators: zod4Client(actionSchema),
     id: `delete-form-${user.id}`,
     onSubmit({ formData }) {
       formData.set('id', `${user.id}`);

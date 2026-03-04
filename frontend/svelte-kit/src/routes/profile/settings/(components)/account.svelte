@@ -11,20 +11,20 @@
   import LoaderCircleIcon from 'lucide-svelte/icons/loader-circle';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import type { PageData } from '../$types';
   import { deleteSchema, updateProfileSchema } from '../schema';
 
   const { data }: { data: PageData } = $props();
 
   const superform = superForm(data.updateProfileForm, {
-    validators: zodClient(updateProfileSchema),
+    validators: zod4Client(updateProfileSchema),
     resetForm: false,
   });
   const { form, message, errors, enhance, submitting } = superform;
 
   const deleteSuperform = superForm(data.deleteForm, {
-    validators: zodClient(deleteSchema),
+    validators: zod4Client(deleteSchema),
   });
   const { errors: deleteErrors, enhance: deleteEnhance } = deleteSuperform;
   let deleteDialogOpen = $state(false);

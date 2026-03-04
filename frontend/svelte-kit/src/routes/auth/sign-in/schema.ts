@@ -9,5 +9,5 @@ export const signInSchema = z.object({
       (value) => USERNAME_REGEX.test(value) || EMAIL_REGEX.test(value),
       m.auth_usernameOrEmailInvalid(),
     ),
-  password: z.string().regex(PASSWORD_REGEX, { message: m.auth_passwordInvalid() }),
+  password: z.string().regex(PASSWORD_REGEX, { error: m.auth_passwordInvalid() }),
 });

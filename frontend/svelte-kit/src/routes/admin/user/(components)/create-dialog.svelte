@@ -10,14 +10,14 @@
   import LoaderCircleIcon from 'lucide-svelte/icons/loader-circle';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import type { PageData } from '../$types';
   import { createSchema } from '../schema';
 
   const { data }: { data: PageData } = $props();
 
   const superform = superForm(data.createForm, {
-    validators: zodClient(createSchema),
+    validators: zod4Client(createSchema),
   });
   const { form, message, errors, enhance, submitting } = superform;
   let dialogOpen = $state(false);
