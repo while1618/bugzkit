@@ -18,7 +18,7 @@ export const changePasswordSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['confirmNewPassword'],
-        error: m.profile_passwordsDoNotMatch(),
+        message: m.profile_passwordsDoNotMatch(),
       });
     }
   });

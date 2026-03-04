@@ -12,7 +12,7 @@ export const resetPasswordSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['confirmPassword'],
-        error: m.auth_passwordsDoNotMatch(),
+        message: m.auth_passwordsDoNotMatch(),
       });
     }
   });
