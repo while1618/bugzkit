@@ -7,7 +7,7 @@
   import * as m from '$lib/paraglide/messages.js';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import { UAParser } from 'ua-parser-js';
   import type { PageData } from '../$types';
   import { revokeDeviceSchema } from '../schema';
@@ -26,7 +26,7 @@
   }
 
   const revokeDeviceSuperform = superForm(data.revokeDeviceForm, {
-    validators: zodClient(revokeDeviceSchema),
+    validators: zod4Client(revokeDeviceSchema),
   });
   const {
     form: revokeDeviceForm,

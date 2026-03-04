@@ -8,14 +8,14 @@
   import LockKeyholeOpenIcon from 'lucide-svelte/icons/lock-keyhole-open';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { zod4Client } from 'sveltekit-superforms/adapters';
   import type { PageData } from '../$types';
   import { actionSchema } from '../schema';
 
   const { data, user }: { data: PageData; user: AdminUser } = $props();
 
   const superform = superForm(data.lockForm, {
-    validators: zodClient(actionSchema),
+    validators: zod4Client(actionSchema),
     id: `lock-form-${user.id}`,
     onSubmit({ formData }) {
       formData.set('id', `${user.id}`);

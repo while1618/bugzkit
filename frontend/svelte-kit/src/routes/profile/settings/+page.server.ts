@@ -4,7 +4,7 @@ import { apiErrors, makeRequest } from '$lib/server/apis/api';
 import { HttpRequest, removeAuth } from '$lib/server/utils/util';
 import { error, redirect } from '@sveltejs/kit';
 import { fail, message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import {
   changePasswordSchema,
@@ -14,12 +14,12 @@ import {
 } from './schema';
 
 export const load = (async ({ parent, cookies }) => {
-  const changePasswordForm = await superValidate(zod(changePasswordSchema));
-  const deleteForm = await superValidate(zod(deleteSchema));
-  const revokeDeviceForm = await superValidate(zod(revokeDeviceSchema));
+  const changePasswordForm = await superValidate(zod4(changePasswordSchema));
+  const deleteForm = await superValidate(zod4(deleteSchema));
+  const revokeDeviceForm = await superValidate(zod4(revokeDeviceSchema));
   const { profile } = await parent();
   const updateProfileInitialData = { username: profile?.username, email: profile?.email };
-  const updateProfileForm = await superValidate(updateProfileInitialData, zod(updateProfileSchema));
+  const updateProfileForm = await superValidate(updateProfileInitialData, zod4(updateProfileSchema));
 
   const devicesResponse = await makeRequest(
     { method: HttpRequest.GET, path: '/auth/tokens/devices' },
@@ -33,7 +33,7 @@ export const load = (async ({ parent, cookies }) => {
 
 export const actions = {
   updateProfile: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(updateProfileSchema));
+    const form = await superValidate(request, zod4(updateProfileSchema));
     if (!form.valid) return fail(400, { form });
 
     const response = await makeRequest(
@@ -50,7 +50,7 @@ export const actions = {
     return message(form, m.profile_updateSuccess());
   },
   changePassword: async ({ request, cookies, url }) => {
-    const form = await superValidate(request, zod(changePasswordSchema));
+    const form = await superValidate(request, zod4(changePasswordSchema));
     if (!form.valid) return fail(400, { form });
 
     const response = await makeRequest(
@@ -82,7 +82,7 @@ export const actions = {
     return message(form, m.profile_changePasswordSuccess());
   },
   delete: async ({ request, cookies, locals }) => {
-    const form = await superValidate(request, zod(deleteSchema));
+    const form = await superValidate(request, zod4(deleteSchema));
 
     const response = await makeRequest(
       {
@@ -98,7 +98,7 @@ export const actions = {
     redirect(302, '/');
   },
   revokeDevice: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(revokeDeviceSchema));
+    const form = await superValidate(request, zod4(revokeDeviceSchema));
     if (!form.valid) return fail(400, { form });
 
     const response = await makeRequest(

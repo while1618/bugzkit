@@ -129,8 +129,8 @@ importers:
         specifier: 4.0.18
         version: 4.0.18(@types/node@25.3.3)(jiti@1.21.7)(yaml@2.8.2)
       zod:
-        specifier: 3.24.1
-        version: 3.24.1
+        specifier: 4.3.6
+        version: 4.3.6
 
 packages:
 
@@ -2084,9 +2084,6 @@ packages:
     peerDependencies:
       zod: ^3.25 || ^4.0.14
 
-  zod@3.24.1:
-    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
-
   zod@4.3.6:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
@@ -3893,7 +3890,4 @@ snapshots:
       zod: 4.3.6
     optional: true
 
-  zod@3.24.1: {}
-
-  zod@4.3.6:
-    optional: true
+  zod@4.3.6: {}

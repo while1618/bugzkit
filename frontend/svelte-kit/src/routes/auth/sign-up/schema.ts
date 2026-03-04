@@ -4,17 +4,17 @@ import { z, ZodIssueCode } from 'zod';
 
 export const signUpSchema = z
   .object({
-    username: z.string().regex(USERNAME_REGEX, { message: m.auth_usernameInvalid() }),
-    email: z.string().regex(EMAIL_REGEX, { message: m.auth_emailInvalid() }),
-    password: z.string().regex(PASSWORD_REGEX, { message: m.auth_passwordInvalid() }),
-    confirmPassword: z.string().regex(PASSWORD_REGEX, { message: m.auth_passwordInvalid() }),
+    username: z.string().regex(USERNAME_REGEX, { error: m.auth_usernameInvalid() }),
+    email: z.string().regex(EMAIL_REGEX, { error: m.auth_emailInvalid() }),
+    password: z.string().regex(PASSWORD_REGEX, { error: m.auth_passwordInvalid() }),
+    confirmPassword: z.string().regex(PASSWORD_REGEX, { error: m.auth_passwordInvalid() }),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
     if (password !== confirmPassword) {
       ctx.addIssue({
         code: ZodIssueCode.custom,
         path: ['confirmPassword'],
-        message: m.auth_passwordsDoNotMatch(),
+        error: m.auth_passwordsDoNotMatch(),
       });
     }
   });

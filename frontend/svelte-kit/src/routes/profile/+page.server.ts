@@ -2,19 +2,19 @@ import { apiErrors, makeRequest } from '$lib/server/apis/api';
 import { HttpRequest } from '$lib/server/utils/util';
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad } from './$types';
 import { setUsernameSchema } from './schema';
 
 export const load = (async ({ parent }) => {
   const { profile } = await parent();
-  const setUsernameForm = await superValidate(zod(setUsernameSchema));
+  const setUsernameForm = await superValidate(zod4(setUsernameSchema));
   return { setUsernameForm, profile };
 }) satisfies PageServerLoad;
 
 export const actions = {
   setUsername: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(setUsernameSchema));
+    const form = await superValidate(request, zod4(setUsernameSchema));
     if (!form.valid) return fail(400, { form });
 
     const response = await makeRequest(
