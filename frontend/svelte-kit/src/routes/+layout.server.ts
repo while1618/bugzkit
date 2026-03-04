@@ -18,7 +18,7 @@ export const load = (async ({ locals, cookies, url }) => {
   );
 
   if ('error' in response) {
-    if (response.status == 401)
+    if (response.status === 401)
       cookies.delete('accessToken', { path: '/', domain: env.DOMAIN_NAME });
     error(response.status, { message: response.error });
   }
