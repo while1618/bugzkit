@@ -1,6 +1,7 @@
 import type { RoleName } from '../user/role';
 
 export interface JwtPayload {
+  jti: string;
   jwt: string;
   iss: string;
   iat: number;
