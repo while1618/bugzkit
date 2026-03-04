@@ -5,18 +5,17 @@
   let {
     ref = $bindable(null),
     class: className,
-    orientation = 'horizontal',
+    'data-slot': dataSlot = 'separator',
     ...restProps
   }: SeparatorPrimitive.RootProps = $props();
 </script>
 
 <SeparatorPrimitive.Root
   bind:ref
+  data-slot={dataSlot}
   class={cn(
-    'shrink-0 bg-border',
-    orientation === 'horizontal' ? 'h-[1px] w-full' : 'min-h-full w-[1px]',
+    'shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:min-h-full data-[orientation=vertical]:w-px',
     className,
   )}
-  {orientation}
   {...restProps}
 />
