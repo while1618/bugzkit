@@ -63,8 +63,9 @@
         <CreateDialog {data} />
         <Pagination
           currentPage={data.pageable.page}
-          totalPages={Math.ceil(data.users.total / data.pageable.size)}
+          count={data.users.total}
           size={data.pageable.size}
+          class="mx-0 w-auto"
         />
       </div>
     </div>

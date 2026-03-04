@@ -2,7 +2,6 @@
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
   import { Button, buttonVariants } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card/index.js';
-  import Separator from '$lib/components/ui/separator/separator.svelte';
   import * as Table from '$lib/components/ui/table';
   import * as m from '$lib/paraglide/messages.js';
   import { toast } from 'svelte-sonner';
@@ -96,8 +95,6 @@
           {/each}
         </Table.Body>
       </Table.Root>
-
-      <Separator />
 
       <Button href="/auth/sign-out-from-all-devices" class="w-full" variant="destructive">
         {m.profile_signOutFromAllDevices()}
