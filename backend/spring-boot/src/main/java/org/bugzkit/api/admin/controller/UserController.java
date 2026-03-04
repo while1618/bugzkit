@@ -1,5 +1,7 @@
 package org.bugzkit.api.admin.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.bugzkit.api.admin.payload.request.PatchUserRequest;
 import org.bugzkit.api.admin.payload.request.UserRequest;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "admin")
+@SecurityRequirement(name = "cookieAuth")
 @RestController("adminUserController")
 @RequestMapping(Path.ADMIN_USERS)
 public class UserController extends CrudController<UserDTO, UserRequest> {

@@ -1,5 +1,6 @@
 package org.bugzkit.api.user.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.payload.dto.AvailabilityDTO;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "users")
 @RestController
 @RequestMapping(Path.USERS)
 public class UserController {

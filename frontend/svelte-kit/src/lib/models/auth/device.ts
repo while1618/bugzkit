@@ -1,7 +1,3 @@
-export interface Device {
-  deviceId: string;
-  userAgent: string | null;
-  createdAt: string;
-  lastActiveAt: string;
-  current: boolean;
-}
+import type { components } from '../api';
+
+export type Device = Required<components['schemas']['DeviceDTO']>;

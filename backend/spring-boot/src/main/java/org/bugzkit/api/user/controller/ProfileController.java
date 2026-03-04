@@ -1,5 +1,7 @@
 package org.bugzkit.api.user.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.ratelimit.RateLimit;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "profile")
+@SecurityRequirement(name = "cookieAuth")
 @RestController
 @RequestMapping(Path.PROFILE)
 public class ProfileController {

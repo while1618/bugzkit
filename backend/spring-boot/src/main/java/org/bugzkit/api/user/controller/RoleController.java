@@ -1,5 +1,7 @@
 package org.bugzkit.api.user.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.user.payload.dto.RoleDTO;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "roles")
+@SecurityRequirement(name = "cookieAuth")
 @RestController
 @RequestMapping(Path.ROLES)
 public class RoleController {
