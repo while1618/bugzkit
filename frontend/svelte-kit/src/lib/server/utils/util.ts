@@ -3,7 +3,7 @@ import type { JwtPayload } from '$lib/models/auth/jwt-payload';
 import { RoleName } from '$lib/models/user/role';
 import { type Cookies } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
-import * as setCookieParser from 'set-cookie-parser';
+import { parseString } from 'set-cookie-parser';
 
 export enum HttpRequest {
   GET = 'GET',
@@ -16,7 +16,7 @@ export enum HttpRequest {
 export function setCookieFromString(cookie: string, cookies: Cookies) {
   if (cookie === '') return;
 
-  const parsed = setCookieParser.parseString(cookie);
+  const parsed = parseString(cookie);
   const { name, value, path, sameSite, secure, httpOnly, ...opts } = parsed;
 
   if (name === undefined || value === undefined || path === undefined) return;
