@@ -19,7 +19,10 @@ export const load = (async ({ parent, cookies }) => {
   const revokeDeviceForm = await superValidate(zod4(revokeDeviceSchema));
   const { profile } = await parent();
   const updateProfileInitialData = { username: profile?.username, email: profile?.email };
-  const updateProfileForm = await superValidate(updateProfileInitialData, zod4(updateProfileSchema));
+  const updateProfileForm = await superValidate(
+    updateProfileInitialData,
+    zod4(updateProfileSchema),
+  );
 
   const devicesResponse = await makeRequest(
     { method: HttpRequest.GET, path: '/auth/tokens/devices' },
