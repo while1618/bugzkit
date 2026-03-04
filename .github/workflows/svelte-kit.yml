@@ -82,7 +82,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:17
+        image: postgres:17.9-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: root
@@ -95,7 +95,7 @@ jobs:
         ports:
           - 5432:5432
       redis:
-        image: redis:7
+        image: valkey/valkey:9.0.3
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
