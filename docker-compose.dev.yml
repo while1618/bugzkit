@@ -84,7 +84,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:8.0.6-alpine
+    image: valkey/valkey:9.0.3-alpine
     ports:
       - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
     restart: always
