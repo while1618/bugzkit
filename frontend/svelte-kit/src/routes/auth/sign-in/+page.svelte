@@ -82,9 +82,11 @@
               {/if}
               <Button
                 variant="outline"
-                href="https://api.bugzkit.com/oauth2/authorization/google"
                 disabled={googleLoading}
-                onclick={() => (googleLoading = true)}
+                onclick={() => {
+                  googleLoading = true;
+                  window.location.href = 'https://api.bugzkit.com/oauth2/authorization/google';
+                }}
               >
                 {#if googleLoading}
                   <LoaderCircleIcon class="animate-spin" />
