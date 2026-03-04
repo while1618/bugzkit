@@ -20,6 +20,7 @@
   });
   const { form, errors, enhance, submitting } = superform;
   const oauthError = page.url.searchParams.get('error');
+  let googleLoading = $state(false);
 
   $effect(() => {
     if ($errors._errors) {
@@ -79,7 +80,15 @@
               {:else}
                 <Form.Button>{m.auth_signIn()}</Form.Button>
               {/if}
-              <Button variant="outline" href="https://api.bugzkit.com/oauth2/authorization/google">
+              <Button
+                variant="outline"
+                href="https://api.bugzkit.com/oauth2/authorization/google"
+                disabled={googleLoading}
+                onclick={() => (googleLoading = true)}
+              >
+                {#if googleLoading}
+                  <LoaderCircleIcon class="animate-spin" />
+                {/if}
                 {m.auth_singInWithGoogle()}
               </Button>
               {#if oauthError}
