@@ -77,6 +77,9 @@ jobs:
     if: needs.changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
+    env:
+      REDIS_PASSWORD: ""
+
     services:
       postgres:
         image: postgres:17
@@ -92,11 +95,9 @@ jobs:
         ports:
           - 5432:5432
       redis:
-        image: bitnami/redis:7.2
-        env:
-          REDIS_PASSWORD: root
+        image: redis:7
         options: >-
-          --health-cmd "redis-cli -a root ping"
+          --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
