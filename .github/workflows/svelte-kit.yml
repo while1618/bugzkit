@@ -7,17 +7,34 @@ on:
     branches: [master]
     paths:
       - frontend/svelte-kit/**
+      - backend/spring-boot/src/main/java/**
   pull_request:
     branches: [master]
     paths:
       - frontend/svelte-kit/**
+      - backend/spring-boot/src/main/java/**
 
 env:
   PUBLIC_APP_NAME: ${{vars.PUBLIC_APP_NAME}}
   PUBLIC_API_URL: ${{vars.PUBLIC_API_URL}}
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/svelte-kit/**'
+
   build:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch'
     defaults:
       run:
         working-directory: frontend/svelte-kit
@@ -51,6 +68,83 @@ jobs:
         run: |
           npx playwright install --with-deps
           npx playwright test --pass-with-no-tests
+
+  check-models:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: bugzkit
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7
+        command: redis-server --requirepass root
+        options: >-
+          --health-cmd "redis-cli -a root ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build Spring Boot
+        run: mvn -B clean install -DskipTests
+        working-directory: backend/spring-boot
+
+      - name: Start Spring Boot
+        run: mvn spring-boot:run -Dspring-boot.run.profiles=dev &
+        working-directory: backend/spring-boot
+
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            curl -sf http://localhost:8080/v3/api-docs > /dev/null && echo "Backend ready" && exit 0
+            echo "Waiting... ($i/30)"
+            sleep 5
+          done
+          echo "Backend failed to start" && exit 1
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install frontend dependencies
+        run: pnpm i
+        working-directory: frontend/svelte-kit
+
+      - name: Generate models
+        run: pnpm run generate:models
+        working-directory: frontend/svelte-kit
+
+      - name: Check for model drift
+        run: git diff --exit-code frontend/svelte-kit/src/lib/models/api.d.ts
 
   push-image:
     needs: build
