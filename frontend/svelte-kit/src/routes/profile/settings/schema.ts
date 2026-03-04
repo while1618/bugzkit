@@ -1,6 +1,6 @@
 import * as m from '$lib/paraglide/messages.js';
 import { EMAIL_REGEX, PASSWORD_REGEX, USERNAME_REGEX } from '$lib/regex';
-import { z, ZodIssueCode } from 'zod';
+import { z } from 'zod';
 
 export const updateProfileSchema = z.object({
   username: z.string().regex(USERNAME_REGEX, { error: m.profile_usernameInvalid() }),
@@ -16,7 +16,7 @@ export const changePasswordSchema = z
   .superRefine(({ newPassword, confirmNewPassword }, ctx) => {
     if (newPassword !== confirmNewPassword) {
       ctx.addIssue({
-        code: ZodIssueCode.custom,
+        code: 'custom',
         path: ['confirmNewPassword'],
         error: m.profile_passwordsDoNotMatch(),
       });
