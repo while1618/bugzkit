@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -31,6 +32,8 @@ jobs:
           filters: |
             frontend:
               - 'frontend/svelte-kit/**'
+            backend:
+              - 'backend/spring-boot/src/main/java/**'
 
   build:
     needs: changes
@@ -70,6 +73,8 @@ jobs:
           npx playwright test --pass-with-no-tests
 
   check-models:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     services:
@@ -87,8 +92,9 @@ jobs:
         ports:
           - 5432:5432
       redis:
-        image: redis:7
-        command: redis-server --requirepass root
+        image: bitnami/redis:7.0
+        env:
+          REDIS_PASSWORD: root
         options: >-
           --health-cmd "redis-cli -a root ping"
           --health-interval 10s
