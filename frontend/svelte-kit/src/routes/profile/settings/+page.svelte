@@ -13,7 +13,7 @@
   <div class="container">
     <div class="m-20 flex justify-center">
       <Tabs.Root value="account">
-        <Tabs.List class="grid grid-cols-3">
+        <Tabs.List class="grid w-full grid-cols-3">
           <Tabs.Trigger value="account">
             {m.profile_account()}
           </Tabs.Trigger>

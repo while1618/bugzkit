@@ -23,8 +23,12 @@
       <div class="flex items-center gap-3 lg:hidden">
         <Sheet.Root>
           <Sheet.Trigger>
-            <MenuIcon />
-            <span class="sr-only">Open Menu</span>
+            {#snippet child({ props })}
+              <Button {...props} variant="ghost" size="icon">
+                <MenuIcon />
+                <span class="sr-only">Open Menu</span>
+              </Button>
+            {/snippet}
           </Sheet.Trigger>
           <Sheet.Content side="left">
             <Sheet.Header>
