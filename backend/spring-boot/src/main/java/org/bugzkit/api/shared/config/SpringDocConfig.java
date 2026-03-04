@@ -45,8 +45,6 @@ public class SpringDocConfig {
         openApi
             .getComponents()
             .getSchemas()
-            .putAll(
-                ModelConverters.getInstance()
-                    .readAll(new AnnotatedType(ErrorMessage.class)));
+            .putAll(ModelConverters.getInstance().readAll(new AnnotatedType(ErrorMessage.class)));
   }
 }

@@ -6,3 +6,4 @@ yarn.lock
 .vscode/
 project.inlang/
 src/lib/paraglide/
+src/lib/models/api.d.ts
