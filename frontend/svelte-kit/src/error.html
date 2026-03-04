@@ -3,11 +3,51 @@
   <head>
     <meta charset="utf-8" />
     <title>%sveltekit.error.message%</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        background: #09090b;
+        color: #fafafa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      .container {
+        text-align: center;
+        max-width: 480px;
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 5rem;
+        font-weight: 800;
+        margin: 0 0 1rem;
+      }
+      p {
+        color: #a1a1aa;
+        margin: 0 0 2rem;
+      }
+      a {
+        display: inline-block;
+        padding: 0.5rem 1.25rem;
+        background: #fafafa;
+        color: #09090b;
+        border-radius: 0.375rem;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      a:hover {
+        background: #e4e4e7;
+      }
+    </style>
   </head>
   <body>
-    <!-- TODO: Customize this page -->
-    <h1>My custom error page</h1>
-    <p>Status: %sveltekit.status%</p>
-    <p>Message: %sveltekit.error.message%</p>
+    <div class="container">
+      <h1>%sveltekit.status%</h1>
+      <p>%sveltekit.error.message%</p>
+      <a href="/">Go to homepage</a>
+    </div>
   </body>
 </html>
