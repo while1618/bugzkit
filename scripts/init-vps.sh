@@ -37,7 +37,7 @@ apt_install() { DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "$@"; }
 # ==============================================================================
 echo ""
 echo "========================================"
-echo "  Bugzkit — Production VPS Init"
+echo "  bugzkit — Production VPS Init"
 echo "========================================"
 echo ""
 
@@ -46,11 +46,6 @@ read -rp "Deploy username (will be created): " DEPLOY_USER
 
 read -rp "SSH public key for $DEPLOY_USER: " SSH_PUB_KEY
 [[ -z "$SSH_PUB_KEY" ]] && die "SSH public key cannot be empty."
-
-echo ""
-echo "--- Stack configuration (Enter to keep default) ---"
-read -rp "  ACME / Let's Encrypt email [office@bugzkit.com]: " ACME_EMAIL
-ACME_EMAIL="${ACME_EMAIL:-office@bugzkit.com}"
 
 echo ""
 echo "--- Secrets (input is hidden) ---"
@@ -364,11 +359,11 @@ if [[ ! -f "$COMPOSE_FILE" ]]; then
   echo ""
   echo "  Copy the file manually, then run:"
   echo "    cd $APP_DIR"
-  echo "    ACME_EMAIL=$ACME_EMAIL docker compose -f docker-compose.prod.yml up -d"
+  echo "    docker compose -f docker-compose.prod.yml up -d"
 else
   info "Deploying stack…"
   cd "$APP_DIR"
-  ACME_EMAIL="$ACME_EMAIL" docker compose -f docker-compose.prod.yml up -d
+  docker compose -f docker-compose.prod.yml up -d
   success "Stack deployed."
   echo ""
   info "Service status:  docker compose -f $COMPOSE_FILE ps"

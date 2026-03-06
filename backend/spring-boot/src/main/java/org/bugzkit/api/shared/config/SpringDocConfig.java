@@ -4,27 +4,29 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.bugzkit.api.shared.error.ErrorMessage;
 import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SpringDocConfig {
 
+  @Value("${spring.application.name}")
+  private String appName;
+
   @Bean
   public OpenAPI openAPI() {
     return new OpenAPI()
         .info(
             new Info()
-                .title("bugzkit")
+                .title(appName)
                 .description("A production-ready web application template")
                 .version("1.0.0")
-                .contact(new Contact().email("office@bugzkit.com"))
                 .license(
                     new License()
                         .name("MIT License")

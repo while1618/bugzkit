@@ -14,10 +14,10 @@ services:
       REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_DATABASE: ${REDIS_DATABASE:-0}
-      SMTP_HOST: ${SMTP_HOST:-smtp.sendgrid.net}
+      SMTP_HOST: ${SMTP_HOST:-smtp.resend.com}
       SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_USER: ${SMTP_USER:-apikey}
-      SMTP_SENDER: ${SMTP_SENDER:-office@bugzkit.com}
+      SMTP_USER: ${SMTP_USER:-resend}
+      SMTP_SENDER: ${SMTP_SENDER:-noreply@bugzkit.com}
       ACCESS_TOKEN_DURATION: ${ACCESS_TOKEN_DURATION:-900}
       REFRESH_TOKEN_DURATION: ${REFRESH_TOKEN_DURATION:-604800}
       VERIFY_EMAIL_TOKEN_DURATION: ${VERIFY_EMAIL_TOKEN_DURATION:-900}
@@ -163,7 +163,7 @@ services:
       - --providers.docker=true
       - --providers.docker.network=web
       - --providers.docker.exposedbydefault=false
-      - --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-office@bugzkit.com}
+      - --certificatesresolvers.myresolver.acme.email=office@bugzkit.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
       - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
     networks:
