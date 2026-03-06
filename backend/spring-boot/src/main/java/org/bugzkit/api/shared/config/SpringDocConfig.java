@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpringDocConfig {
 
-  @Value("${spring.application.name}")
+  @Value("${app.name}")
   private String appName;
 
   @Bean
