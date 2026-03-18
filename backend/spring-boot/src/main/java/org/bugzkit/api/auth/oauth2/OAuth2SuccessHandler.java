@@ -4,11 +4,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.service.AccessTokenService;
 import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.service.RefreshTokenService;
 import org.bugzkit.api.auth.util.AuthUtil;
-import org.bugzkit.api.shared.logger.CustomLogger;
 import org.bugzkit.api.user.payload.dto.RoleDTO;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,12 +17,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
   private final DeviceService deviceService;
-  private final CustomLogger customLogger;
 
   @Value("${domain.name}")
   private String domain;
@@ -39,12 +39,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   public OAuth2SuccessHandler(
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
-      DeviceService deviceService,
-      CustomLogger customLogger) {
+      DeviceService deviceService) {
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
     this.deviceService = deviceService;
-    this.customLogger = customLogger;
   }
 
   @Override
@@ -68,7 +66,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
     response.sendRedirect(uiUrl);
-    customLogger.info("Finished");
-    MDC.remove("REQUEST_ID");
+    log.info("OAuth finished");
+    MDC.clear();
   }
 }

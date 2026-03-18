@@ -2,8 +2,8 @@ package org.bugzkit.api.auth.oauth2;
 
 import java.util.Collections;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.security.UserPrincipal;
-import org.bugzkit.api.shared.logger.CustomLogger;
 import org.bugzkit.api.user.model.Role.RoleName;
 import org.bugzkit.api.user.model.User;
 import org.bugzkit.api.user.repository.RoleRepository;
@@ -16,24 +16,21 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class OAuth2UserService extends DefaultOAuth2UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
-  private final CustomLogger customLogger;
 
-  public OAuth2UserService(
-      UserRepository userRepository, RoleRepository roleRepository, CustomLogger customLogger) {
+  public OAuth2UserService(UserRepository userRepository, RoleRepository roleRepository) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
-    this.customLogger = customLogger;
   }
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-    final var requestId = UUID.randomUUID().toString();
-    MDC.put("REQUEST_ID", requestId);
-    customLogger.info("Called");
+    MDC.put("REQUEST_ID", UUID.randomUUID().toString());
+    log.info("OAuth called");
     final var oAuthUser = super.loadUser(userRequest);
     final String email = oAuthUser.getAttribute("email");
     final boolean emailVerified = Boolean.TRUE.equals(oAuthUser.getAttribute("email_verified"));

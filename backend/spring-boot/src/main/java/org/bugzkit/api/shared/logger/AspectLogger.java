@@ -11,11 +11,8 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class AspectLogger {
-  private final CustomLogger customLogger;
-
-  public AspectLogger(CustomLogger customLogger) {
+  public AspectLogger() {
     log.info("AspectLogger Initialized");
-    this.customLogger = customLogger;
   }
 
   @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
@@ -23,11 +20,11 @@ public class AspectLogger {
 
   @Before(value = "controllerLayer()")
   public void logBefore() {
-    customLogger.info("Called");
+    log.info("Called");
   }
 
   @AfterReturning(value = "controllerLayer()")
   public void logAfter() {
-    customLogger.info("Finished");
+    log.info("Finished");
   }
 }

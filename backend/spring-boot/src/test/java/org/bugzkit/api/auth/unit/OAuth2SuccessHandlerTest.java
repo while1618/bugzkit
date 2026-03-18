@@ -15,7 +15,6 @@ import org.bugzkit.api.auth.security.UserPrincipal;
 import org.bugzkit.api.auth.service.AccessTokenService;
 import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.service.RefreshTokenService;
-import org.bugzkit.api.shared.logger.CustomLogger;
 import org.bugzkit.api.user.model.Role;
 import org.bugzkit.api.user.model.Role.RoleName;
 import org.bugzkit.api.user.model.User;
@@ -34,7 +33,6 @@ class OAuth2SuccessHandlerTest {
   @Mock private AccessTokenService accessTokenService;
   @Mock private RefreshTokenService refreshTokenService;
   @Mock private DeviceService deviceService;
-  @Mock private CustomLogger customLogger;
   @Mock private Authentication authentication;
 
   @InjectMocks private OAuth2SuccessHandler oAuth2SuccessHandler;

@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.bugzkit.api.auth.oauth2.OAuth2FailureHandler;
-import org.bugzkit.api.shared.logger.CustomLogger;
 import org.bugzkit.api.shared.message.service.MessageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +18,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(MockitoExtension.class)
 class OAuth2FailureHandlerTest {
   @Mock private MessageService messageService;
-  @Mock private CustomLogger customLogger;
 
   @InjectMocks private OAuth2FailureHandler oAuth2FailureHandler;
 
