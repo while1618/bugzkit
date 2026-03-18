@@ -1,5 +1,6 @@
 package org.bugzkit.api.user.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.service.AccessTokenService;
 import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.service.RefreshTokenService;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class ProfileServiceImpl implements ProfileService {
   private final UserRepository userRepository;
@@ -55,12 +57,20 @@ public class ProfileServiceImpl implements ProfileService {
     final var user =
         userRepository
             .findById(userId)
-            .orElseThrow(() -> new UnauthorizedException("auth.tokenInvalid"));
+            .orElseThrow(
+                () -> {
+                  log.error(
+                      "Profile patch failed: token was valid but no user found for userId '{}' — possible data inconsistency",
+                      userId);
+                  return new UnauthorizedException("auth.tokenInvalid");
+                });
 
     if (patchProfileRequest.username() != null) setUsername(user, patchProfileRequest.username());
     if (patchProfileRequest.email() != null) setEmail(user, patchProfileRequest.email());
 
-    return UserMapper.INSTANCE.userToProfileUserDTO(userRepository.save(user));
+    final var updated = userRepository.save(user);
+    log.info("Profile updated for user '{}'", userId);
+    return UserMapper.INSTANCE.userToProfileUserDTO(updated);
   }
 
   private void deleteAuthTokens(Long userId) {
@@ -70,21 +80,26 @@ public class ProfileServiceImpl implements ProfileService {
 
   private void setUsername(User user, String username) {
     if (user.getUsername() != null && user.getUsername().equals(username)) return;
-    if (userRepository.existsByUsername(username))
+    if (userRepository.existsByUsername(username)) {
+      log.warn("Profile update failed: username '{}' already exists", username);
       throw new ConflictException("user.usernameExists");
-
+    }
     user.setUsername(username);
   }
 
   private void setEmail(User user, String email) {
     if (user.getEmail().equals(email)) return;
-    if (userRepository.existsByEmail(email)) throw new ConflictException("user.emailExists");
-
+    if (userRepository.existsByEmail(email)) {
+      log.warn("Profile update failed: email '{}' already exists", email);
+      throw new ConflictException("user.emailExists");
+    }
     user.setEmail(email);
     user.setActive(false);
     deleteAuthTokens(user.getId());
     final var token = verificationTokenService.create(user.getId());
     verificationTokenService.sendToEmail(user, token);
+    log.info(
+        "Email changed for user '{}', tokens invalidated, verification email sent", user.getId());
   }
 
   @Override
@@ -94,6 +109,7 @@ public class ProfileServiceImpl implements ProfileService {
     deviceService.deleteAllByUserId(userId);
     deleteAuthTokens(userId);
     userRepository.deleteById(userId);
+    log.info("Account deleted for user '{}'", userId);
   }
 
   @Override
@@ -103,11 +119,21 @@ public class ProfileServiceImpl implements ProfileService {
     final var user =
         userRepository
             .findById(userId)
-            .orElseThrow(() -> new UnauthorizedException("auth.tokenInvalid"));
-    if (!bCryptPasswordEncoder.matches(changePasswordRequest.currentPassword(), user.getPassword()))
+            .orElseThrow(
+                () -> {
+                  log.error(
+                      "Password change failed: token was valid but no user found for userId '{}' — possible data inconsistency",
+                      userId);
+                  return new UnauthorizedException("auth.tokenInvalid");
+                });
+    if (!bCryptPasswordEncoder.matches(
+        changePasswordRequest.currentPassword(), user.getPassword())) {
+      log.warn("Password change failed for user '{}': current password is wrong", userId);
       throw new BadRequestException("user.currentPasswordWrong");
+    }
     user.setPassword(bCryptPasswordEncoder.encode(changePasswordRequest.newPassword()));
     deleteAuthTokens(userId);
     userRepository.save(user);
+    log.info("Password changed for user '{}', all tokens invalidated", userId);
   }
 }

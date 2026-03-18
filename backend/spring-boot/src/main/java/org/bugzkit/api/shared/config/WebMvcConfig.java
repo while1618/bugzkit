@@ -1,8 +1,8 @@
 package org.bugzkit.api.shared.config;
 
 import java.util.List;
+import org.bugzkit.api.shared.interceptor.RateLimitInterceptor;
 import org.bugzkit.api.shared.interceptor.RequestInterceptor;
-import org.bugzkit.api.shared.ratelimit.RateLimitInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +40,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(rateLimitInterceptor);
     registry.addInterceptor(requestInterceptor);
+    registry.addInterceptor(rateLimitInterceptor);
   }
 }

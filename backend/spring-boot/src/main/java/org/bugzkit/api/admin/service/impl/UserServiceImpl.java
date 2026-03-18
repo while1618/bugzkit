@@ -2,6 +2,7 @@ package org.bugzkit.api.admin.service.impl;
 
 import java.util.HashSet;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.admin.payload.request.PatchUserRequest;
 import org.bugzkit.api.admin.payload.request.UserRequest;
 import org.bugzkit.api.admin.service.UserService;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service("adminUserService")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class UserServiceImpl implements UserService {
@@ -49,10 +51,14 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public UserDTO create(UserRequest userRequest) {
-    if (userRepository.existsByUsername(userRequest.username()))
+    if (userRepository.existsByUsername(userRequest.username())) {
+      log.warn("Admin user creation failed: username '{}' already exists", userRequest.username());
       throw new ConflictException("user.usernameExists");
-    if (userRepository.existsByEmail(userRequest.email()))
+    }
+    if (userRepository.existsByEmail(userRequest.email())) {
+      log.warn("Admin user creation failed: email '{}' already exists", userRequest.email());
       throw new ConflictException("user.emailExists");
+    }
     final var user =
         User.builder()
             .username(userRequest.username())
@@ -62,7 +68,9 @@ public class UserServiceImpl implements UserService {
             .lock(userRequest.lock())
             .roles(new HashSet<>(roleRepository.findAllByNameIn(userRequest.roleNames())))
             .build();
-    return UserMapper.INSTANCE.userToAdminUserDTO(userRepository.save(user));
+    final var saved = userRepository.save(user);
+    log.info("Admin created user '{}' (id={})", saved.getUsername(), saved.getId());
+    return UserMapper.INSTANCE.userToAdminUserDTO(saved);
   }
 
   /*
@@ -87,7 +95,11 @@ public class UserServiceImpl implements UserService {
     return userRepository
         .findWithRolesById(id)
         .map(UserMapper.INSTANCE::userToAdminUserDTO)
-        .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
+        .orElseThrow(
+            () -> {
+              log.warn("Admin user lookup failed: no user found with id '{}'", id);
+              return new ResourceNotFoundException("user.notFound");
+            });
   }
 
   @Override
@@ -96,7 +108,11 @@ public class UserServiceImpl implements UserService {
     final var user =
         userRepository
             .findWithRolesById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
+            .orElseThrow(
+                () -> {
+                  log.warn("Admin user update failed: no user found with id '{}'", id);
+                  return new ResourceNotFoundException("user.notFound");
+                });
 
     setUsername(user, userRequest.username());
     setEmail(user, userRequest.email());
@@ -108,7 +124,9 @@ public class UserServiceImpl implements UserService {
       setRoles(user, userRequest.roleNames());
     }
 
-    return UserMapper.INSTANCE.userToAdminUserDTO(userRepository.save(user));
+    final var updated = userRepository.save(user);
+    log.info("Admin updated user '{}' (id={})", updated.getUsername(), id);
+    return UserMapper.INSTANCE.userToAdminUserDTO(updated);
   }
 
   @Override
@@ -117,7 +135,11 @@ public class UserServiceImpl implements UserService {
     final var user =
         userRepository
             .findWithRolesById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
+            .orElseThrow(
+                () -> {
+                  log.warn("Admin user patch failed: no user found with id '{}'", id);
+                  return new ResourceNotFoundException("user.notFound");
+                });
 
     if (patchUserRequest.username() != null) setUsername(user, patchUserRequest.username());
     if (patchUserRequest.email() != null) setEmail(user, patchUserRequest.email());
@@ -129,7 +151,9 @@ public class UserServiceImpl implements UserService {
       if (patchUserRequest.roleNames() != null) setRoles(user, patchUserRequest.roleNames());
     }
 
-    return UserMapper.INSTANCE.userToAdminUserDTO(userRepository.save(user));
+    final var updated = userRepository.save(user);
+    log.info("Admin patched user '{}' (id={})", updated.getUsername(), id);
+    return UserMapper.INSTANCE.userToAdminUserDTO(updated);
   }
 
   private boolean isSelf(Long id) {
@@ -143,16 +167,19 @@ public class UserServiceImpl implements UserService {
 
   private void setUsername(User user, String username) {
     if (username.equals(user.getUsername())) return;
-    if (userRepository.existsByUsername(username))
+    if (userRepository.existsByUsername(username)) {
+      log.warn("Admin user update failed: username '{}' already exists", username);
       throw new ConflictException("user.usernameExists");
-
+    }
     user.setUsername(username);
   }
 
   private void setEmail(User user, String email) {
     if (email.equals(user.getEmail())) return;
-    if (userRepository.existsByEmail(email)) throw new ConflictException("user.emailExists");
-
+    if (userRepository.existsByEmail(email)) {
+      log.warn("Admin user update failed: email '{}' already exists", email);
+      throw new ConflictException("user.emailExists");
+    }
     user.setEmail(email);
   }
 
@@ -161,36 +188,56 @@ public class UserServiceImpl implements UserService {
       return;
 
     user.setPassword(bCryptPasswordEncoder.encode(password));
-    if (user.getId() != null) deleteAuthTokens(user.getId());
+    if (user.getId() != null) {
+      deleteAuthTokens(user.getId());
+      log.info(
+          "Password changed for user '{}' (id={}), all tokens invalidated",
+          user.getUsername(),
+          user.getId());
+    }
   }
 
   private void setActive(User user, Boolean active) {
     if (user.getActive().equals(active)) return;
-
     user.setActive(active);
-    if (Boolean.FALSE.equals(active)) deleteAuthTokens(user.getId());
+    if (Boolean.FALSE.equals(active)) {
+      deleteAuthTokens(user.getId());
+      log.info(
+          "User '{}' (id={}) deactivated, all tokens invalidated",
+          user.getUsername(),
+          user.getId());
+    }
   }
 
   private void setLock(User user, Boolean lock) {
     if (user.getLock().equals(lock)) return;
-
     user.setLock(lock);
-    if (Boolean.TRUE.equals(lock)) deleteAuthTokens(user.getId());
+    if (Boolean.TRUE.equals(lock)) {
+      deleteAuthTokens(user.getId());
+      log.info(
+          "User '{}' (id={}) locked, all tokens invalidated", user.getUsername(), user.getId());
+    }
   }
 
   private void setRoles(User user, Set<RoleName> roleNames) {
-    if (roleNames.isEmpty()) throw new BadRequestException("user.rolesEmpty");
-
+    if (roleNames.isEmpty()) {
+      log.warn("Admin role update failed for user '{}': role list is empty", user.getId());
+      throw new BadRequestException("user.rolesEmpty");
+    }
     final var roles = new HashSet<>(roleRepository.findAllByNameIn(roleNames));
     if (user.getRoles().equals(roles)) return;
-
     user.setRoles(roles);
     deleteAuthTokens(user.getId());
+    log.info(
+        "Roles updated for user '{}' (id={}), all tokens invalidated",
+        user.getUsername(),
+        user.getId());
   }
 
   @Override
   public void delete(Long id) {
     deleteAuthTokens(id);
     userRepository.deleteById(id);
+    log.info("Admin deleted user with id '{}'", id);
   }
 }

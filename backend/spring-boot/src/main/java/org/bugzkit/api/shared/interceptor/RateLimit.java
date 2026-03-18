@@ -1,4 +1,4 @@
-package org.bugzkit.api.shared.ratelimit;
+package org.bugzkit.api.shared.interceptor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

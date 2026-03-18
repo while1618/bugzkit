@@ -1,6 +1,7 @@
 package org.bugzkit.api.auth.service.impl;
 
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.email.AuthEmailPurpose;
 import org.bugzkit.api.auth.email.OnSendAuthEmail;
 import org.bugzkit.api.auth.redis.model.VerificationTokenStore;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class VerificationTokenServiceImpl implements VerificationTokenService {
   private final VerificationTokenStoreRepository verificationTokenStoreRepository;
@@ -39,7 +41,13 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     final var stored =
         verificationTokenStoreRepository
             .findById(token)
-            .orElseThrow(() -> new BadRequestException("auth.tokenInvalid"));
+            .orElseThrow(
+                () -> {
+                  log.warn(
+                      "Verification token '{}' not found in store (already consumed or expired)",
+                      token);
+                  return new BadRequestException("auth.tokenInvalid");
+                });
     verificationTokenStoreRepository.deleteById(token);
     return stored.getUserId();
   }

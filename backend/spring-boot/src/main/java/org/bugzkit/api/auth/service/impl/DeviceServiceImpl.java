@@ -2,6 +2,7 @@ package org.bugzkit.api.auth.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.mapper.AuthMapper;
 import org.bugzkit.api.auth.model.Device;
 import org.bugzkit.api.auth.payload.dto.DeviceDTO;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class DeviceServiceImpl implements DeviceService {
   private final DeviceRepository deviceRepository;
@@ -72,6 +74,7 @@ public class DeviceServiceImpl implements DeviceService {
     deviceRepository.deleteByUserIdAndDeviceId(userId, deviceId);
     refreshTokenService.deleteByUserIdAndDeviceId(userId, deviceId);
     accessTokenService.invalidateAllByUserId(userId);
+    log.info("Device '{}' revoked for user '{}', all access tokens invalidated", deviceId, userId);
   }
 
   @Override

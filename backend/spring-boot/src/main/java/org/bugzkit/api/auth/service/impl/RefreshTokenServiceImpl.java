@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.redis.model.RefreshTokenStore;
 import org.bugzkit.api.auth.redis.repository.RefreshTokenStoreRepository;
 import org.bugzkit.api.auth.service.RefreshTokenService;
@@ -14,6 +15,7 @@ import org.bugzkit.api.user.payload.dto.RoleDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
   private static final JwtPurpose PURPOSE = JwtPurpose.REFRESH_TOKEN;
@@ -50,8 +52,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   public void checkAndConsume(String token) {
     verifyToken(token);
     final var jti = JwtUtil.getJwtId(token);
-    if (!refreshTokenStoreRepository.existsById(jti))
+    if (!refreshTokenStoreRepository.existsById(jti)) {
+      log.warn("Refresh token '{}' not found in store (already consumed or expired)", jti);
       throw new BadRequestException("auth.tokenInvalid");
+    }
     refreshTokenStoreRepository.deleteById(jti);
   }
 
@@ -59,6 +63,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     try {
       JwtUtil.verify(token, secret, PURPOSE);
     } catch (RuntimeException e) {
+      log.warn("Refresh token verification failed: {}", e.getMessage());
       throw new BadRequestException("auth.tokenInvalid");
     }
   }

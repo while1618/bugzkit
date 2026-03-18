@@ -1,4 +1,4 @@
-package org.bugzkit.api.shared.ratelimit;
+package org.bugzkit.api.shared.interceptor;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.BucketConfiguration;
@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.shared.error.ErrorMessage;
 import org.bugzkit.api.shared.message.service.MessageService;
 import org.bugzkit.api.shared.util.Utils;
@@ -34,6 +35,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import tools.jackson.databind.ObjectMapper;
 
+@Slf4j
 @Component
 public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializingSingleton {
   private final MessageService messageService;
@@ -105,6 +107,7 @@ public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializi
 
     if (probe.isConsumed()) return true;
 
+    log.warn("Rate limit exceeded for '{}' by ip '{}'", endpointKey, ip);
     writeRateLimitResponse(response, probe);
     return false;
   }

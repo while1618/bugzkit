@@ -18,7 +18,7 @@ import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.auth.util.JwtUtil;
 import org.bugzkit.api.shared.constants.Path;
-import org.bugzkit.api.shared.ratelimit.RateLimit;
+import org.bugzkit.api.shared.interceptor.RateLimit;
 import org.bugzkit.api.user.payload.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;

@@ -41,7 +41,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     objectMapper.writeValue(response.getOutputStream(), errorMessage);
-    log.error("Auth failed", e);
+    log.warn("Auth failed: {}", e.getMessage());
     MDC.clear();
   }
 }

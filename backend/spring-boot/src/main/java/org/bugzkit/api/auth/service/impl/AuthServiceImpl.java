@@ -2,6 +2,7 @@ package org.bugzkit.api.auth.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.AuthTokens;
 import org.bugzkit.api.auth.payload.request.AuthTokensRequest;
 import org.bugzkit.api.auth.payload.request.ForgotPasswordRequest;
@@ -32,6 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
   private final UserRepository userRepository;
@@ -68,13 +70,18 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional
   public UserDTO register(RegisterUserRequest registerUserRequest) {
-    if (userRepository.existsByUsername(registerUserRequest.username()))
+    if (userRepository.existsByUsername(registerUserRequest.username())) {
+      log.warn("Registration failed: username '{}' already exists", registerUserRequest.username());
       throw new ConflictException("user.usernameExists");
-    if (userRepository.existsByEmail(registerUserRequest.email()))
+    }
+    if (userRepository.existsByEmail(registerUserRequest.email())) {
+      log.warn("Registration failed: email '{}' already exists", registerUserRequest.email());
       throw new ConflictException("user.emailExists");
+    }
     final var user = userRepository.save(createUser(registerUserRequest));
     final var token = verificationTokenService.create(user.getId());
     verificationTokenService.sendToEmail(user, token);
+    log.info("User '{}' registered, verification email sent", user.getUsername());
     return UserMapper.INSTANCE.userToProfileUserDTO(user);
   }
 
@@ -94,6 +101,7 @@ public class AuthServiceImpl implements AuthService {
     final var accessToken = accessTokenService.create(user.getId(), roleDTOs, deviceId);
     final var refreshToken = refreshTokenService.create(user.getId(), roleDTOs, deviceId);
     deviceService.createOrUpdate(user.getId(), deviceId, userAgent);
+    log.info("User '{}' authenticated on device '{}'", user.getUsername(), deviceId);
     return new AuthTokens(accessToken, refreshToken);
   }
 
@@ -119,6 +127,7 @@ public class AuthServiceImpl implements AuthService {
     refreshTokenService.deleteByUserIdAndDeviceId(id, deviceId);
     accessTokenService.invalidate(accessToken);
     deviceService.deleteByUserIdAndDeviceId(id, deviceId);
+    log.info("Tokens deleted for user '{}', device '{}'", id, deviceId);
   }
 
   @Override
@@ -129,6 +138,7 @@ public class AuthServiceImpl implements AuthService {
     refreshTokenService.deleteAllByUserId(id);
     accessTokenService.invalidateAllByUserId(id);
     deviceService.deleteAllByUserId(id);
+    log.info("All tokens and devices deleted for user '{}'", id);
   }
 
   @Override
@@ -140,6 +150,7 @@ public class AuthServiceImpl implements AuthService {
     final var newAccessToken = accessTokenService.create(userId, roleDTOs, deviceId);
     final var newRefreshToken = refreshTokenService.create(userId, roleDTOs, deviceId);
     deviceService.createOrUpdate(userId, deviceId, userAgent);
+    log.info("Tokens refreshed for user '{}', device '{}'", userId, deviceId);
     return new AuthTokens(newAccessToken, newRefreshToken);
   }
 
@@ -152,6 +163,7 @@ public class AuthServiceImpl implements AuthService {
             user -> {
               final var token = resetPasswordTokenService.create(user.getId());
               resetPasswordTokenService.sendToEmail(user, token);
+              log.info("Password reset email sent to '{}'", forgotPasswordRequest.email());
             });
   }
 
@@ -162,11 +174,18 @@ public class AuthServiceImpl implements AuthService {
     final var user =
         userRepository
             .findById(userId)
-            .orElseThrow(() -> new BadRequestException("auth.tokenInvalid"));
+            .orElseThrow(
+                () -> {
+                  log.error(
+                      "Password reset failed: token was valid but no user found for userId '{}' — possible data inconsistency",
+                      userId);
+                  return new BadRequestException("auth.tokenInvalid");
+                });
     user.setPassword(bCryptPasswordEncoder.encode(resetPasswordRequest.password()));
     accessTokenService.invalidateAllByUserId(user.getId());
     refreshTokenService.deleteAllByUserId(user.getId());
     userRepository.save(user);
+    log.info("Password reset for user '{}', all tokens invalidated", userId);
   }
 
   @Override
@@ -178,6 +197,7 @@ public class AuthServiceImpl implements AuthService {
             user -> {
               final var token = verificationTokenService.create(user.getId());
               verificationTokenService.sendToEmail(user, token);
+              log.info("Verification email sent to '{}'", request.usernameOrEmail());
             });
   }
 
@@ -187,9 +207,16 @@ public class AuthServiceImpl implements AuthService {
     final var user =
         userRepository
             .findById(userId)
-            .orElseThrow(() -> new BadRequestException("auth.tokenInvalid"));
+            .orElseThrow(
+                () -> {
+                  log.error(
+                      "Email verification failed: token was valid but no user found for userId '{}' — possible data inconsistency",
+                      userId);
+                  return new BadRequestException("auth.tokenInvalid");
+                });
     if (Boolean.TRUE.equals(user.getActive())) return;
     user.setActive(true);
     userRepository.save(user);
+    log.info("Email verified for user '{}'", user.getUsername());
   }
 }

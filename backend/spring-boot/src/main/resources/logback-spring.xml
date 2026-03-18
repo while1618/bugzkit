@@ -2,13 +2,24 @@
 <configuration>
   <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="CONSOLE_DEFAULT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - REQUEST_ID: %X{REQUEST_ID:-n/a}, USER: %X{USER:-anonymousUser}, ENDPOINT: %X{REQUEST_METHOD:-?} %X{REQUEST_URL:-?}, MESSAGE: %msg%n</pattern>
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
     </encoder>
   </appender>
 
+  <!-- org.bugzkit logs — includes MDC request context -->
+  <appender name="CONSOLE_APP" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} [%X{REQUEST_ID:-n/a} | %X{REQUEST_METHOD:-?} %X{REQUEST_URL:-?} | %X{USER:-anonymous}] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.bugzkit" level="INFO" additivity="false">
+    <appender-ref ref="CONSOLE_APP"/>
+  </logger>
+
   <root level="INFO">
-    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="CONSOLE_DEFAULT"/>
   </root>
 </configuration>

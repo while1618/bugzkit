@@ -30,17 +30,20 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
     MDC.put("REQUEST_ID", UUID.randomUUID().toString());
-    log.info("OAuth called");
     final var oAuthUser = super.loadUser(userRequest);
     final String email = oAuthUser.getAttribute("email");
     final boolean emailVerified = Boolean.TRUE.equals(oAuthUser.getAttribute("email_verified"));
     if (!emailVerified) throw new DisabledException("user.notActive");
-    final var user = userRepository.findWithRolesByEmail(email).orElseGet(() -> createUser(email));
+    final var provider = userRequest.getClientRegistration().getRegistrationId();
+    final var user =
+        userRepository.findWithRolesByEmail(email).orElseGet(() -> createUser(email, provider));
     if (user.getUsername() == null) user.setUsername(email);
+    log.info("OAuth2 login via '{}' for '{}'", provider, email);
     return new OAuth2UserPrincipal(UserPrincipal.create(user), oAuthUser.getAttributes());
   }
 
-  private User createUser(String email) {
+  private User createUser(String email, String provider) {
+    log.info("Provisioning new OAuth2 user via '{}' for '{}'", provider, email);
     final var roles =
         roleRepository
             .findByName(RoleName.USER)

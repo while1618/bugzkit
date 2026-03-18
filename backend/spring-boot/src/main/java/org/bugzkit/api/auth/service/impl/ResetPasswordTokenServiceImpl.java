@@ -1,6 +1,7 @@
 package org.bugzkit.api.auth.service.impl;
 
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.email.AuthEmailPurpose;
 import org.bugzkit.api.auth.email.OnSendAuthEmail;
 import org.bugzkit.api.auth.redis.model.ResetPasswordTokenStore;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ResetPasswordTokenServiceImpl implements ResetPasswordTokenService {
   private final ResetPasswordTokenStoreRepository resetPasswordTokenStoreRepository;
@@ -40,7 +42,13 @@ public class ResetPasswordTokenServiceImpl implements ResetPasswordTokenService 
     final var stored =
         resetPasswordTokenStoreRepository
             .findById(token)
-            .orElseThrow(() -> new BadRequestException("auth.tokenInvalid"));
+            .orElseThrow(
+                () -> {
+                  log.warn(
+                      "Reset password token '{}' not found in store (already consumed or expired)",
+                      token);
+                  return new BadRequestException("auth.tokenInvalid");
+                });
     resetPasswordTokenStoreRepository.deleteById(token);
     return stored.getUserId();
   }

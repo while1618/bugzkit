@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.auth.redis.model.AccessTokenBlacklist;
 import org.bugzkit.api.auth.redis.model.UserBlacklist;
 import org.bugzkit.api.auth.redis.repository.AccessTokenBlacklistRepository;
@@ -16,6 +17,7 @@ import org.bugzkit.api.user.payload.dto.RoleDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AccessTokenServiceImpl implements AccessTokenService {
   private static final JwtPurpose PURPOSE = JwtPurpose.ACCESS_TOKEN;
@@ -59,13 +61,16 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     try {
       JwtUtil.verify(token, secret, PURPOSE);
     } catch (RuntimeException e) {
+      log.warn("Access token verification failed: {}", e.getMessage());
       throw new UnauthorizedException("auth.tokenInvalid");
     }
   }
 
   private void isInAccessTokenBlacklist(String token) {
-    if (accessTokenBlacklistRepository.existsById(JwtUtil.getJwtId(token)))
+    if (accessTokenBlacklistRepository.existsById(JwtUtil.getJwtId(token))) {
+      log.warn("Access token '{}' is blacklisted", JwtUtil.getJwtId(token));
       throw new UnauthorizedException("auth.tokenInvalid");
+    }
   }
 
   private void isInUserBlacklist(String token) {
@@ -73,8 +78,10 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     final var issuedAt = JwtUtil.getIssuedAt(token);
     final var userInBlacklist = userBlacklistRepository.findById(userId);
     if (userInBlacklist.isEmpty()) return;
-    if (issuedAt.isBefore(userInBlacklist.get().getUpdatedAt()))
+    if (issuedAt.isBefore(userInBlacklist.get().getUpdatedAt())) {
+      log.warn("Access token for user '{}' was issued before the user blacklist entry", userId);
       throw new UnauthorizedException("auth.tokenInvalid");
+    }
   }
 
   @Override

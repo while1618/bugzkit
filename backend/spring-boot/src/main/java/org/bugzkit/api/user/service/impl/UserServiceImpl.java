@@ -1,5 +1,6 @@
 package org.bugzkit.api.user.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.shared.error.exception.ResourceNotFoundException;
 import org.bugzkit.api.shared.payload.dto.AvailabilityDTO;
 import org.bugzkit.api.shared.payload.dto.PageableDTO;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
@@ -37,7 +39,11 @@ public class UserServiceImpl implements UserService {
     return userRepository
         .findById(id)
         .map(UserMapper.INSTANCE::userToSimpleUserDTO)
-        .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
+        .orElseThrow(
+            () -> {
+              log.warn("User not found with id '{}'", id);
+              return new ResourceNotFoundException("user.notFound");
+            });
   }
 
   @Override
@@ -45,7 +51,11 @@ public class UserServiceImpl implements UserService {
     return userRepository
         .findByUsername(username)
         .map(UserMapper.INSTANCE::userToSimpleUserDTO)
-        .orElseThrow(() -> new ResourceNotFoundException("user.notFound"));
+        .orElseThrow(
+            () -> {
+              log.warn("User not found with username '{}'", username);
+              return new ResourceNotFoundException("user.notFound");
+            });
   }
 
   @Override

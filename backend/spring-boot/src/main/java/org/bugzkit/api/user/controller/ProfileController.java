@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.bugzkit.api.shared.constants.Path;
-import org.bugzkit.api.shared.ratelimit.RateLimit;
+import org.bugzkit.api.shared.interceptor.RateLimit;
 import org.bugzkit.api.user.payload.dto.UserDTO;
 import org.bugzkit.api.user.payload.request.ChangePasswordRequest;
 import org.bugzkit.api.user.payload.request.PatchProfileRequest;

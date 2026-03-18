@@ -66,7 +66,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
     response.sendRedirect(uiUrl);
-    log.info("OAuth finished");
+    log.info(
+        "OAuth2 login successful for user '{}' on device '{}'", userPrincipal.getId(), deviceId);
     MDC.clear();
   }
 }
