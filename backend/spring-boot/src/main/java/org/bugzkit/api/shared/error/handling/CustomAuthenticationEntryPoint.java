@@ -14,14 +14,17 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
   private final MessageService messageService;
+  private final ObjectMapper objectMapper;
 
-  public CustomAuthenticationEntryPoint(MessageService messageService) {
+  public CustomAuthenticationEntryPoint(MessageService messageService, ObjectMapper objectMapper) {
     this.messageService = messageService;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -37,7 +40,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     response.setHeader(HttpHeaders.X_REQUEST_ID, requestId);
     response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
-    response.getOutputStream().println(errorMessage.toString());
+    objectMapper.writeValue(response.getOutputStream(), errorMessage);
     log.error("Auth failed", e);
     MDC.clear();
   }
