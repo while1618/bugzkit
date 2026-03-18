@@ -1,8 +1,7 @@
-package org.bugzkit.api.shared.error.handling;
+package org.bugzkit.api.shared.error;
 
 import jakarta.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
-import org.bugzkit.api.shared.error.ErrorMessage;
 import org.bugzkit.api.shared.error.exception.BadRequestException;
 import org.bugzkit.api.shared.error.exception.ConflictException;
 import org.bugzkit.api.shared.error.exception.ResourceNotFoundException;
@@ -30,10 +29,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Slf4j
 @ControllerAdvice
-public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   private final MessageService messageService;
 
-  public CustomExceptionHandler(MessageService messageService) {
+  public GlobalExceptionHandler(MessageService messageService) {
     this.messageService = messageService;
   }
 

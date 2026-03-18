@@ -1,4 +1,4 @@
-package org.bugzkit.api.shared.error.handling;
+package org.bugzkit.api.shared.error;
 
 import com.google.common.net.HttpHeaders;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.bugzkit.api.shared.error.ErrorMessage;
 import org.bugzkit.api.shared.message.service.MessageService;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;

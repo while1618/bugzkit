@@ -6,7 +6,7 @@ import org.bugzkit.api.auth.oauth2.OAuth2UserService;
 import org.bugzkit.api.auth.security.JWTFilter;
 import org.bugzkit.api.auth.security.UserDetailsServiceImpl;
 import org.bugzkit.api.shared.constants.Path;
-import org.bugzkit.api.shared.error.handling.CustomAuthenticationEntryPoint;
+import org.bugzkit.api.shared.error.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
