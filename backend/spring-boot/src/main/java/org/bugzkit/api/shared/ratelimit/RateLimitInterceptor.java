@@ -32,12 +32,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializingSingleton {
   private final MessageService messageService;
   private final RedisClient lettuceClient;
   private final ApplicationContext applicationContext;
+  private final ObjectMapper objectMapper;
   private final Map<String, BucketConfiguration> configCache = new ConcurrentHashMap<>();
   private LettuceBasedProxyManager<String> proxyManager;
 
@@ -50,10 +52,12 @@ public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializi
   public RateLimitInterceptor(
       MessageService messageService,
       RedisClient lettuceClient,
-      ApplicationContext applicationContext) {
+      ApplicationContext applicationContext,
+      ObjectMapper objectMapper) {
     this.messageService = messageService;
     this.lettuceClient = lettuceClient;
     this.applicationContext = applicationContext;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -124,6 +128,6 @@ public class RateLimitInterceptor implements HandlerInterceptor, SmartInitializi
     response.setStatus(status.value());
     response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
     response.setHeader("Retry-After", String.valueOf(retryAfter));
-    response.getWriter().write(errorMessage.toString());
+    objectMapper.writeValue(response.getOutputStream(), errorMessage);
   }
 }
