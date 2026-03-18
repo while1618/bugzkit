@@ -10,14 +10,14 @@ Bugzkit is a production-ready full-stack web application template with a Spring 
 
 ### Backend (Spring Boot — `backend/spring-boot/`)
 
-| Task | Command |
-|---|---|
-| Build (skip tests) | `mvn -B clean install -DskipTests` |
-| Run (dev profile) | `mvn spring-boot:run -Dspring-boot.run.profiles=dev` |
-| Unit tests | `mvn -B test` |
-| Integration tests | `mvn -B failsafe:integration-test failsafe:verify` |
-| Format check | `mvn -B spotless:check` |
-| Format fix | `mvn spotless:apply` |
+| Task | Command                                                 |
+|---|---------------------------------------------------------|
+| Build (skip tests) | `./mvnw -B clean install -DskipTests`                   |
+| Run (dev profile) | `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` |
+| Unit tests | `./mvnw -B test`                                        |
+| Integration tests | `./mvnw -B failsafe:integration-test failsafe:verify`   |
+| Format check | `./mvnw -B spotless:check`                              |
+| Format fix | `./mvnw spotless:apply`                                 |
 
 Integration tests use `*IT.java` suffix and run via Maven Failsafe. They require Testcontainers (Docker must be running).
 

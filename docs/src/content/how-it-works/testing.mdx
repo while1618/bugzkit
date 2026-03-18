@@ -10,19 +10,19 @@ Unit tests use JUnit 5 with Mockito and don't require a running database or appl
 
 ```bash
 cd backend/spring-boot
-mvn -B test
+./mvnw -B test
 ```
 
 To run a single test class:
 
 ```bash
-mvn -B test -Dtest=MessageServiceTest
+./mvnw -B test -Dtest=MessageServiceTest
 ```
 
 To run a single test method:
 
 ```bash
-mvn -B test -Dtest=MessageServiceTest#getMessage
+./mvnw -B test -Dtest=MessageServiceTest#getMessage
 ```
 
 #### Integration Tests
@@ -31,13 +31,13 @@ Integration tests use Spring Boot Test with [Testcontainers](https://testcontain
 
 ```bash
 cd backend/spring-boot
-mvn -B failsafe:integration-test failsafe:verify
+./mvnw -B failsafe:integration-test failsafe:verify
 ```
 
 To run a single integration test:
 
 ```bash
-mvn -B failsafe:integration-test -Dit.test=AuthControllerIT failsafe:verify
+./mvnw -B failsafe:integration-test -Dit.test=AuthControllerIT failsafe:verify
 ```
 
 All integration tests extend the `DatabaseContainers` base class, which defines shared PostgreSQL and Redis containers using `@ServiceConnection` for automatic Spring Boot configuration.

@@ -34,7 +34,7 @@ The goal is to provide a reliable and customizable foundation that eliminates re
 <details>
   <summary>Backend</summary>
 
-- [Java 21](https://openjdk.org/projects/jdk/21/)
+- [Java 25](https://openjdk.org/projects/jdk/25/)
 - [SpringBoot](https://spring.io/projects/spring-boot)
 - [Postgres](https://www.postgresql.org/)
 - [Redis](https://redis.io/)

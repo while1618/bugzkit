@@ -6,8 +6,7 @@ To use `bugzkit` ensure you have the following software installed:
 
 - [Gum](https://github.com/charmbracelet/gum)
 - [Docker](https://www.docker.com/)
-- [Java 21](https://openjdk.org/projects/jdk/21/)
-- [Maven](https://maven.apache.org/)
+- [Java 25](https://openjdk.org/projects/jdk/25/)
 - [Node.js 22](https://nodejs.org/)
 - [pnpm](https://pnpm.io/)
 
@@ -43,8 +42,7 @@ After the services are up and running, navigate to the `backend/spring-boot` dir
 
 ```bash
 cd backend/spring-boot
-mvn clean install
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 Alternatively, use IntelliJ IDEA. A pre-configured run configuration is available - just click and run!

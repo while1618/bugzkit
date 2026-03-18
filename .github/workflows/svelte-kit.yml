@@ -108,19 +108,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: "21"
+          java-version: "25"
           distribution: "temurin"
           cache: maven
 
       - name: Build Spring Boot
-        run: mvn -B clean install -DskipTests
+        run: ./mvnw -B clean install -DskipTests
         working-directory: backend/spring-boot
 
       - name: Start Spring Boot
-        run: mvn spring-boot:run -Dspring-boot.run.profiles=dev &
+        run: ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev &
         working-directory: backend/spring-boot
 
       - name: Wait for backend

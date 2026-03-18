@@ -1,4 +1,6 @@
 *
 !src/
 !pom.xml
+!.mvn/
+!mvnw
 target/

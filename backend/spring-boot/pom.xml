@@ -17,7 +17,7 @@
   <description>bugzkit api</description>
 
   <properties>
-    <java.version>21</java.version>
+    <java.version>25</java.version>
     <lombok.version>1.18.42</lombok.version>
     <guava.version>33.5.0-jre</guava.version>
     <jwt.version>4.5.1</jwt.version>

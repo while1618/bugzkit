@@ -11,8 +11,7 @@ docker-compose -f docker-compose-db.dev.yml up -d
 After the services are up and running, start the application:
 
 ```bash
-mvn clean install
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 Alternatively, use IntelliJ IDEA. A pre-configured run configuration is available - just click and run!
