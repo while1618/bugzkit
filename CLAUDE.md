@@ -14,8 +14,8 @@ Bugzkit is a production-ready full-stack web application template with a Spring 
 |---|---------------------------------------------------------|
 | Build (skip tests) | `./mvnw -B clean install -DskipTests`                   |
 | Run (dev profile) | `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` |
-| Unit tests | `./mvnw -B test`                                        |
-| Integration tests | `./mvnw -B failsafe:integration-test failsafe:verify`   |
+| All tests + coverage | `./mvnw -B clean verify` (report: `target/site/jacoco/`) |
+| Unit tests only | `./mvnw -B test`                                        |
 | Format check | `./mvnw -B spotless:check`                              |
 | Format fix | `./mvnw spotless:apply`                                 |
 

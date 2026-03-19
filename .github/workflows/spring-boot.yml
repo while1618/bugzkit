@@ -31,17 +31,17 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Build
-        run: ./mvnw -B clean install -DskipTests
-
       - name: Lint
         run: ./mvnw -B spotless:check
 
-      - name: Unit tests
-        run: ./mvnw -B test
+      - name: Test
+        run: ./mvnw -B clean verify
 
-      - name: Integration tests
-        run: ./mvnw -B failsafe:integration-test failsafe:verify
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: backend/spring-boot/target/site/jacoco/
 
   push-image:
     needs: build
