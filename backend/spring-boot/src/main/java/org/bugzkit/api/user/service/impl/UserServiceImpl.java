@@ -18,18 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
-  public UserServiceImpl(UserRepository userRepository) {
+  public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
     this.userRepository = userRepository;
+    this.userMapper = userMapper;
   }
 
   @Override
   @Transactional(readOnly = true)
   public PageableDTO<UserDTO> findAll(Pageable pageable) {
     final var users =
-        userRepository.findAll(pageable).stream()
-            .map(UserMapper.INSTANCE::userToSimpleUserDTO)
-            .toList();
+        userRepository.findAll(pageable).stream().map(userMapper::userToSimpleUserDTO).toList();
     final var total = userRepository.count();
     return new PageableDTO<>(users, total);
   }
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
   public UserDTO findById(Long id) {
     return userRepository
         .findById(id)
-        .map(UserMapper.INSTANCE::userToSimpleUserDTO)
+        .map(userMapper::userToSimpleUserDTO)
         .orElseThrow(
             () -> {
               log.warn("User not found with id '{}'", id);
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
   public UserDTO findByUsername(String username) {
     return userRepository
         .findByUsername(username)
-        .map(UserMapper.INSTANCE::userToSimpleUserDTO)
+        .map(userMapper::userToSimpleUserDTO)
         .orElseThrow(
             () -> {
               log.warn("User not found with username '{}'", username);

@@ -6,14 +6,12 @@ import org.bugzkit.api.user.model.Role;
 import org.bugzkit.api.user.model.User;
 import org.bugzkit.api.user.payload.dto.RoleDTO;
 import org.bugzkit.api.user.payload.dto.UserDTO;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface UserMapper {
-  UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
   Set<RoleDTO> rolesToRoleDTOs(Set<Role> roles);
 

@@ -13,14 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 @PreAuthorize("hasAuthority('ADMIN')")
 public class RoleServiceImpl implements RoleService {
   private final RoleRepository roleRepository;
+  private final UserMapper userMapper;
 
-  public RoleServiceImpl(RoleRepository roleRepository) {
+  public RoleServiceImpl(RoleRepository roleRepository, UserMapper userMapper) {
     this.roleRepository = roleRepository;
+    this.userMapper = userMapper;
   }
 
   @Override
   @Transactional(readOnly = true)
   public List<RoleDTO> findAll() {
-    return roleRepository.findAll().stream().map(UserMapper.INSTANCE::roleToRoleDTO).toList();
+    return roleRepository.findAll().stream().map(userMapper::roleToRoleDTO).toList();
   }
 }

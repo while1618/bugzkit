@@ -11,8 +11,11 @@ import org.bugzkit.api.user.model.Role;
 import org.bugzkit.api.user.model.Role.RoleName;
 import org.bugzkit.api.user.model.User;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class UserMapperTest {
+  private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+
   @Test
   void userToAdminUserDTO_mapsAllFields() {
     final var now = LocalDateTime.now();
@@ -28,7 +31,7 @@ class UserMapperTest {
             .roles(Set.of(role))
             .build();
 
-    final var dto = UserMapper.INSTANCE.userToAdminUserDTO(user);
+    final var dto = userMapper.userToAdminUserDTO(user);
 
     assertEquals(1L, dto.id());
     assertEquals("admin", dto.username());
@@ -52,7 +55,7 @@ class UserMapperTest {
             .lock(false)
             .build();
 
-    final var dto = UserMapper.INSTANCE.userToProfileUserDTO(user);
+    final var dto = userMapper.userToProfileUserDTO(user);
 
     assertEquals("user", dto.username());
     assertEquals("user@localhost", dto.email());
@@ -72,7 +75,7 @@ class UserMapperTest {
             .lock(false)
             .build();
 
-    final var dto = UserMapper.INSTANCE.userToSimpleUserDTO(user);
+    final var dto = userMapper.userToSimpleUserDTO(user);
 
     assertEquals("user", dto.username());
     assertNull(dto.email());

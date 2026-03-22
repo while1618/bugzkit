@@ -34,18 +34,21 @@ public class UserServiceImpl implements UserService {
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
   private final PasswordEncoder bCryptPasswordEncoder;
+  private final UserMapper userMapper;
 
   public UserServiceImpl(
       UserRepository userRepository,
       RoleRepository roleRepository,
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
-      PasswordEncoder bCryptPasswordEncoder) {
+      PasswordEncoder bCryptPasswordEncoder,
+      UserMapper userMapper) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    this.userMapper = userMapper;
   }
 
   @Override
@@ -70,7 +73,7 @@ public class UserServiceImpl implements UserService {
             .build();
     final var saved = userRepository.save(user);
     log.info("Admin created user '{}' (id={})", saved.getUsername(), saved.getId());
-    return UserMapper.INSTANCE.userToAdminUserDTO(saved);
+    return userMapper.userToAdminUserDTO(saved);
   }
 
   /*
@@ -83,9 +86,7 @@ public class UserServiceImpl implements UserService {
   public PageableDTO<UserDTO> findAll(Pageable pageable) {
     final var userIds = userRepository.findAllUserIds(pageable);
     final var users =
-        userRepository.findAllByIdIn(userIds).stream()
-            .map(UserMapper.INSTANCE::userToAdminUserDTO)
-            .toList();
+        userRepository.findAllByIdIn(userIds).stream().map(userMapper::userToAdminUserDTO).toList();
     final long total = userRepository.count();
     return new PageableDTO<>(users, total);
   }
@@ -95,7 +96,7 @@ public class UserServiceImpl implements UserService {
   public UserDTO findById(Long id) {
     return userRepository
         .findWithRolesById(id)
-        .map(UserMapper.INSTANCE::userToAdminUserDTO)
+        .map(userMapper::userToAdminUserDTO)
         .orElseThrow(
             () -> {
               log.warn("Admin user lookup failed: no user found with id '{}'", id);
@@ -127,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
     final var updated = userRepository.save(user);
     log.info("Admin updated user '{}' (id={})", updated.getUsername(), id);
-    return UserMapper.INSTANCE.userToAdminUserDTO(updated);
+    return userMapper.userToAdminUserDTO(updated);
   }
 
   @Override
@@ -154,7 +155,7 @@ public class UserServiceImpl implements UserService {
 
     final var updated = userRepository.save(user);
     log.info("Admin patched user '{}' (id={})", updated.getUsername(), id);
-    return UserMapper.INSTANCE.userToAdminUserDTO(updated);
+    return userMapper.userToAdminUserDTO(updated);
   }
 
   private boolean isSelf(Long id) {

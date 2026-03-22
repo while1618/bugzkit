@@ -29,6 +29,7 @@ public class ProfileServiceImpl implements ProfileService {
   private final RefreshTokenService refreshTokenService;
   private final VerificationTokenService verificationTokenService;
   private final DeviceService deviceService;
+  private final UserMapper userMapper;
 
   public ProfileServiceImpl(
       UserRepository userRepository,
@@ -36,18 +37,20 @@ public class ProfileServiceImpl implements ProfileService {
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
       VerificationTokenService verificationTokenService,
-      DeviceService deviceService) {
+      DeviceService deviceService,
+      UserMapper userMapper) {
     this.userRepository = userRepository;
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
     this.verificationTokenService = verificationTokenService;
     this.deviceService = deviceService;
+    this.userMapper = userMapper;
   }
 
   @Override
   public UserDTO find() {
-    return UserMapper.INSTANCE.userPrincipalToProfileUserDTO(AuthUtil.findSignedInUser());
+    return userMapper.userPrincipalToProfileUserDTO(AuthUtil.findSignedInUser());
   }
 
   @Override
@@ -70,7 +73,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     final var updated = userRepository.save(user);
     log.info("Profile updated for user '{}'", userId);
-    return UserMapper.INSTANCE.userToProfileUserDTO(updated);
+    return userMapper.userToProfileUserDTO(updated);
   }
 
   private void deleteAuthTokens(Long userId) {

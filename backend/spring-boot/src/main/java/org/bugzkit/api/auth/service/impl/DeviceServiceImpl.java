@@ -23,6 +23,7 @@ public class DeviceServiceImpl implements DeviceService {
   private final UserRepository userRepository;
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
+  private final AuthMapper authMapper;
 
   @Value("${jwt.refresh-token.duration}")
   private int refreshTokenDuration;
@@ -31,11 +32,13 @@ public class DeviceServiceImpl implements DeviceService {
       DeviceRepository deviceRepository,
       UserRepository userRepository,
       AccessTokenService accessTokenService,
-      RefreshTokenService refreshTokenService) {
+      RefreshTokenService refreshTokenService,
+      AuthMapper authMapper) {
     this.deviceRepository = deviceRepository;
     this.userRepository = userRepository;
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
+    this.authMapper = authMapper;
   }
 
   @Override
@@ -43,7 +46,7 @@ public class DeviceServiceImpl implements DeviceService {
   public List<DeviceDTO> findAll(String currentDeviceId) {
     final var userId = AuthUtil.findSignedInUser().getId();
     return deviceRepository.findAllByUserId(userId).stream()
-        .map(device -> AuthMapper.INSTANCE.deviceToDeviceDTO(device, currentDeviceId))
+        .map(device -> authMapper.deviceToDeviceDTO(device, currentDeviceId))
         .toList();
   }
 

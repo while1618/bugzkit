@@ -8,8 +8,11 @@ import java.time.LocalDateTime;
 import org.bugzkit.api.auth.mapper.AuthMapper;
 import org.bugzkit.api.auth.model.Device;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class AuthMapperTest {
+  private final AuthMapper authMapper = Mappers.getMapper(AuthMapper.class);
+
   @Test
   void deviceToDeviceDTO_mapsAllFields() {
     final var now = LocalDateTime.now();
@@ -21,7 +24,7 @@ class AuthMapperTest {
             .lastActiveAt(now)
             .build();
 
-    final var dto = AuthMapper.INSTANCE.deviceToDeviceDTO(device, "device-1");
+    final var dto = authMapper.deviceToDeviceDTO(device, "device-1");
 
     assertEquals("device-1", dto.deviceId());
     assertEquals("Mozilla/5.0", dto.userAgent());
@@ -33,7 +36,7 @@ class AuthMapperTest {
   void deviceToDeviceDTO_currentTrue_whenDeviceIdMatches() {
     final var device = Device.builder().deviceId("device-1").build();
 
-    final var dto = AuthMapper.INSTANCE.deviceToDeviceDTO(device, "device-1");
+    final var dto = authMapper.deviceToDeviceDTO(device, "device-1");
 
     assertTrue(dto.current());
   }
@@ -42,7 +45,7 @@ class AuthMapperTest {
   void deviceToDeviceDTO_currentFalse_whenDeviceIdDoesNotMatch() {
     final var device = Device.builder().deviceId("device-1").build();
 
-    final var dto = AuthMapper.INSTANCE.deviceToDeviceDTO(device, "device-2");
+    final var dto = authMapper.deviceToDeviceDTO(device, "device-2");
 
     assertFalse(dto.current());
   }

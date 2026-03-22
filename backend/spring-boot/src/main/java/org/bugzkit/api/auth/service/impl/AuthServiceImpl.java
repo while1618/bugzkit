@@ -45,6 +45,7 @@ public class AuthServiceImpl implements AuthService {
   private final VerificationTokenService verificationTokenService;
   private final ResetPasswordTokenService resetPasswordTokenService;
   private final DeviceService deviceService;
+  private final UserMapper userMapper;
 
   public AuthServiceImpl(
       UserRepository userRepository,
@@ -55,7 +56,8 @@ public class AuthServiceImpl implements AuthService {
       RefreshTokenService refreshTokenService,
       VerificationTokenService verificationTokenService,
       ResetPasswordTokenService resetPasswordTokenService,
-      DeviceService deviceService) {
+      DeviceService deviceService,
+      UserMapper userMapper) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -65,6 +67,7 @@ public class AuthServiceImpl implements AuthService {
     this.verificationTokenService = verificationTokenService;
     this.resetPasswordTokenService = resetPasswordTokenService;
     this.deviceService = deviceService;
+    this.userMapper = userMapper;
   }
 
   @Override
@@ -82,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
     final var token = verificationTokenService.create(user.getId());
     verificationTokenService.sendToEmail(user, token);
     log.info("User '{}' registered, verification email sent", user.getUsername());
-    return UserMapper.INSTANCE.userToProfileUserDTO(user);
+    return userMapper.userToProfileUserDTO(user);
   }
 
   @Override
@@ -97,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
         userRepository
             .findWithRolesByUsername(auth.getName())
             .orElseThrow(() -> new UnauthorizedException("auth.unauthorized"));
-    final var roleDTOs = UserMapper.INSTANCE.rolesToRoleDTOs(user.getRoles());
+    final var roleDTOs = userMapper.rolesToRoleDTOs(user.getRoles());
     final var accessToken = accessTokenService.create(user.getId(), roleDTOs, deviceId);
     final var refreshToken = refreshTokenService.create(user.getId(), roleDTOs, deviceId);
     deviceService.createOrUpdate(user.getId(), deviceId, userAgent);
