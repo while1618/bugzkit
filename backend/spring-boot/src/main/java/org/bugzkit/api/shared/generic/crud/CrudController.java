@@ -32,17 +32,17 @@ public abstract class CrudController<T, U> {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<T> findById(@PathVariable("id") Long id) {
+  public ResponseEntity<T> findById(@PathVariable Long id) {
     return ResponseEntity.ok(service.findById(id));
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<T> update(@PathVariable("id") Long id, @Valid @RequestBody U saveRequest) {
+  public ResponseEntity<T> update(@PathVariable Long id, @Valid @RequestBody U saveRequest) {
     return ResponseEntity.ok(service.update(id, saveRequest));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
     service.delete(id);
     return ResponseEntity.noContent().build();
   }

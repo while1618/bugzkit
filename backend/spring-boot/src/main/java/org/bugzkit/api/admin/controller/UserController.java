@@ -30,7 +30,7 @@ public class UserController extends CrudController<UserDTO, UserRequest> {
 
   @PatchMapping("/{id}")
   public ResponseEntity<UserDTO> patch(
-      @PathVariable("id") Long id, @Valid @RequestBody PatchUserRequest patchUserRequest) {
+      @PathVariable Long id, @Valid @RequestBody PatchUserRequest patchUserRequest) {
     return ResponseEntity.ok(userService.patch(id, patchUserRequest));
   }
 }
