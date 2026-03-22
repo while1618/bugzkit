@@ -30,7 +30,7 @@ spring:
       timeout: 60
   mail:
     host: ${SMTP_HOST:smtp.resend.com}
-    port: ${SMTP_PORT:587}
+    port: ${SMTP_PORT:2587}
     username: ${SMTP_USER:resend}
     properties:
       sender: ${SMTP_SENDER:noreply@bugzkit.com}

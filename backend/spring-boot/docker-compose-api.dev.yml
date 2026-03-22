@@ -25,7 +25,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-client_id}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-client_secret}
       SMTP_HOST: ${SMTP_HOST:-smtp.resend.com}
-      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_PORT: ${SMTP_PORT:-2587}
       SMTP_USERNAME: ${SMTP_USER:-resend}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-password}
       SMTP_SENDER: ${SMTP_SENDER:-noreply@bugzkit.com}

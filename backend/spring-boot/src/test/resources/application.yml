@@ -51,7 +51,7 @@ spring:
             scope: profile,email
   mail:
     host: ${SMTP_HOST:smtp.resend.com}
-    port: ${SMTP_PORT:587}
+    port: ${SMTP_PORT:2587}
     username: ${SMTP_USER:resend}
     password: ${SMTP_PASSWORD:password}
     properties:

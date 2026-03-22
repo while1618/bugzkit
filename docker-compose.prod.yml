@@ -15,7 +15,7 @@ services:
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_DATABASE: ${REDIS_DATABASE:-0}
       SMTP_HOST: ${SMTP_HOST:-smtp.resend.com}
-      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_PORT: ${SMTP_PORT:-2587}
       SMTP_USER: ${SMTP_USER:-resend}
       SMTP_SENDER: ${SMTP_SENDER:-noreply@bugzkit.com}
       ACCESS_TOKEN_DURATION: ${ACCESS_TOKEN_DURATION:-900}
