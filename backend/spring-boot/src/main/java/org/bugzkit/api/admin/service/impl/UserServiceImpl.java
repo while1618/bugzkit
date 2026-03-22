@@ -91,6 +91,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public UserDTO findById(Long id) {
     return userRepository
         .findWithRolesById(id)
@@ -235,6 +236,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public void delete(Long id) {
     deleteAuthTokens(id);
     userRepository.deleteById(id);

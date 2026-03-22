@@ -7,6 +7,7 @@ import org.bugzkit.api.user.repository.RoleRepository;
 import org.bugzkit.api.user.service.RoleService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @PreAuthorize("hasAuthority('ADMIN')")
@@ -18,6 +19,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<RoleDTO> findAll() {
     return roleRepository.findAll().stream().map(UserMapper.INSTANCE::roleToRoleDTO).toList();
   }

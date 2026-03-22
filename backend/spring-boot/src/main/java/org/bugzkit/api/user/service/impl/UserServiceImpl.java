@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public UserDTO findById(Long id) {
     return userRepository
         .findById(id)
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public UserDTO findByUsername(String username) {
     return userRepository
         .findByUsername(username)
@@ -59,6 +61,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public AvailabilityDTO usernameAvailability(
       UsernameAvailabilityRequest usernameAvailabilityRequest) {
     final var available = !userRepository.existsByUsername(usernameAvailabilityRequest.username());
@@ -66,6 +69,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public AvailabilityDTO emailAvailability(EmailAvailabilityRequest emailAvailabilityRequest) {
     final var available = !userRepository.existsByEmail(emailAvailabilityRequest.email());
     return new AvailabilityDTO(available);

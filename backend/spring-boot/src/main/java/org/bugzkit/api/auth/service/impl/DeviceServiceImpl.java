@@ -39,6 +39,7 @@ public class DeviceServiceImpl implements DeviceService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<DeviceDTO> findAll(String currentDeviceId) {
     final var userId = AuthUtil.findSignedInUser().getId();
     return deviceRepository.findAllByUserId(userId).stream()

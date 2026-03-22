@@ -202,6 +202,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public void verifyEmail(VerifyEmailRequest verifyEmailRequest) {
     final var userId = verificationTokenService.checkAndConsume(verifyEmailRequest.token());
     final var user =
