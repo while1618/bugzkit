@@ -11,12 +11,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Get a resource by ID */
         get: operations["findById"];
+        /** Replace a resource by ID */
         put: operations["update"];
         post?: never;
+        /** Delete a resource by ID */
         delete: operations["delete"];
         options?: never;
         head?: never;
+        /** Partially update a user by ID */
         patch: operations["patch"];
         trace?: never;
     };
@@ -29,6 +33,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Check if a username is available */
         post: operations["usernameAvailability"];
         delete?: never;
         options?: never;
@@ -45,6 +50,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Check if an email is available */
         post: operations["emailAvailability"];
         delete?: never;
         options?: never;
@@ -61,6 +67,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Verify email address using a token from the verification email */
         post: operations["verifyEmail"];
         delete?: never;
         options?: never;
@@ -77,6 +84,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Resend the email verification link */
         post: operations["sendVerificationMail"];
         delete?: never;
         options?: never;
@@ -93,7 +101,9 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Sign in and receive access and refresh token cookies */
         post: operations["authenticate"];
+        /** Sign out and clear auth cookies for the current device */
         delete: operations["deleteTokens"];
         options?: never;
         head?: never;
@@ -109,6 +119,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Refresh access and refresh token cookies using the refresh token */
         post: operations["refreshTokens"];
         delete?: never;
         options?: never;
@@ -125,6 +136,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Register a new user account */
         post: operations["register"];
         delete?: never;
         options?: never;
@@ -141,6 +153,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Reset password using a token from the reset email */
         post: operations["resetPassword"];
         delete?: never;
         options?: never;
@@ -157,6 +170,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Send a password reset email */
         post: operations["forgotPassword"];
         delete?: never;
         options?: never;
@@ -171,8 +185,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** List all resources (paginated) */
         get: operations["findAll"];
         put?: never;
+        /** Create a new resource */
         post: operations["create"];
         delete?: never;
         options?: never;
@@ -187,12 +203,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Get the current user's profile */
         get: operations["find"];
         put?: never;
         post?: never;
+        /** Delete the current user's account */
         delete: operations["delete_1"];
         options?: never;
         head?: never;
+        /** Update the current user's profile fields */
         patch: operations["patch_1"];
         trace?: never;
     };
@@ -209,6 +228,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /** Change the current user's password */
         patch: operations["changePassword"];
         trace?: never;
     };
@@ -219,6 +239,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** List all users (paginated) */
         get: operations["findAll_1"];
         put?: never;
         post?: never;
@@ -235,6 +256,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Get a user by ID */
         get: operations["findById_1"];
         put?: never;
         post?: never;
@@ -251,6 +273,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Get a user by username */
         get: operations["findByUsername"];
         put?: never;
         post?: never;
@@ -267,6 +290,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** List all available roles */
         get: operations["findAll_2"];
         put?: never;
         post?: never;
@@ -283,9 +307,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** List all active devices for the current user */
         get: operations["findAllDevices"];
         put?: never;
         post?: never;
+        /** Sign out from all devices and clear auth cookies */
         delete: operations["deleteTokensOnAllDevices"];
         options?: never;
         head?: never;
@@ -302,6 +328,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
+        /** Revoke a specific device and invalidate all access tokens */
         delete: operations["revokeDevice"];
         options?: never;
         head?: never;
@@ -313,14 +340,30 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         UserRequest: {
+            /** @example john_doe */
             username: string;
-            /** Format: email */
+            /**
+             * Format: email
+             * @example john@example.com
+             */
             email: string;
+            /** @example Secret123! */
             password: string;
+            /** @example Secret123! */
             confirmPassword: string;
+            /** @example true */
             active: boolean;
+            /** @example false */
             lock: boolean;
             roleNames: ("USER" | "ADMIN")[];
+        };
+        ErrorMessage: {
+            /** Format: date-time */
+            timestamp?: string;
+            /** Format: int32 */
+            status?: number;
+            error?: string;
+            codes?: string[];
         };
         RoleDTO: {
             name?: string;
@@ -337,58 +380,93 @@ export interface components {
             roles?: components["schemas"]["RoleDTO"][];
         };
         UsernameAvailabilityRequest: {
+            /** @example john_doe */
             username: string;
         };
         AvailabilityDTO: {
             available?: boolean;
         };
         EmailAvailabilityRequest: {
-            /** Format: email */
+            /**
+             * Format: email
+             * @example john@example.com
+             */
             email: string;
         };
         VerifyEmailRequest: {
+            /** @example 550e8400-e29b-41d4-a716-446655440000 */
             token: string;
         };
         VerificationEmailRequest: {
+            /** @example john_doe */
             usernameOrEmail: string;
         };
         AuthTokensRequest: {
+            /** @example john_doe */
             usernameOrEmail: string;
+            /** @example Secret123! */
             password: string;
         };
         RegisterUserRequest: {
+            /** @example john_doe */
             username: string;
-            /** Format: email */
+            /**
+             * Format: email
+             * @example john@example.com
+             */
             email: string;
+            /** @example Secret123! */
             password: string;
+            /** @example Secret123! */
             confirmPassword: string;
         };
         ResetPasswordRequest: {
+            /** @example 550e8400-e29b-41d4-a716-446655440000 */
             token: string;
+            /** @example NewSecret123! */
             password: string;
+            /** @example NewSecret123! */
             confirmPassword: string;
         };
         ForgotPasswordRequest: {
-            /** Format: email */
+            /**
+             * Format: email
+             * @example john@example.com
+             */
             email: string;
         };
         PatchProfileRequest: {
+            /** @example john_doe */
             username?: string;
-            /** Format: email */
+            /**
+             * Format: email
+             * @example john@example.com
+             */
             email?: string;
         };
         ChangePasswordRequest: {
+            /** @example OldSecret123! */
             currentPassword: string;
+            /** @example NewSecret123! */
             newPassword: string;
+            /** @example NewSecret123! */
             confirmNewPassword: string;
         };
         PatchUserRequest: {
+            /** @example john_doe */
             username?: string;
-            /** Format: email */
+            /**
+             * Format: email
+             * @example john@example.com
+             */
             email?: string;
+            /** @example Secret123! */
             password?: string;
+            /** @example Secret123! */
             confirmPassword?: string;
+            /** @example true */
             active?: boolean;
+            /** @example false */
             lock?: boolean;
             roleNames?: ("USER" | "ADMIN")[];
         };
@@ -412,14 +490,6 @@ export interface components {
             /** Format: date-time */
             lastActiveAt?: string;
             current?: boolean;
-        };
-        ErrorMessage: {
-            /** Format: date-time */
-            timestamp?: string;
-            /** Format: int32 */
-            status?: number;
-            error?: string;
-            codes?: string[];
         };
     };
     responses: never;
@@ -450,6 +520,33 @@ export interface operations {
                     "*/*": components["schemas"]["UserDTO"];
                 };
             };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     update: {
@@ -476,6 +573,51 @@ export interface operations {
                     "*/*": components["schemas"]["UserDTO"];
                 };
             };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Conflict — username or email already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     delete: {
@@ -489,12 +631,39 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Deleted */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
             };
         };
     };
@@ -522,6 +691,51 @@ export interface operations {
                     "*/*": components["schemas"]["UserDTO"];
                 };
             };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Conflict — username or email already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     usernameAvailability: {
@@ -545,6 +759,22 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["AvailabilityDTO"];
                 };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -570,6 +800,22 @@ export interface operations {
                     "*/*": components["schemas"]["AvailabilityDTO"];
                 };
             };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     verifyEmail: {
@@ -585,8 +831,24 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Email verified */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid or expired token */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -607,8 +869,24 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Email sent if account exists and is inactive */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -629,8 +907,33 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Authenticated — cookies set */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Invalid credentials or account inactive/locked */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -647,8 +950,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Signed out — cookies cleared */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -665,8 +968,24 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Tokens refreshed — cookies updated */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid or expired refresh token */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -687,14 +1006,39 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Registered */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "*/*": components["schemas"]["UserDTO"];
                 };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Username or email already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -711,8 +1055,24 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Password reset */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid or expired token, or validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -733,8 +1093,24 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Email sent if account exists */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -762,6 +1138,24 @@ export interface operations {
                     "*/*": components["schemas"]["PageableDTOUserDTO"];
                 };
             };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     create: {
@@ -777,13 +1171,49 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Created */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "*/*": components["schemas"]["UserDTO"];
+                };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Conflict — resource already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
                 };
             };
         };
@@ -806,6 +1236,15 @@ export interface operations {
                     "*/*": components["schemas"]["UserDTO"];
                 };
             };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     delete_1: {
@@ -817,12 +1256,21 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Account deleted */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
             };
         };
     };
@@ -848,6 +1296,33 @@ export interface operations {
                     "*/*": components["schemas"]["UserDTO"];
                 };
             };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Username or email already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     changePassword: {
@@ -863,8 +1338,33 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Password changed */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Current password is wrong or validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -914,6 +1414,15 @@ export interface operations {
                     "*/*": components["schemas"]["UserDTO"];
                 };
             };
+            /** @description User not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     findByUsername: {
@@ -936,6 +1445,15 @@ export interface operations {
                     "*/*": components["schemas"]["UserDTO"];
                 };
             };
+            /** @description User not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     findAll_2: {
@@ -954,6 +1472,24 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RoleDTO"][];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
                 };
             };
         };
@@ -976,6 +1512,15 @@ export interface operations {
                     "*/*": components["schemas"]["DeviceDTO"][];
                 };
             };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
+            };
         };
     };
     deleteTokensOnAllDevices: {
@@ -987,8 +1532,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Signed out from all devices */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1007,12 +1552,21 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Device revoked */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorMessage"];
+                };
             };
         };
     };
