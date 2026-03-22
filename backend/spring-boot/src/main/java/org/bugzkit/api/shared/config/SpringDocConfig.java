@@ -7,6 +7,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.tags.Tag;
+import java.util.List;
 import org.bugzkit.api.shared.error.ErrorMessage;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +33,21 @@ public class SpringDocConfig {
                     new License()
                         .name("MIT License")
                         .url("https://choosealicense.com/licenses/mit/")))
+        .tags(
+            List.of(
+                new Tag()
+                    .name("auth")
+                    .description(
+                        "Registration, sign-in, token management, device management, password reset, and email verification"),
+                new Tag()
+                    .name("profile")
+                    .description(
+                        "Manage the authenticated user's own profile, password, and account"),
+                new Tag()
+                    .name("users")
+                    .description("Public user lookup and username/email availability checks"),
+                new Tag().name("admin").description("Admin user management — requires ADMIN role"),
+                new Tag().name("roles").description("Role listing — requires ADMIN role")))
         .components(
             new Components()
                 .addSecuritySchemes(
@@ -38,7 +55,8 @@ public class SpringDocConfig {
                     new SecurityScheme()
                         .type(SecurityScheme.Type.APIKEY)
                         .in(SecurityScheme.In.COOKIE)
-                        .name("accessToken")));
+                        .name("accessToken")
+                        .description("HTTP-only JWT access token set by the sign-in endpoint")));
   }
 
   @Bean

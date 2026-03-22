@@ -1,5 +1,10 @@
 package org.bugzkit.api.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +23,7 @@ import org.bugzkit.api.auth.service.DeviceService;
 import org.bugzkit.api.auth.util.AuthUtil;
 import org.bugzkit.api.auth.util.JwtUtil;
 import org.bugzkit.api.shared.constants.Path;
+import org.bugzkit.api.shared.error.ErrorMessage;
 import org.bugzkit.api.shared.interceptor.RateLimit;
 import org.bugzkit.api.user.payload.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +59,19 @@ public class AuthController {
     this.deviceService = deviceService;
   }
 
+  @Operation(summary = "Register a new user account")
+  @ApiResponses({
+    @ApiResponse(responseCode = "201", description = "Registered"),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Validation error",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(
+        responseCode = "409",
+        description = "Username or email already exists",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content)
+  })
   @RateLimit(requests = 5, duration = 60)
   @PostMapping("/register")
   public ResponseEntity<UserDTO> register(
@@ -60,6 +79,19 @@ public class AuthController {
     return new ResponseEntity<>(authService.register(registerUserRequest), HttpStatus.CREATED);
   }
 
+  @Operation(summary = "Sign in and receive access and refresh token cookies")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Authenticated — cookies set"),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Validation error",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(
+        responseCode = "401",
+        description = "Invalid credentials or account inactive/locked",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content)
+  })
   @RateLimit(requests = 10, duration = 60)
   @PostMapping("/tokens")
   public ResponseEntity<Void> authenticate(
@@ -70,6 +102,8 @@ public class AuthController {
     return setAuthCookies(authTokens);
   }
 
+  @Operation(summary = "Sign out and clear auth cookies for the current device")
+  @ApiResponse(responseCode = "204", description = "Signed out — cookies cleared")
   @DeleteMapping("/tokens")
   public ResponseEntity<Void> deleteTokens(HttpServletRequest request) {
     final var accessToken = AuthUtil.getValueFromCookie("accessToken", request);
@@ -77,6 +111,14 @@ public class AuthController {
     return removeAuthCookies();
   }
 
+  @Operation(summary = "List all active devices for the current user")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  })
   @SecurityRequirement(name = "cookieAuth")
   @GetMapping("/tokens/devices")
   public ResponseEntity<List<DeviceDTO>> findAllDevices(HttpServletRequest request) {
@@ -85,12 +127,22 @@ public class AuthController {
     return ResponseEntity.ok(deviceService.findAll(deviceId));
   }
 
+  @Operation(summary = "Sign out from all devices and clear auth cookies")
+  @ApiResponse(responseCode = "204", description = "Signed out from all devices")
   @DeleteMapping("/tokens/devices")
   public ResponseEntity<Void> deleteTokensOnAllDevices() {
     authService.deleteTokensOnAllDevices();
     return removeAuthCookies();
   }
 
+  @Operation(summary = "Revoke a specific device and invalidate all access tokens")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Device revoked"),
+    @ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  })
   @SecurityRequirement(name = "cookieAuth")
   @DeleteMapping("/tokens/devices/{deviceId}")
   public ResponseEntity<Void> revokeDevice(@PathVariable String deviceId) {
@@ -98,6 +150,15 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
+  @Operation(summary = "Refresh access and refresh token cookies using the refresh token")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Tokens refreshed — cookies updated"),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Invalid or expired refresh token",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content)
+  })
   @RateLimit(requests = 10, duration = 60)
   @PostMapping("/tokens/refresh")
   public ResponseEntity<Void> refreshTokens(HttpServletRequest request) {
@@ -107,6 +168,15 @@ public class AuthController {
     return setAuthCookies(authTokens);
   }
 
+  @Operation(summary = "Send a password reset email")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Email sent if account exists"),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Validation error",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content)
+  })
   @RateLimit(requests = 3, duration = 60)
   @PostMapping("/password/forgot")
   public ResponseEntity<Void> forgotPassword(
@@ -115,6 +185,15 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
+  @Operation(summary = "Reset password using a token from the reset email")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Password reset"),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Invalid or expired token, or validation error",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content)
+  })
   @RateLimit(requests = 5, duration = 60)
   @PostMapping("/password/reset")
   public ResponseEntity<Void> resetPassword(
@@ -123,6 +202,17 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
+  @Operation(summary = "Resend the email verification link")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "204",
+        description = "Email sent if account exists and is inactive"),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Validation error",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content)
+  })
   @RateLimit(requests = 3, duration = 60)
   @PostMapping("/verification-email")
   public ResponseEntity<Void> sendVerificationMail(
@@ -131,6 +221,15 @@ public class AuthController {
     return ResponseEntity.noContent().build();
   }
 
+  @Operation(summary = "Verify email address using a token from the verification email")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Email verified"),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Invalid or expired token",
+        content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content)
+  })
   @RateLimit(requests = 5, duration = 60)
   @PostMapping("/verify-email")
   public ResponseEntity<Void> verifyEmail(

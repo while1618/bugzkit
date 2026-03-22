@@ -1,5 +1,6 @@
 package org.bugzkit.api.admin.payload.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,18 +15,22 @@ import org.bugzkit.api.user.model.Role.RoleName;
 @Builder
 @FieldMatch(first = "password", second = "confirmPassword", message = "{user.passwordsDoNotMatch}")
 public record UserRequest(
-    @NotBlank(message = "{user.usernameRequired}")
+    @Schema(example = "john_doe")
+        @NotBlank(message = "{user.usernameRequired}")
         @Pattern(regexp = Regex.USERNAME, message = "{user.usernameInvalid}")
         String username,
-    @NotBlank(message = "{user.emailRequired}")
+    @Schema(example = "john@example.com")
+        @NotBlank(message = "{user.emailRequired}")
         @Email(message = "{user.emailInvalid}", regexp = Regex.EMAIL)
         String email,
-    @NotBlank(message = "{user.passwordRequired}")
+    @Schema(example = "Secret123!")
+        @NotBlank(message = "{user.passwordRequired}")
         @Pattern(regexp = Regex.PASSWORD, message = "{user.passwordInvalid}")
         String password,
-    @NotBlank(message = "{user.passwordRequired}")
+    @Schema(example = "Secret123!")
+        @NotBlank(message = "{user.passwordRequired}")
         @Pattern(regexp = Regex.PASSWORD, message = "{user.passwordInvalid}")
         String confirmPassword,
-    @NotNull(message = "{user.activeRequired}") Boolean active,
-    @NotNull(message = "{user.lockRequired}") Boolean lock,
+    @Schema(example = "true") @NotNull(message = "{user.activeRequired}") Boolean active,
+    @Schema(example = "false") @NotNull(message = "{user.lockRequired}") Boolean lock,
     @NotEmpty(message = "{user.rolesEmpty}") Set<RoleName> roleNames) {}
