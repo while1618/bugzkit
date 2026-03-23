@@ -393,4 +393,39 @@ class UserControllerIT extends DatabaseContainers {
                 .cookie(new Cookie("accessToken", accessToken)))
         .andExpect(status().isNoContent());
   }
+
+  @Test
+  void deleteUser_withActiveSession() throws Exception {
+    final var userRequest =
+        UserRequest.builder()
+            .username("todelete")
+            .email("todelete@localhost")
+            .password("qwerty123")
+            .confirmPassword("qwerty123")
+            .active(true)
+            .lock(false)
+            .roleNames(Set.of(RoleName.USER))
+            .build();
+    final var createResponse =
+        mockMvc
+            .perform(
+                post(Path.ADMIN_USERS)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .cookie(new Cookie("accessToken", accessToken))
+                    .content(objectMapper.writeValueAsString(userRequest)))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    final var userId = objectMapper.readValue(createResponse, UserDTO.class).id();
+
+    IntegrationTestUtil.authTokens(mockMvc, objectMapper, "todelete");
+
+    mockMvc
+        .perform(
+            delete(Path.ADMIN_USERS + "/{id}", userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie("accessToken", accessToken)))
+        .andExpect(status().isNoContent());
+  }
 }

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bugzkit.api.admin.payload.request.PatchUserRequest;
 import org.bugzkit.api.admin.payload.request.UserRequest;
 import org.bugzkit.api.admin.service.UserService;
+import org.bugzkit.api.auth.repository.DeviceRepository;
 import org.bugzkit.api.auth.service.AccessTokenService;
 import org.bugzkit.api.auth.service.RefreshTokenService;
 import org.bugzkit.api.auth.util.AuthUtil;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
+  private final DeviceRepository deviceRepository;
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
   private final PasswordEncoder passwordEncoder;
@@ -39,12 +41,14 @@ public class UserServiceImpl implements UserService {
   public UserServiceImpl(
       UserRepository userRepository,
       RoleRepository roleRepository,
+      DeviceRepository deviceRepository,
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
       PasswordEncoder passwordEncoder,
       UserMapper userMapper) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
+    this.deviceRepository = deviceRepository;
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
     this.passwordEncoder = passwordEncoder;
@@ -239,6 +243,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public void delete(Long id) {
     deleteAuthTokens(id);
+    deviceRepository.deleteAllByUserId(id);
     userRepository.deleteById(id);
     log.info("Admin deleted user with id '{}'", id);
   }
