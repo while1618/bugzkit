@@ -17,7 +17,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@Profile({"dev", "prod", "test"})
+@Profile({"dev", "prod"})
 @Component
 public class DataInit implements ApplicationRunner {
   private final UserRepository userRepository;
@@ -45,41 +45,39 @@ public class DataInit implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    initRoles();
-    saveUsers();
+    getRoles();
+    seedUsers();
   }
 
-  private void initRoles() {
+  private void getRoles() {
     userRole = roleRepository.findByName(RoleName.USER).orElseThrow();
     adminRole = roleRepository.findByName(RoleName.ADMIN).orElseThrow();
   }
 
-  private void saveUsers() {
+  private void seedUsers() {
     if (!userRepository.existsByUsername("admin"))
       userRepository.save(
           User.builder()
               .username("admin")
-              .email("admin@localhost")
+              .email("office@bugzkit.com")
               .password(bCryptPasswordEncoder.encode(password))
               .active(true)
               .lock(false)
               .roles(Set.of(userRole, adminRole))
               .build());
-    if (!userRepository.existsByUsername("user"))
-      userRepository.save(
-          User.builder()
-              .username("user")
-              .email("user@localhost")
-              .password(bCryptPasswordEncoder.encode(password))
-              .active(true)
-              .lock(false)
-              .roles(Collections.singleton(userRole))
-              .build());
     if (environment.getActiveProfiles()[0].equals("dev")) devUsers();
-    else if (environment.getActiveProfiles()[0].equals("test")) testUsers();
   }
 
   private void devUsers() {
+    userRepository.save(
+        User.builder()
+            .username("user")
+            .email("user@localhost")
+            .password(bCryptPasswordEncoder.encode(password))
+            .active(true)
+            .lock(false)
+            .roles(Collections.singleton(userRole))
+            .build());
     List<User> users =
         faker
             .collection(
@@ -95,90 +93,5 @@ public class DataInit implements ApplicationRunner {
             .len(100)
             .generate();
     userRepository.saveAll(users);
-  }
-
-  private void testUsers() {
-    userRepository.saveAll(
-        List.of(
-            User.builder()
-                .username("deactivated1")
-                .email("deactivate1d@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(false)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("deactivated2")
-                .email("deactivated2@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(false)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("deactivated3")
-                .email("deactivated3@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(false)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("locked")
-                .email("locked@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(true)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("update1")
-                .email("update1@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("update2")
-                .email("update2@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("update3")
-                .email("update3@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("update4")
-                .email("update4@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("delete1")
-                .email("delete1@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build(),
-            User.builder()
-                .username("delete2")
-                .email("delete2@localhost")
-                .password(bCryptPasswordEncoder.encode(password))
-                .active(true)
-                .lock(false)
-                .roles(Collections.singleton(userRole))
-                .build()));
   }
 }

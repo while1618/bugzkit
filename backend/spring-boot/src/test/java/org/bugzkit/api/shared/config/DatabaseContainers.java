@@ -1,28 +1,35 @@
 package org.bugzkit.api.shared.config;
 
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-@Testcontainers
+@Sql(
+    scripts = {"classpath:sql/truncate.sql", "classpath:sql/test-data.sql"},
+    executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 public abstract class DatabaseContainers {
-  @Container @ServiceConnection
   static PostgreSQLContainer postgres =
       new PostgreSQLContainer(DockerImageName.parse("postgres").withTag("latest"));
 
-  @Container
   static GenericContainer<?> redis =
       new GenericContainer<>(DockerImageName.parse("redis").withTag("latest"))
           .withExposedPorts(6379)
           .withCommand("redis-server", "--requirepass", "root");
 
+  static {
+    postgres.start();
+    redis.start();
+  }
+
   @DynamicPropertySource
-  static void redisProperties(DynamicPropertyRegistry registry) {
+  static void containerProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", postgres::getJdbcUrl);
+    registry.add("spring.datasource.username", postgres::getUsername);
+    registry.add("spring.datasource.password", postgres::getPassword);
     registry.add("spring.data.redis.host", redis::getHost);
     registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
   }
