@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
   private final RoleRepository roleRepository;
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
-  private final PasswordEncoder bCryptPasswordEncoder;
+  private final PasswordEncoder passwordEncoder;
   private final UserMapper userMapper;
 
   public UserServiceImpl(
@@ -41,13 +41,13 @@ public class UserServiceImpl implements UserService {
       RoleRepository roleRepository,
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
-      PasswordEncoder bCryptPasswordEncoder,
+      PasswordEncoder passwordEncoder,
       UserMapper userMapper) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
-    this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    this.passwordEncoder = passwordEncoder;
     this.userMapper = userMapper;
   }
 
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         User.builder()
             .username(userRequest.username())
             .email(userRequest.email())
-            .password(bCryptPasswordEncoder.encode(userRequest.password()))
+            .password(passwordEncoder.encode(userRequest.password()))
             .active(userRequest.active())
             .lock(userRequest.lock())
             .roles(new HashSet<>(roleRepository.findAllByNameIn(userRequest.roleNames())))
@@ -186,10 +186,9 @@ public class UserServiceImpl implements UserService {
   }
 
   private void setPassword(User user, String password) {
-    if (user.getPassword() != null && bCryptPasswordEncoder.matches(password, user.getPassword()))
-      return;
+    if (user.getPassword() != null && passwordEncoder.matches(password, user.getPassword())) return;
 
-    user.setPassword(bCryptPasswordEncoder.encode(password));
+    user.setPassword(passwordEncoder.encode(password));
     if (user.getId() != null) {
       deleteAuthTokens(user.getId());
       log.info(

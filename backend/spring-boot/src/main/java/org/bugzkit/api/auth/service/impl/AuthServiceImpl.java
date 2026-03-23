@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
-  private final PasswordEncoder bCryptPasswordEncoder;
+  private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
   public AuthServiceImpl(
       UserRepository userRepository,
       RoleRepository roleRepository,
-      PasswordEncoder bCryptPasswordEncoder,
+      PasswordEncoder passwordEncoder,
       AuthenticationManager authenticationManager,
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
       UserMapper userMapper) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
-    this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    this.passwordEncoder = passwordEncoder;
     this.authenticationManager = authenticationManager;
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
@@ -116,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
     return User.builder()
         .username(registerUserRequest.username())
         .email(registerUserRequest.email())
-        .password(bCryptPasswordEncoder.encode(registerUserRequest.password()))
+        .password(passwordEncoder.encode(registerUserRequest.password()))
         .roles(Collections.singleton(roles))
         .build();
   }
@@ -184,7 +184,7 @@ public class AuthServiceImpl implements AuthService {
                       userId);
                   return new BadRequestException("auth.tokenInvalid");
                 });
-    user.setPassword(bCryptPasswordEncoder.encode(resetPasswordRequest.password()));
+    user.setPassword(passwordEncoder.encode(resetPasswordRequest.password()));
     accessTokenService.invalidateAllByUserId(user.getId());
     refreshTokenService.deleteAllByUserId(user.getId());
     userRepository.save(user);

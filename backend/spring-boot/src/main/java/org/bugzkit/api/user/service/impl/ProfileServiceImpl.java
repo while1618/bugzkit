@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProfileServiceImpl implements ProfileService {
   private final UserRepository userRepository;
-  private final PasswordEncoder bCryptPasswordEncoder;
+  private final PasswordEncoder passwordEncoder;
   private final AccessTokenService accessTokenService;
   private final RefreshTokenService refreshTokenService;
   private final VerificationTokenService verificationTokenService;
@@ -33,14 +33,14 @@ public class ProfileServiceImpl implements ProfileService {
 
   public ProfileServiceImpl(
       UserRepository userRepository,
-      PasswordEncoder bCryptPasswordEncoder,
+      PasswordEncoder passwordEncoder,
       AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService,
       VerificationTokenService verificationTokenService,
       DeviceService deviceService,
       UserMapper userMapper) {
     this.userRepository = userRepository;
-    this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    this.passwordEncoder = passwordEncoder;
     this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
     this.verificationTokenService = verificationTokenService;
@@ -129,12 +129,11 @@ public class ProfileServiceImpl implements ProfileService {
                       userId);
                   return new UnauthorizedException("auth.tokenInvalid");
                 });
-    if (!bCryptPasswordEncoder.matches(
-        changePasswordRequest.currentPassword(), user.getPassword())) {
+    if (!passwordEncoder.matches(changePasswordRequest.currentPassword(), user.getPassword())) {
       log.warn("Password change failed for user '{}': current password is wrong", userId);
       throw new BadRequestException("user.currentPasswordWrong");
     }
-    user.setPassword(bCryptPasswordEncoder.encode(changePasswordRequest.newPassword()));
+    user.setPassword(passwordEncoder.encode(changePasswordRequest.newPassword()));
     deleteAuthTokens(userId);
     userRepository.save(user);
     log.info("Password changed for user '{}', all tokens invalidated", userId);

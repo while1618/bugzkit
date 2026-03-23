@@ -19,7 +19,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -51,6 +50,7 @@ public class SecurityConfig {
   private final OAuth2SuccessHandler oAuth2SuccessHandler;
   private final OAuth2FailureHandler oAuth2FailureHandler;
   private final OAuth2UserService oAuth2UserService;
+  private final PasswordEncoder passwordEncoder;
 
   public SecurityConfig(
       JWTFilter jwtFilter,
@@ -58,24 +58,21 @@ public class SecurityConfig {
       CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
       OAuth2SuccessHandler oAuth2SuccessHandler,
       OAuth2FailureHandler oAuth2FailureHandler,
-      OAuth2UserService oAuth2UserService) {
+      OAuth2UserService oAuth2UserService,
+      PasswordEncoder passwordEncoder) {
     this.jwtFilter = jwtFilter;
     this.userDetailsService = userDetailsService;
     this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     this.oAuth2FailureHandler = oAuth2FailureHandler;
     this.oAuth2UserService = oAuth2UserService;
-  }
-
-  @Bean
-  public PasswordEncoder bCryptPasswordEncoder() {
-    return new BCryptPasswordEncoder(12);
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Bean
   public AuthenticationManager authenticationManager() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-    authProvider.setPasswordEncoder(bCryptPasswordEncoder());
+    authProvider.setPasswordEncoder(passwordEncoder);
     return new ProviderManager(authProvider);
   }
 
