@@ -58,9 +58,9 @@ spring:
       sender: ${SMTP_SENDER:noreply@bugzkit.com}
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
-            enable: true
+            enable: false
 
 jwt:
   secret: ${JWT_SECRET:secret}

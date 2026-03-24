@@ -32,7 +32,16 @@ spring:
             client-secret: ${google_client_secret}
             scope: profile,email
   mail:
+    host: ${SMTP_HOST:smtp.resend.com}
+    port: ${SMTP_PORT:2587}
+    username: ${SMTP_USER:resend}
     password: ${smtp_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 jwt:
   secret: ${jwt_secret}

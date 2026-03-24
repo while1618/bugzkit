@@ -29,16 +29,8 @@ spring:
       database: ${REDIS_DATABASE:0}
       timeout: 60
   mail:
-    host: ${SMTP_HOST:smtp.resend.com}
-    port: ${SMTP_PORT:2587}
-    username: ${SMTP_USER:resend}
     properties:
       sender: ${SMTP_SENDER:noreply@bugzkit.com}
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
 jwt:
   access-token:

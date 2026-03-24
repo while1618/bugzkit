@@ -4,6 +4,34 @@ Sending emails requires additional setup and won't work out of the box.
 You'll need to configure your SMTP, provide host, username and password.
 You can set these up directly in the code or via environment variables. Refer to the corresponding section for more details.
 
+### Local development and testing
+
+In development and integration tests, emails are caught by [Mailpit](https://github.com/axllent/mailpit) — a lightweight local SMTP server. No real emails are sent.
+
+**Development**: Mailpit runs as a Docker container (defined in `docker-compose-infra.dev.yml`). Start it along with the other dev services:
+
+```bash
+docker-compose -f docker-compose-infra.dev.yml up -d
+```
+
+Once running, you can view all captured emails in the Mailpit web UI at **http://localhost:8025**.
+
+The backend dev config (`application-dev.yml`) points SMTP to Mailpit by default (`localhost:1025`), so no extra configuration is needed locally.
+
+**Integration tests**: Mailpit is started automatically via Testcontainers (managed by `TestcontainersConfig`). Tests that send emails use `mailpit()` to assert emails were received.
+
+### Production
+
+In production, [Resend](https://resend.com) is used as the SMTP provider (`smtp.resend.com`). Configure it via environment variables:
+
+```
+SMTP_HOST=smtp.resend.com
+SMTP_PORT=2587
+SMTP_USER=resend
+SMTP_PASSWORD=your_resend_api_key
+SMTP_SENDER=noreply@yourdomain.com
+```
+
 ### Adding your HTML templates
 
 Emails are send via SpringBoot, you can create HTML email template in the `resources/templates/email` directory and send them using the `sendHtmlEmail()` method from the `EmailService`.

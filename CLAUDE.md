@@ -36,7 +36,7 @@ Integration tests use `*IT.java` suffix and run via Maven Failsafe. They require
 
 ### Docker (from repo root)
 
-- **DB only** (for local backend dev): `docker-compose -f docker-compose-db.dev.yml up -d`
+- **DB only** (for local backend dev): `docker-compose -f docker-compose-infra.dev.yml up -d`
 - **Full stack**: `docker-compose -f docker-compose.dev.yml up --build -d`
 - **API + DB only**: `docker-compose -f docker-compose-api.dev.yml up --build -d`
 

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.bugzkit.api.shared.config.DatabaseContainers;
+import org.bugzkit.api.shared.config.TestcontainersConfig;
 import org.bugzkit.api.user.model.User;
 import org.bugzkit.api.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @ActiveProfiles("test")
 @SpringBootTest
-class OAuth2UserServiceIT extends DatabaseContainers {
+class OAuth2UserServiceIT extends TestcontainersConfig {
   @Autowired private UserRepository userRepository;
 
   @Test

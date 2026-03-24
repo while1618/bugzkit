@@ -40,7 +40,15 @@ To run a single integration test:
 ./mvnw -B failsafe:integration-test -Dit.test=AuthControllerIT failsafe:verify
 ```
 
-All integration tests extend the `DatabaseContainers` base class, which defines shared PostgreSQL and Redis containers using `@ServiceConnection` for automatic Spring Boot configuration.
+All integration tests extend the `TestcontainersConfig` base class, which spins up shared PostgreSQL, Redis, and Mailpit containers. PostgreSQL uses `@ServiceConnection` for automatic Spring Boot configuration; Redis and Mailpit use `@DynamicPropertySource` to inject their host/port at runtime.
+
+Tests that trigger emails can use the `mailpit()` helper to assert emails were received:
+
+```java
+mailpit().clearMessages();
+// ... perform action that sends an email ...
+assertEquals(1, mailpit().getMessageCount());
+```
 
 Docker must be running for integration tests to work.
 

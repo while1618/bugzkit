@@ -2,10 +2,10 @@
 
 ### Running Locally
 
-For the API to start properly, you'll need Postgres and Redis running. The easies way to start them is via Docker. Just run `docker-compose-db.dev.yml`:
+For the API to start properly, you'll need Postgres and Redis running. The easies way to start them is via Docker. Just run `docker-compose-infra.dev.yml`:
 
 ```bash
-docker-compose -f docker-compose-db.dev.yml up -d
+docker-compose -f docker-compose-infra.dev.yml up -d
 ```
 
 After the services are up and running, start the application:

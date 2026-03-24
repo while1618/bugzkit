@@ -32,10 +32,10 @@ Once completed, commit the changes and start coding!
 
 ### Running Locally
 
-For the API to start properly, you'll need Postgres and Redis running. The easiest way to do that is via the `docker-compose-db.dev.yml` file in the `backend/spring-boot` directory:
+For the API to start properly, you'll need Postgres and Redis running. The easiest way to do that is via the `docker-compose-infra.dev.yml` file in the `backend/spring-boot` directory:
 
 ```bash
-docker-compose -f backend/spring-boot/docker-compose-db.dev.yml up -d
+docker-compose -f docker-compose-infra.dev.yml up -d
 ```
 
 After the services are up and running, navigate to the `backend/spring-boot` directory and start the application:
@@ -52,7 +52,7 @@ Alternatively, use IntelliJ IDEA. A pre-configured run configuration is availabl
 For running the API using Docker, execute:
 
 ```bash
-docker-compose -f backend/spring-boot/docker-compose-api.dev.yml up --build -d
+docker-compose -f docker-compose-api.dev.yml up --build -d
 ```
 
 **Note**: SMTP and Google OAuth require configuration. Refer to the Environment Variables section for setup.

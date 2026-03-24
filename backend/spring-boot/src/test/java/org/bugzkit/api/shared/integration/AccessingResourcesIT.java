@@ -13,7 +13,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Set;
 import org.bugzkit.api.admin.payload.request.PatchUserRequest;
 import org.bugzkit.api.admin.payload.request.UserRequest;
-import org.bugzkit.api.shared.config.DatabaseContainers;
+import org.bugzkit.api.shared.config.TestcontainersConfig;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.util.IntegrationTestUtil;
 import org.bugzkit.api.user.model.Role.RoleName;
@@ -29,7 +29,7 @@ import tools.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @SpringBootTest
-class AccessingResourcesIT extends DatabaseContainers {
+class AccessingResourcesIT extends TestcontainersConfig {
   private final String unauthorized = "API_ERROR_AUTH_UNAUTHORIZED";
   private final String forbidden = "API_ERROR_AUTH_FORBIDDEN";
   @Autowired private MockMvc mockMvc;

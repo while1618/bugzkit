@@ -6,11 +6,9 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,9 +28,8 @@ import org.bugzkit.api.auth.redis.repository.RefreshTokenStoreRepository;
 import org.bugzkit.api.auth.service.impl.ResetPasswordTokenServiceImpl;
 import org.bugzkit.api.auth.service.impl.VerificationTokenServiceImpl;
 import org.bugzkit.api.auth.util.JwtUtil;
-import org.bugzkit.api.shared.config.DatabaseContainers;
+import org.bugzkit.api.shared.config.TestcontainersConfig;
 import org.bugzkit.api.shared.constants.Path;
-import org.bugzkit.api.shared.email.service.EmailService;
 import org.bugzkit.api.shared.util.IntegrationTestUtil;
 import org.bugzkit.api.user.model.User;
 import org.bugzkit.api.user.repository.UserRepository;
@@ -45,14 +42,13 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @SpringBootTest
-class AuthControllerIT extends DatabaseContainers {
+class AuthControllerIT extends TestcontainersConfig {
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
   @Autowired private VerificationTokenServiceImpl verificationTokenService;
@@ -60,10 +56,9 @@ class AuthControllerIT extends DatabaseContainers {
   @Autowired private UserRepository userRepository;
   @Autowired private RefreshTokenStoreRepository refreshTokenStoreRepository;
 
-  @MockitoBean private EmailService emailService;
-
   @Test
   void registerUser() throws Exception {
+    mailpit().clearMessages();
     final var registerUserRequest =
         RegisterUserRequest.builder()
             .username("test")
@@ -78,8 +73,9 @@ class AuthControllerIT extends DatabaseContainers {
                 .content(objectMapper.writeValueAsString(registerUserRequest)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.username").value("test"));
-    verify(emailService, times(1))
-        .sendHtmlEmail(any(String.class), any(String.class), any(String.class));
+    final var messages = mailpit().getMessages();
+    assertEquals(1, mailpit().getMessageCount());
+    assertEquals("test@localhost", messages.get(0).get("To").get(0).get("Address").asString());
   }
 
   @Test
@@ -241,6 +237,7 @@ class AuthControllerIT extends DatabaseContainers {
 
   @Test
   void forgotPassword() throws Exception {
+    mailpit().clearMessages();
     final var forgotPasswordRequest = new ForgotPasswordRequest("update4@localhost");
     mockMvc
         .perform(
@@ -248,8 +245,7 @@ class AuthControllerIT extends DatabaseContainers {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(forgotPasswordRequest)))
         .andExpect(status().isNoContent());
-    verify(emailService, times(1))
-        .sendHtmlEmail(any(String.class), any(String.class), any(String.class));
+    assertEquals(1, mailpit().getMessageCount());
   }
 
   @Test
@@ -313,6 +309,7 @@ class AuthControllerIT extends DatabaseContainers {
 
   @Test
   void sendVerificationMail() throws Exception {
+    mailpit().clearMessages();
     final var verificationMailRequest = new VerificationEmailRequest("deactivated1");
     mockMvc
         .perform(
@@ -320,8 +317,7 @@ class AuthControllerIT extends DatabaseContainers {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(verificationMailRequest)))
         .andExpect(status().isNoContent());
-    verify(emailService, times(1))
-        .sendHtmlEmail(any(String.class), any(String.class), any(String.class));
+    assertEquals(1, mailpit().getMessageCount());
   }
 
   @Test

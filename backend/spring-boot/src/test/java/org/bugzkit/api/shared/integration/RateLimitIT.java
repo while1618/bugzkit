@@ -9,9 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.bugzkit.api.auth.payload.request.ForgotPasswordRequest;
 import org.bugzkit.api.auth.payload.request.VerificationEmailRequest;
-import org.bugzkit.api.shared.config.DatabaseContainers;
+import org.bugzkit.api.shared.config.TestcontainersConfig;
 import org.bugzkit.api.shared.constants.Path;
-import org.bugzkit.api.shared.email.service.EmailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +19,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
@@ -28,10 +26,9 @@ import tools.jackson.databind.ObjectMapper;
 @ActiveProfiles("test")
 @SpringBootTest
 @TestPropertySource(properties = "rate-limit.enabled=true")
-class RateLimitIT extends DatabaseContainers {
+class RateLimitIT extends TestcontainersConfig {
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
-  @MockitoBean private EmailService emailService;
 
   @Value("${server.client-ip-header}")
   private String clientIpHeader;

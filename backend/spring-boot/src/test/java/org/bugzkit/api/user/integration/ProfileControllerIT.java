@@ -1,9 +1,7 @@
 package org.bugzkit.api.user.integration;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -12,9 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import jakarta.servlet.http.Cookie;
-import org.bugzkit.api.shared.config.DatabaseContainers;
+import org.bugzkit.api.shared.config.TestcontainersConfig;
 import org.bugzkit.api.shared.constants.Path;
-import org.bugzkit.api.shared.email.service.EmailService;
 import org.bugzkit.api.shared.util.IntegrationTestUtil;
 import org.bugzkit.api.user.payload.request.ChangePasswordRequest;
 import org.bugzkit.api.user.payload.request.PatchProfileRequest;
@@ -24,18 +21,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @SpringBootTest
-class ProfileControllerIT extends DatabaseContainers {
+class ProfileControllerIT extends TestcontainersConfig {
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
-
-  @MockitoBean private EmailService emailService;
 
   @Test
   void findProfile() throws Exception {
@@ -52,6 +46,7 @@ class ProfileControllerIT extends DatabaseContainers {
 
   @Test
   void patchProfile_newUsernameAndEmail() throws Exception {
+    mailpit().clearMessages();
     final var authTokens = IntegrationTestUtil.authTokens(mockMvc, objectMapper, "update1");
     final var patchProfileRequest = new PatchProfileRequest("updated1", "updated1@localhost");
     mockMvc
@@ -63,8 +58,7 @@ class ProfileControllerIT extends DatabaseContainers {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").value("updated1"))
         .andExpect(jsonPath("$.email").value("updated1@localhost"));
-    verify(emailService, times(1))
-        .sendHtmlEmail(any(String.class), any(String.class), any(String.class));
+    assertEquals(1, mailpit().getMessageCount());
   }
 
   @Test

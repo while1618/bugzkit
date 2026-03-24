@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import org.bugzkit.api.admin.payload.request.PatchUserRequest;
 import org.bugzkit.api.admin.payload.request.UserRequest;
-import org.bugzkit.api.shared.config.DatabaseContainers;
+import org.bugzkit.api.shared.config.TestcontainersConfig;
 import org.bugzkit.api.shared.constants.Path;
 import org.bugzkit.api.shared.util.IntegrationTestUtil;
 import org.bugzkit.api.user.model.Role.RoleName;
@@ -35,7 +35,7 @@ import tools.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @SpringBootTest
-class UserControllerIT extends DatabaseContainers {
+class UserControllerIT extends TestcontainersConfig {
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
 

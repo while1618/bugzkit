@@ -59,6 +59,21 @@ services:
     networks:
       - web
 
+  mailpit:
+    container_name: mailpit
+    image: axllent/mailpit:latest
+    ports:
+      - "${SMTP_PORT:-1025}:${SMTP_PORT:-1025}"
+      - "8025:8025"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8025/livez || exit 1"]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+    networks:
+      - web
+
 volumes:
   postgres_data:
   redis_data:
