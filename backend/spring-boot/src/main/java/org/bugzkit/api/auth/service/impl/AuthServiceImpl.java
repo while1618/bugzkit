@@ -10,6 +10,7 @@ import org.bugzkit.api.auth.payload.request.RegisterUserRequest;
 import org.bugzkit.api.auth.payload.request.ResetPasswordRequest;
 import org.bugzkit.api.auth.payload.request.VerificationEmailRequest;
 import org.bugzkit.api.auth.payload.request.VerifyEmailRequest;
+import org.bugzkit.api.auth.security.UserPrincipal;
 import org.bugzkit.api.auth.service.AccessTokenService;
 import org.bugzkit.api.auth.service.AuthService;
 import org.bugzkit.api.auth.service.DeviceService;
@@ -91,14 +92,15 @@ public class AuthServiceImpl implements AuthService {
   @Override
   public AuthTokens authenticate(
       AuthTokensRequest authTokensRequest, String deviceId, String userAgent) {
-    final var auth =
+    final var authToken =
         new UsernamePasswordAuthenticationToken(
             authTokensRequest.usernameOrEmail(), authTokensRequest.password(), new ArrayList<>());
-    authenticationManager.authenticate(auth);
+    final var authenticated = authenticationManager.authenticate(authToken);
+    final var principal = (UserPrincipal) authenticated.getPrincipal();
 
     final var user =
         userRepository
-            .findWithRolesByUsername(auth.getName())
+            .findWithRolesById(principal.getId())
             .orElseThrow(() -> new UnauthorizedException("auth.unauthorized"));
     final var roleDTOs = userMapper.rolesToRoleDTOs(user.getRoles());
     final var accessToken = accessTokenService.create(user.getId(), roleDTOs, deviceId);
