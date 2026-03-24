@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Profile("dev")
 @Component
-public class InitDevData implements ApplicationRunner {
+public class DevDataInit implements ApplicationRunner {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
@@ -25,7 +25,7 @@ public class InitDevData implements ApplicationRunner {
   @Value("${spring.security.user.password}")
   private String password;
 
-  public InitDevData(
+  public DevDataInit(
       UserRepository userRepository,
       RoleRepository roleRepository,
       PasswordEncoder passwordEncoder) {
