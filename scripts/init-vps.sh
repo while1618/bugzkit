@@ -350,27 +350,6 @@ chown -R root:root "$SECRETS_DIR"
 success "7 secret files written (mode 400, root-owned)."
 
 # ==============================================================================
-# 13. DEPLOY
-# ==============================================================================
-COMPOSE_FILE="$APP_DIR/docker-compose.prod.yml"
-
-if [[ ! -f "$COMPOSE_FILE" ]]; then
-  warn "docker-compose.prod.yml not found at $APP_DIR — skipping deploy."
-  echo ""
-  echo "  Copy the file manually, then run:"
-  echo "    cd $APP_DIR"
-  echo "    docker compose -f docker-compose.prod.yml up -d"
-else
-  info "Deploying stack…"
-  cd "$APP_DIR"
-  docker compose -f docker-compose.prod.yml up -d
-  success "Stack deployed."
-  echo ""
-  info "Service status:  docker compose -f $COMPOSE_FILE ps"
-  info "Follow logs:     docker compose -f $COMPOSE_FILE logs -f bugzkit-api"
-fi
-
-# ==============================================================================
 # DONE
 # ==============================================================================
 echo ""
