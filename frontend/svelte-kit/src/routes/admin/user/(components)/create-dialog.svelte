@@ -18,21 +18,20 @@
 
   const superform = superForm(data.createForm, {
     validators: zod4Client(createSchema),
-  });
-  const { form, message, errors, enhance, submitting } = superform;
-  let dialogOpen = $state(false);
-
-  $effect(() => {
-    if ($message) {
-      toast.success($message);
-      dialogOpen = false;
-    }
-    if ($errors._errors) {
-      for (const error of $errors._errors) {
-        toast.error(error);
+    onUpdate({ form }) {
+      if (form.message) {
+        toast.success(form.message as string);
+        dialogOpen = false;
       }
-    }
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
+      }
+    },
   });
+  const { form, enhance, submitting } = superform;
+  let dialogOpen = $state(false);
 </script>
 
 <Dialog.Root bind:open={dialogOpen}>

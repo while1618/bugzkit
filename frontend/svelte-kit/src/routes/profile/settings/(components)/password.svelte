@@ -15,23 +15,20 @@
 
   const changePasswordSuperform = superForm(data.changePasswordForm, {
     validators: zod4Client(changePasswordSchema),
+    onUpdate({ form }) {
+      if (form.message) toast.success(form.message as string);
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
+      }
+    },
   });
   const {
     form: changePasswordForm,
-    message: changePasswordMessage,
-    errors: changePasswordErrors,
     enhance: changePasswordEnhance,
     submitting: changePasswordSubmitting,
   } = changePasswordSuperform;
-
-  $effect(() => {
-    if ($changePasswordMessage) toast.success($changePasswordMessage);
-    if ($changePasswordErrors._errors) {
-      for (const error of $changePasswordErrors._errors) {
-        toast.error(error);
-      }
-    }
-  });
 </script>
 
 <Card.Root class="w-[500px]">

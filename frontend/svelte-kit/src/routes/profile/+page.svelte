@@ -15,16 +15,15 @@
 
   const superform = superForm(data.setUsernameForm, {
     validators: zod4Client(setUsernameSchema),
-  });
-  const { form, errors, enhance, delayed } = superform;
-
-  $effect(() => {
-    if ($errors._errors) {
-      for (const error of $errors._errors) {
-        toast.error(error);
+    onUpdate({ form }) {
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
       }
-    }
+    },
   });
+  const { form, enhance, delayed } = superform;
 </script>
 
 <section>

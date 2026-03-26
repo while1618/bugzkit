@@ -17,18 +17,17 @@
   const { data }: PageProps = $props();
   const superform = superForm(data.form, {
     validators: zod4Client(signInSchema),
+    onUpdate({ form }) {
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
+      }
+    },
   });
-  const { form, errors, enhance, submitting } = superform;
+  const { form, enhance, submitting } = superform;
   const oauthError = page.url.searchParams.get('error');
   let googleLoading = $state(false);
-
-  $effect(() => {
-    if ($errors._errors) {
-      for (const error of $errors._errors) {
-        toast.error(error);
-      }
-    }
-  });
 </script>
 
 <section>

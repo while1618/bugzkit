@@ -26,25 +26,22 @@
 
   const revokeDeviceSuperform = superForm(data.revokeDeviceForm, {
     validators: zod4Client(revokeDeviceSchema),
+    onUpdate({ form }) {
+      if (form.message) toast.success(form.message as string);
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
+      }
+    },
   });
   const {
     form: revokeDeviceForm,
-    message: revokeDeviceMessage,
-    errors: revokeDeviceErrors,
     enhance: revokeDeviceEnhance,
   } = revokeDeviceSuperform;
 
   let dialogOpen = $state(false);
   let selectedDeviceId = $state('');
-
-  $effect(() => {
-    if ($revokeDeviceMessage) toast.success($revokeDeviceMessage);
-    if ($revokeDeviceErrors._errors) {
-      for (const error of $revokeDeviceErrors._errors) {
-        toast.error(error);
-      }
-    }
-  });
 
   function openRevokeDialog(deviceId: string) {
     selectedDeviceId = deviceId;

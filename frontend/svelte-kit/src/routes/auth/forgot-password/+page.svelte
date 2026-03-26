@@ -14,17 +14,16 @@
   const { data }: PageProps = $props();
   const superform = superForm(data.form, {
     validators: zod4Client(forgotPasswordSchema),
-  });
-  const { form, message, errors, enhance, submitting } = superform;
-
-  $effect(() => {
-    if ($message) toast.success($message);
-    if ($errors._errors) {
-      for (const error of $errors._errors) {
-        toast.error(error);
+    onUpdate({ form }) {
+      if (form.message) toast.success(form.message as string);
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
       }
-    }
+    },
   });
+  const { form, enhance, submitting } = superform;
 </script>
 
 <section>

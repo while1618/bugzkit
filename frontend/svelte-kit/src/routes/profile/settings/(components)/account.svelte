@@ -20,28 +20,29 @@
   const superform = superForm(data.updateProfileForm, {
     validators: zod4Client(updateProfileSchema),
     resetForm: false,
+    onUpdate({ form }) {
+      if (form.message) toast.success(form.message as string);
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
+      }
+    },
   });
-  const { form, message, errors, enhance, submitting } = superform;
+  const { form, enhance, submitting } = superform;
 
   const deleteSuperform = superForm(data.deleteForm, {
     validators: zod4Client(deleteSchema),
+    onUpdate({ form }) {
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
+      }
+    },
   });
-  const { errors: deleteErrors, enhance: deleteEnhance } = deleteSuperform;
+  const { enhance: deleteEnhance } = deleteSuperform;
   let deleteDialogOpen = $state(false);
-
-  $effect(() => {
-    if ($message) toast.success($message);
-    if ($errors._errors) {
-      for (const error of $errors._errors) {
-        toast.error(error);
-      }
-    }
-    if ($deleteErrors._errors) {
-      for (const error of $deleteErrors._errors) {
-        toast.error(error);
-      }
-    }
-  });
 </script>
 
 <Card.Root class="w-[500px]">

@@ -19,18 +19,17 @@
     onSubmit({ formData }) {
       formData.set('id', `${user.id}`);
     },
-  });
-  const { message, errors, enhance } = superform;
-  let dialogOpen = $state(false);
-
-  $effect(() => {
-    if ($message) toast.success($message);
-    if ($errors._errors) {
-      for (const error of $errors._errors) {
-        toast.error(error);
+    onUpdate({ form }) {
+      if (form.message) toast.success(form.message as string);
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
       }
-    }
+    },
   });
+  const { enhance } = superform;
+  let dialogOpen = $state(false);
 </script>
 
 <AlertDialog.Root bind:open={dialogOpen}>

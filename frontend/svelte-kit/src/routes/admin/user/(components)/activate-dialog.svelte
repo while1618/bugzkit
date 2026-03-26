@@ -20,19 +20,18 @@
     onSubmit({ formData }) {
       formData.set('id', `${user.id}`);
     },
+    onUpdate({ form }) {
+      if (form.message) toast.success(form.message as string);
+      if (form.errors._errors) {
+        for (const error of form.errors._errors) {
+          toast.error(error);
+        }
+      }
+    },
   });
-  const { message, errors, enhance } = superform;
+  const { enhance } = superform;
   let dialogOpen = $state(false);
   const isSelf = user.id === data.profile?.id;
-
-  $effect(() => {
-    if ($message) toast.success($message);
-    if ($errors._errors) {
-      for (const error of $errors._errors) {
-        toast.error(error);
-      }
-    }
-  });
 </script>
 
 <AlertDialog.Root bind:open={dialogOpen}>
