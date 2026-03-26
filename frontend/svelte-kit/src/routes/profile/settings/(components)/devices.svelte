@@ -35,10 +35,7 @@
       }
     },
   });
-  const {
-    form: revokeDeviceForm,
-    enhance: revokeDeviceEnhance,
-  } = revokeDeviceSuperform;
+  const { form: revokeDeviceForm, enhance: revokeDeviceEnhance } = revokeDeviceSuperform;
 
   let dialogOpen = $state(false);
   let selectedDeviceId = $state('');
