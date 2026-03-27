@@ -68,9 +68,13 @@ jobs:
         run: pnpm run test:unit
 
       - name: Integration tests
+        env:
+          PUBLIC_API_URL: http://localhost:8080
+          JWT_SECRET: secret
+          DOMAIN_NAME: localhost
         run: |
           npx playwright install --with-deps
-          npx playwright test --pass-with-no-tests
+          pnpm run test:integration
 
   check-models:
     needs: changes
