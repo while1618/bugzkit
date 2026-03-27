@@ -44,6 +44,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: 9.0.10
         version: 9.0.10
+      '@types/node':
+        specifier: 25.5.0
+        version: 25.5.0
       '@types/set-cookie-parser':
         specifier: 2.4.10
         version: 2.4.10
