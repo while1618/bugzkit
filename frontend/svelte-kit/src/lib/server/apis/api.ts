@@ -1,7 +1,7 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { ErrorCode, type ErrorMessage } from '$lib/models/shared/error-message';
 import * as m from '$lib/paraglide/messages.js';
-import { setCookieFromString, type HttpRequest } from '$lib/server/utils/util';
+import { setCookiesFromString, type HttpRequest } from '$lib/server/utils/util';
 import { fail, type Cookies } from '@sveltejs/kit';
 import { setError, type SuperValidated } from 'sveltekit-superforms';
 
@@ -38,9 +38,7 @@ export async function makeRequest(
   const response = await fetch(`${PUBLIC_API_URL}${params.path}`, opts);
 
   const setCookies = response.headers.getSetCookie();
-  setCookies.forEach((cookie: string) => {
-    setCookieFromString(cookie, cookies);
-  });
+  setCookiesFromString(setCookies, cookies);
 
   if (!response.ok) return (await response.json()) as ErrorMessage;
 

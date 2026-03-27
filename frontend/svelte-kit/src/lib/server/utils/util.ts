@@ -3,7 +3,7 @@ import type { JwtPayload } from '$lib/models/auth/jwt-payload';
 import { RoleName } from '$lib/models/user/role';
 import { type Cookies } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
-import { parseString } from 'set-cookie-parser';
+import { parseSetCookie } from 'set-cookie-parser';
 
 export enum HttpRequest {
   GET = 'GET',
@@ -13,31 +13,30 @@ export enum HttpRequest {
   DELETE = 'DELETE',
 }
 
-export function setCookieFromString(cookie: string, cookies: Cookies) {
-  if (cookie === '') return;
+export function setCookiesFromString(setCookies: string[], cookies: Cookies) {
+  parseSetCookie(setCookies).forEach((cookie) => {
+    const { name, value, path, sameSite, secure, httpOnly, ...opts } = cookie;
 
-  const parsed = parseString(cookie);
-  const { name, value, path, sameSite, secure, httpOnly, ...opts } = parsed;
+    if (name === undefined || value === undefined || path === undefined) return;
 
-  if (name === undefined || value === undefined || path === undefined) return;
+    const normalizedSameSite = (() => {
+      if (sameSite === undefined || typeof sameSite === 'boolean') {
+        return sameSite;
+      }
+      const lower = sameSite.toLowerCase();
+      if (lower === 'lax' || lower === 'strict' || lower === 'none') {
+        return lower;
+      }
+      return undefined;
+    })();
 
-  const normalizedSameSite = (() => {
-    if (sameSite === undefined || typeof sameSite === 'boolean') {
-      return sameSite;
-    }
-    const lower = sameSite.toLowerCase();
-    if (lower === 'lax' || lower === 'strict' || lower === 'none') {
-      return lower;
-    }
-    return undefined;
-  })();
-
-  cookies.set(name, value, {
-    ...opts,
-    path,
-    sameSite: normalizedSameSite,
-    secure: secure ?? false,
-    httpOnly: httpOnly ?? false,
+    cookies.set(name, value, {
+      ...opts,
+      path,
+      sameSite: normalizedSameSite,
+      secure: secure ?? false,
+      httpOnly: httpOnly ?? false,
+    });
   });
 }
 
