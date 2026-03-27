@@ -52,8 +52,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "pnpm"
-          cache-dependency-path: frontend/svelte-kit/pnpm-lock.yaml
 
       - name: Install pnpm
         uses: pnpm/action-setup@v5
@@ -157,8 +155,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "pnpm"
-          cache-dependency-path: frontend/svelte-kit/pnpm-lock.yaml
 
       - name: Install pnpm
         uses: pnpm/action-setup@v5
