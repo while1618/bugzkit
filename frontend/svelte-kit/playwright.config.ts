@@ -2,6 +2,7 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
+  reporter: [['list'], ['github'], ['html', { open: 'never' }]],
   globalSetup: './tests/setup.ts',
   globalTeardown: './tests/cleanup.ts',
   webServer: {
@@ -11,6 +12,9 @@ const config: PlaywrightTestConfig = {
   use: {
     browserName: 'firefox',
     baseURL: 'http://localhost:4173',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
   testDir: 'tests',
   testMatch: /(.+\.)?(test|spec)\.[jt]s/,
