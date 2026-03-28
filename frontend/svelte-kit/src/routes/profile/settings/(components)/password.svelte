@@ -13,6 +13,7 @@
 
   const { data }: { data: PageData } = $props();
 
+  // svelte-ignore state_referenced_locally
   const changePasswordSuperform = superForm(data.changePasswordForm, {
     validators: zod4Client(changePasswordSchema),
     onUpdate({ form }) {

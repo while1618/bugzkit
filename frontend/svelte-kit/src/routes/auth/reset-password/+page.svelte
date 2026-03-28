@@ -13,6 +13,7 @@
   import { resetPasswordSchema } from './schema';
 
   const { data }: PageProps = $props();
+  // svelte-ignore state_referenced_locally
   const superform = superForm(data.form, {
     validators: zod4Client(resetPasswordSchema),
     onUpdate({ form }) {

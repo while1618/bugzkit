@@ -17,6 +17,7 @@
 
   const { data }: { data: PageData } = $props();
 
+  // svelte-ignore state_referenced_locally
   const superform = superForm(data.updateProfileForm, {
     validators: zod4Client(updateProfileSchema),
     resetForm: false,
@@ -31,6 +32,7 @@
   });
   const { form, enhance, submitting } = superform;
 
+  // svelte-ignore state_referenced_locally
   const deleteSuperform = superForm(data.deleteForm, {
     validators: zod4Client(deleteSchema),
     onUpdate({ form }) {

@@ -13,6 +13,7 @@
 
   const { data }: PageProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const superform = superForm(data.setUsernameForm, {
     validators: zod4Client(setUsernameSchema),
     onUpdate({ form }) {

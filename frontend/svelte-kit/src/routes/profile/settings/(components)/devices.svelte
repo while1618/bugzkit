@@ -24,6 +24,7 @@
     return browserStr || osStr || ua;
   }
 
+  // svelte-ignore state_referenced_locally
   const revokeDeviceSuperform = superForm(data.revokeDeviceForm, {
     validators: zod4Client(revokeDeviceSchema),
     onUpdate({ form }) {

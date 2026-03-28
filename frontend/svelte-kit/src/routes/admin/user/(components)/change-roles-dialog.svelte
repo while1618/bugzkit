@@ -15,6 +15,7 @@
 
   const { data, user }: { data: PageData; user: AdminUser } = $props();
 
+  // svelte-ignore state_referenced_locally
   const superform = superForm(data.changeRolesForm, {
     validators: zod4Client(changeRolesSchema),
     id: `change-role-form-${user.id}`,

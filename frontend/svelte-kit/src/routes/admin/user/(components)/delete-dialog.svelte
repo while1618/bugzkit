@@ -13,6 +13,7 @@
 
   const { data, user }: { data: PageData; user: AdminUser } = $props();
 
+  // svelte-ignore state_referenced_locally
   const superform = superForm(data.deleteForm, {
     validators: zod4Client(actionSchema),
     id: `delete-form-${user.id}`,
