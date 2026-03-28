@@ -1,7 +1,7 @@
 <script lang="ts">
   import Pagination from '$lib/components/shared/pagination.svelte';
+  import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
-  import { Label } from '$lib/components/ui/label';
   import * as Table from '$lib/components/ui/table';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -46,12 +46,9 @@
               <Table.Cell><LockDialog {data} {user} /></Table.Cell>
               <Table.Cell>
                 {#if user.roles}
-                  <div class="flex items-center gap-2">
-                    {#each user.roles as role, i (role.name)}
-                      <Label>
-                        {role.name}
-                        {#if i < user.roles.length - 1},{/if}
-                      </Label>
+                  <div class="flex flex-wrap items-center gap-1">
+                    {#each user.roles as role (role.name)}
+                      <Badge variant="secondary">{role.name}</Badge>
                     {/each}
                     <ChangeRolesDialog {data} {user} />
                   </div>
