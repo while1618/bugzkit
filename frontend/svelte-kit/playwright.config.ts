@@ -18,7 +18,7 @@ const config: PlaywrightTestConfig = {
   },
   testDir: 'tests',
   testMatch: /(.+\.)?(test|spec)\.[jt]s/,
-  workers: 1,
+  workers: 4,
   projects: [
     {
       name: 'setup',

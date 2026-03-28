@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { randomBytes } from 'node:crypto';
 
 export async function signIn(page: Page, usernameOrEmail: string, password = 'qwerty123') {
   await page.goto('/auth/sign-in');
@@ -28,7 +29,7 @@ export async function createUserViaAdmin(page: Page, username: string, password 
   await page.locator('input[name="confirmPassword"]').fill(password);
   await page.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByText('User created successfully')).toBeVisible();
-  await page.goto('/auth/sign-out');
+  await page.context().clearCookies();
 }
 
 export async function findUserInAdminTable(page: Page, username: string) {
@@ -39,5 +40,5 @@ export async function findUserInAdminTable(page: Page, username: string) {
 }
 
 export function uniqueUsername() {
-  return `e2e${Date.now()}`;
+  return `u${randomBytes(7).toString('hex')}`;
 }

@@ -66,6 +66,7 @@ test.describe('as user - validation errors', () => {
 
   test('account tab shows error for duplicate username', async ({ page }) => {
     await page.goto('/profile/settings');
+    await page.locator('input[name="username"]').clear();
     await page.locator('input[name="username"]').fill('admin');
     await page.getByRole('button', { name: 'Save' }).first().click();
     await expect(page.getByText('Username already exists')).toBeVisible();
@@ -73,6 +74,7 @@ test.describe('as user - validation errors', () => {
 
   test('account tab shows error for duplicate email', async ({ page }) => {
     await page.goto('/profile/settings');
+    await page.locator('input[name="email"]').clear();
     await page.locator('input[name="email"]').fill('office@bugzkit.com');
     await page.getByRole('button', { name: 'Save' }).first().click();
     await expect(page.getByText('Email already exists')).toBeVisible();
@@ -107,6 +109,7 @@ test.describe('settings with fresh user', () => {
 
     await page.goto('/profile/settings');
     const newUsername = uniqueUsername();
+    await page.locator('input[name="username"]').clear();
     await page.locator('input[name="username"]').fill(newUsername);
     await page.getByRole('button', { name: 'Save' }).first().click();
     await expect(page.getByText('Profile updated successfully')).toBeVisible();
