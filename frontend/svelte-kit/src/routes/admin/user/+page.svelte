@@ -16,7 +16,7 @@
 
 <section>
   <div class="container">
-    <div class="m-10 flex flex-col gap-5">
+    <div class="my-8 flex flex-col gap-5 px-4 sm:my-10 sm:px-0">
       <div class="flex sm:justify-end">
         <CreateDialog {data} />
       </div>

@@ -29,13 +29,13 @@
 
 <section>
   <div class="container">
-    <div class="m-20 flex flex-col items-center justify-center gap-4">
+    <div class="my-8 flex flex-col items-center justify-center gap-4 px-4 sm:my-20 sm:px-0">
       {#if !data.profile?.username}
         <h1 class="text-2xl font-extrabold">{m.profile_setUsername()}</h1>
         <Card.Root class="w-88">
           <Card.Content>
             <form
-              class="flex flex-col gap-2"
+              class="flex flex-col gap-3"
               method="POST"
               action="?/setUsername"
               use:enhance

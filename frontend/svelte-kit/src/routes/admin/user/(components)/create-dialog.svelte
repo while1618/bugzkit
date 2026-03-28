@@ -48,7 +48,7 @@
 
     <form
       id="createForm"
-      class="flex flex-col gap-2"
+      class="flex flex-col gap-3"
       method="POST"
       action="?/create"
       use:enhance

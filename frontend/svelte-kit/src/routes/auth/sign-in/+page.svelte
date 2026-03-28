@@ -33,7 +33,7 @@
 
 <section>
   <div class="container">
-    <div class="m-20 flex items-center justify-center">
+    <div class="my-8 flex items-center justify-center px-4 sm:my-20 sm:px-0">
       <div class="flex max-w-lg flex-col items-center gap-5">
         <Card.Root class="w-88">
           <Card.Header>

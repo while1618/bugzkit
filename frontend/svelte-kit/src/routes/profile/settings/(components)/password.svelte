@@ -35,7 +35,7 @@
 <Card.Root class="w-full">
   <Card.Content>
     <form
-      class="flex flex-col gap-2"
+      class="flex flex-col gap-3"
       method="POST"
       action="?/changePassword&username={data.profile?.username}"
       use:changePasswordEnhance
