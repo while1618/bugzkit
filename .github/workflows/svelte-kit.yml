@@ -71,6 +71,9 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
+      - name: Generate paraglide
+        run: pnpm exec paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide
+
       - name: Type check
         run: pnpm run check
 
