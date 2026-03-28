@@ -171,7 +171,7 @@ services:
       - traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true
 
   socket-proxy:
-    image: tecnativa/docker-socket-proxy:0.4.2
+    image: tecnativa/docker-socket-proxy:v0.4.2
     restart: unless-stopped
     read_only: true
     tmpfs:
