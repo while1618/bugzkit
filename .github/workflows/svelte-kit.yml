@@ -1,6 +1,10 @@
 name: Svelte Kit CI
 run-name: ${{ github.actor }} started CI
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 on:
   workflow_dispatch:
   push:
@@ -43,44 +47,57 @@ jobs:
         working-directory: frontend/svelte-kit
 
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Set up Node.js 22
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
 
       - name: Install pnpm
         uses: pnpm/action-setup@v5
         with:
           version: 10
 
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/svelte-kit/pnpm-lock.yaml
+
       - name: Install dependencies
-        run: pnpm i
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm run lint
+
+      - name: Type check
+        run: pnpm run check
 
       - name: Unit tests
         run: pnpm run test:unit
 
       - name: Cache Playwright browsers
+        id: playwright-cache
         uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/svelte-kit/pnpm-lock.yaml') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps firefox
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps firefox
 
       - name: Integration tests
         env:
           PUBLIC_API_URL: http://localhost:8080
           JWT_SECRET: secret
           DOMAIN_NAME: localhost
-        run: |
-          npx playwright install --with-deps
-          pnpm run test:integration
+        run: pnpm run test:integration
 
       - name: Upload Playwright report
         if: always()
@@ -90,11 +107,13 @@ jobs:
           path: |
             frontend/svelte-kit/playwright-report/
             frontend/svelte-kit/test-results/
+          retention-days: 7
 
   check-models:
     needs: changes
     if: needs.changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     env:
       REDIS_PASSWORD: ""
@@ -151,18 +170,20 @@ jobs:
           done
           echo "Backend failed to start" && exit 1
 
-      - name: Set up Node.js 22
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-
       - name: Install pnpm
         uses: pnpm/action-setup@v5
         with:
           version: 10
 
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/svelte-kit/pnpm-lock.yaml
+
       - name: Install frontend dependencies
-        run: pnpm i
+        run: pnpm install --frozen-lockfile
         working-directory: frontend/svelte-kit
 
       - name: Generate models
@@ -176,6 +197,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -191,6 +213,9 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
@@ -204,3 +229,5 @@ jobs:
           build-args: |
             PUBLIC_APP_NAME=${{ env.PUBLIC_APP_NAME }}
             PUBLIC_API_URL=${{ env.PUBLIC_API_URL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
