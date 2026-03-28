@@ -32,7 +32,7 @@
   });
   const { enhance } = superform;
   let dialogOpen = $state(false);
-  const isSelf = user.id === data.profile?.id;
+  const isSelf = $derived(user.id === data.profile?.id);
 </script>
 
 <Dialog.Root bind:open={dialogOpen}>
