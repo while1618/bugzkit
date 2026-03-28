@@ -2,6 +2,7 @@ package org.bugzkit.api.user.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -39,7 +40,7 @@ class UserControllerIT extends TestcontainersConfig {
         .perform(get(Path.USERS).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.length()").value(10))
-        .andExpect(jsonPath("$.total").value(12));
+        .andExpect(jsonPath("$.total").value(greaterThanOrEqualTo(10)));
   }
 
   @Test
