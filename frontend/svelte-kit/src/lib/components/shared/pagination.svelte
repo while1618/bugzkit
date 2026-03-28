@@ -32,11 +32,11 @@
       </Pagination.Item>
       {#each pages as pg (pg.key)}
         {#if pg.type === 'ellipsis'}
-          <Pagination.Item>
+          <Pagination.Item class="hidden sm:flex">
             <Pagination.Ellipsis />
           </Pagination.Item>
         {:else}
-          <Pagination.Item>
+          <Pagination.Item class="hidden sm:flex">
             <Pagination.Link page={pg} isActive={cp === pg.value}>
               {#snippet child({ props })}
                 <a {...props} href="{page.route.id}?page={pg.value}&size={size}">
@@ -47,6 +47,9 @@
           </Pagination.Item>
         {/if}
       {/each}
+      <Pagination.Item class="sm:hidden">
+        <span class="text-sm text-muted-foreground">{cp} / {totalPages}</span>
+      </Pagination.Item>
       <Pagination.Item>
         <Button
           variant="ghost"

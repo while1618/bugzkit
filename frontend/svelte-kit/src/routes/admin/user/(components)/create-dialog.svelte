@@ -37,7 +37,7 @@
 <Dialog.Root bind:open={dialogOpen}>
   <Dialog.Trigger>
     {#snippet child({ props })}
-      <Button {...props}>{m.admin_userCreate()}</Button>
+      <Button {...props} class="w-full sm:w-auto">{m.admin_userCreate()}</Button>
     {/snippet}
   </Dialog.Trigger>
   <Dialog.Content>

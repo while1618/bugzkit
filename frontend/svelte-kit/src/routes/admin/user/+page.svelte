@@ -17,6 +17,9 @@
 <section>
   <div class="container">
     <div class="m-10 flex flex-col gap-5">
+      <div class="flex sm:justify-end">
+        <CreateDialog {data} />
+      </div>
       <Table.Root>
         <Table.Header>
           <Table.Row>
@@ -59,15 +62,12 @@
           {/each}
         </Table.Body>
       </Table.Root>
-      <div class="flex justify-between">
-        <CreateDialog {data} />
-        <Pagination
-          currentPage={data.pageable.page}
-          count={data.users.total}
-          size={data.pageable.size}
-          class="mx-0 w-auto"
-        />
-      </div>
+      <Pagination
+        currentPage={data.pageable.page}
+        count={data.users.total}
+        size={data.pageable.size}
+        class="sm:justify-end"
+      />
     </div>
   </div>
 </section>
