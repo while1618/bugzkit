@@ -176,6 +176,7 @@ services:
     read_only: true
     tmpfs:
       - /run
+      - /tmp
     environment:
       CONTAINERS: 1
       NETWORKS: 1
