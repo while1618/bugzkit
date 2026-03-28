@@ -11,8 +11,8 @@
 
 <section>
   <div class="container">
-    <div class="m-20 flex justify-center">
-      <Tabs.Root value="account">
+    <div class="my-8 flex justify-center px-4 sm:my-20 sm:px-0">
+      <Tabs.Root value="account" class="w-full sm:w-88">
         <Tabs.List class="grid w-full grid-cols-3">
           <Tabs.Trigger value="account">
             {m.profile_account()}

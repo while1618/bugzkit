@@ -31,7 +31,7 @@
   } = changePasswordSuperform;
 </script>
 
-<Card.Root class="w-125">
+<Card.Root class="w-full">
   <Card.Content>
     <form
       class="flex flex-col gap-2"

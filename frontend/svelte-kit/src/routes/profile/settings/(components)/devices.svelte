@@ -2,7 +2,7 @@
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
   import { Button, buttonVariants } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card/index.js';
-  import * as Table from '$lib/components/ui/table';
+  import { Separator } from '$lib/components/ui/separator';
   import * as m from '$lib/paraglide/messages.js';
   import { toast } from 'svelte-sonner';
   import { superForm } from 'sveltekit-superforms';
@@ -47,48 +47,40 @@
   }
 </script>
 
-<Card.Root class="w-125">
-  <Card.Content class="flex flex-col gap-5">
+<Card.Root class="w-full">
+  <Card.Content class="flex flex-col gap-4">
     {#if data.devices.length === 0}
       <p class="text-center text-sm text-muted-foreground">{m.profile_devicesEmpty()}</p>
     {:else}
-      <Table.Root>
-        <Table.Header>
-          <Table.Row>
-            <Table.Head>{m.profile_devicesUserAgent()}</Table.Head>
-            <Table.Head>{m.profile_devicesLastActive()}</Table.Head>
-            <Table.Head></Table.Head>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {#each data.devices as device (device.deviceId)}
-            <Table.Row>
-              <Table.Cell>
+      <div class="flex flex-col">
+        {#each data.devices as device, i (device.deviceId)}
+          {#if i > 0}
+            <Separator />
+          {/if}
+          <div class="flex items-center justify-between gap-4 py-3">
+            <div class="flex min-w-0 flex-col gap-0.5">
+              <span class="truncate text-sm font-medium">
                 {parseUserAgent(device.userAgent)}
                 {#if device.current}
-                  <span class="ml-2 text-xs text-muted-foreground"
-                    >({m.profile_devicesCurrent()})</span
-                  >
+                  <span class="text-xs text-muted-foreground">({m.profile_devicesCurrent()})</span>
                 {/if}
-              </Table.Cell>
-              <Table.Cell>
+              </span>
+              <span class="text-xs text-muted-foreground">
                 {new Date(device.lastActiveAt).toLocaleString()}
-              </Table.Cell>
-              <Table.Cell class="text-right">
-                {#if !device.current}
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onclick={() => openRevokeDialog(device.deviceId)}
-                  >
-                    {m.profile_devicesRevoke()}
-                  </Button>
-                {/if}
-              </Table.Cell>
-            </Table.Row>
-          {/each}
-        </Table.Body>
-      </Table.Root>
+              </span>
+            </div>
+            {#if !device.current}
+              <Button
+                variant="destructive"
+                size="sm"
+                onclick={() => openRevokeDialog(device.deviceId)}
+              >
+                {m.profile_devicesRevoke()}
+              </Button>
+            {/if}
+          </div>
+        {/each}
+      </div>
 
       <Button href="/auth/sign-out-from-all-devices" class="w-full" variant="destructive">
         {m.profile_signOutFromAllDevices()}
