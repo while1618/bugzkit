@@ -45,7 +45,7 @@
   let deleteDialogOpen = $state(false);
 </script>
 
-<Card.Root class="w-[500px]">
+<Card.Root class="w-125">
   <Card.Content class="flex flex-col gap-5">
     <form class="flex flex-col gap-3" method="POST" action="?/updateProfile" use:enhance novalidate>
       <Form.Field form={superform} name="username">

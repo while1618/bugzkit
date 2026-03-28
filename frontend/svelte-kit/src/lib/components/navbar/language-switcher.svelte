@@ -18,7 +18,7 @@
 </script>
 
 <Select.Root type="single" bind:value={selectedLanguage} onValueChange={changeLanguage}>
-  <Select.Trigger class="w-[180px]">{labels[selectedLanguage]}</Select.Trigger>
+  <Select.Trigger class="w-45">{labels[selectedLanguage]}</Select.Trigger>
   <Select.Content>
     <Select.Group>
       <Select.GroupHeading>{m.languages()}</Select.GroupHeading>

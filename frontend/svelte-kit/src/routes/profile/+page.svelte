@@ -31,7 +31,7 @@
     <div class="m-20 flex flex-col items-center justify-center gap-4">
       {#if !data.profile?.username}
         <h1 class="text-2xl font-extrabold">{m.profile_setUsername()}</h1>
-        <Card.Root class="w-[350px]">
+        <Card.Root class="w-88">
           <Card.Content>
             <form
               class="flex flex-col gap-2"

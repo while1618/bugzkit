@@ -47,7 +47,7 @@
   }
 </script>
 
-<Card.Root class="w-[500px]">
+<Card.Root class="w-125">
   <Card.Content class="flex flex-col gap-5">
     {#if data.devices.length === 0}
       <p class="text-center text-sm text-muted-foreground">{m.profile_devicesEmpty()}</p>

@@ -29,7 +29,7 @@
   <div class="container">
     <div class="m-20 flex items-center justify-center">
       <div class="flex max-w-lg flex-col items-center gap-5">
-        <Card.Root class="w-[350px]">
+        <Card.Root class="w-88">
           <Card.Header>
             <Card.Title class="text-2xl">{m.auth_signUp()}</Card.Title>
           </Card.Header>
