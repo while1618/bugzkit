@@ -1,4 +1,4 @@
-name: Svelte Kit CI
+name: UI CI
 run-name: ${{ github.actor }} started CI
 
 concurrency:
@@ -10,13 +10,13 @@ on:
   push:
     branches: [master]
     paths:
-      - frontend/svelte-kit/**
-      - backend/spring-boot/src/main/java/**
+      - ui/**
+      - api/src/main/java/**
   pull_request:
     branches: [master]
     paths:
-      - frontend/svelte-kit/**
-      - backend/spring-boot/src/main/java/**
+      - ui/**
+      - api/src/main/java/**
 
 env:
   PUBLIC_APP_NAME: ${{vars.PUBLIC_APP_NAME}}
@@ -26,25 +26,25 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      backend: ${{ steps.filter.outputs.backend }}
+      ui: ${{ steps.filter.outputs.ui }}
+      api: ${{ steps.filter.outputs.api }}
     steps:
       - uses: actions/checkout@v6
       - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
-            frontend:
-              - 'frontend/svelte-kit/**'
-            backend:
-              - 'backend/spring-boot/src/main/java/**'
+            ui:
+              - 'ui/**'
+            api:
+              - 'api/src/main/java/**'
 
   build:
     needs: changes
-    if: needs.changes.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch'
+    if: needs.changes.outputs.ui == 'true' || github.event_name == 'workflow_dispatch'
     defaults:
       run:
-        working-directory: frontend/svelte-kit
+        working-directory: ui
 
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -63,7 +63,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: frontend/svelte-kit/pnpm-lock.yaml
+          cache-dependency-path: ui/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -85,7 +85,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/svelte-kit/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('ui/pnpm-lock.yaml') }}
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -108,13 +108,13 @@ jobs:
         with:
           name: playwright-report
           path: |
-            frontend/svelte-kit/playwright-report/
-            frontend/svelte-kit/test-results/
+            ui/playwright-report/
+            ui/test-results/
           retention-days: 7
 
   check-models:
     needs: changes
-    if: needs.changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
+    if: needs.changes.outputs.api == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -156,22 +156,22 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Build Spring Boot
+      - name: Build API
         run: ./mvnw -B clean install -DskipTests
-        working-directory: backend/spring-boot
+        working-directory: api
 
-      - name: Start Spring Boot
+      - name: Start API
         run: ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev &
-        working-directory: backend/spring-boot
+        working-directory: api
 
-      - name: Wait for backend
+      - name: Wait for API
         run: |
           for i in {1..30}; do
-            curl -sf http://localhost:8080/v3/api-docs > /dev/null && echo "Backend ready" && exit 0
+            curl -sf http://localhost:8080/v3/api-docs > /dev/null && echo "API ready" && exit 0
             echo "Waiting... ($i/30)"
             sleep 5
           done
-          echo "Backend failed to start" && exit 1
+          echo "API failed to start" && exit 1
 
       - name: Install pnpm
         uses: pnpm/action-setup@v5
@@ -183,18 +183,18 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: frontend/svelte-kit/pnpm-lock.yaml
+          cache-dependency-path: ui/pnpm-lock.yaml
 
-      - name: Install frontend dependencies
+      - name: Install UI dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: frontend/svelte-kit
+        working-directory: ui
 
       - name: Generate models
         run: pnpm run generate:models
-        working-directory: frontend/svelte-kit
+        working-directory: ui
 
       - name: Check for model drift
-        run: git diff --exit-code frontend/svelte-kit/src/lib/models/api.d.ts
+        run: git diff --exit-code ui/src/lib/models/api.d.ts
 
   push-image:
     needs: build
@@ -208,7 +208,7 @@ jobs:
 
       - name: Get ui version
         id: ui-version
-        run: echo "version=$(jq -r .version frontend/svelte-kit/package.json)" >> $GITHUB_OUTPUT
+        run: echo "version=$(jq -r .version ui/package.json)" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
         uses: docker/login-action@v4
@@ -222,8 +222,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
-          context: frontend/svelte-kit
-          file: frontend/svelte-kit/Dockerfile
+          context: ui
+          file: ui/Dockerfile
           target: prod
           push: true
           tags: |

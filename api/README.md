@@ -1,4 +1,4 @@
-## Running the Backend
+## Running the API
 
 ### Running Locally
 

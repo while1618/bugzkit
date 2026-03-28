@@ -20,19 +20,19 @@ The goal is to provide a reliable and customizable foundation that eliminates re
 
 ### Core features
 
-| Feature                  | Description                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------ |
-| **Authentication**       | JWT auth with role-based access control                                              |
-| **Admin Panel**          | Complete user management interface                                                   |
-| **Error Handling**       | Standardized error codes and handling mechanisms                                     |
-| **Internationalization** | Built-in i18n support                                                                |
-| **Email Support**        | Sending responsive emails ([MJML](https://github.com/mjmlio/mjml)) from your backend |
-| **Logging**              | Comprehensive logging and monitoring system                                          |
+| Feature                  | Description                                                                      |
+| ------------------------ | -------------------------------------------------------------------------------- |
+| **Authentication**       | JWT auth with role-based access control                                          |
+| **Admin Panel**          | Complete user management interface                                               |
+| **Error Handling**       | Standardized error codes and handling mechanisms                                 |
+| **Internationalization** | Built-in i18n support                                                            |
+| **Email Support**        | Sending responsive emails ([MJML](https://github.com/mjmlio/mjml)) from your api |
+| **Logging**              | Comprehensive logging and monitoring system                                      |
 
 ### Tech Stack
 
 <details>
-  <summary>Backend</summary>
+  <summary>API</summary>
 
 - [Java 25](https://openjdk.org/projects/jdk/25/)
 - [SpringBoot](https://spring.io/projects/spring-boot)
@@ -42,7 +42,7 @@ The goal is to provide a reliable and customizable foundation that eliminates re
 </details>
 
 <details>
-  <summary>Frontend</summary>
+  <summary>UI</summary>
 
 - [SvelteKit](https://kit.svelte.dev/)
 - [TypeScript](https://www.typescriptlang.org/)

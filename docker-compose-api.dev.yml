@@ -6,7 +6,7 @@ services:
     container_name: bugzkit-api
     image: bugzkit-api:dev
     build:
-      context: ./backend/spring-boot
+      context: ./api
       target: dev
     ports:
       - "${API_PORT:-8080}:${API_PORT:-8080}"

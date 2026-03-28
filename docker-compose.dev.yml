@@ -6,7 +6,7 @@ services:
     container_name: bugzkit-ui
     image: bugzkit-ui:dev
     build:
-      context: ./frontend/svelte-kit
+      context: ./ui
       dockerfile: Dockerfile
       target: dev
     ports:

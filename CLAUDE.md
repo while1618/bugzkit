@@ -8,7 +8,7 @@ bugzkit is a production-ready full-stack web application template with a Spring 
 
 ## Common Commands
 
-### Backend (Spring Boot — `backend/spring-boot/`)
+### API (Spring Boot — `api/`)
 
 | Task                 | Command                                                  |
 | -------------------- | -------------------------------------------------------- |
@@ -21,7 +21,7 @@ bugzkit is a production-ready full-stack web application template with a Spring 
 
 Integration tests use `*IT.java` suffix and run via Maven Failsafe. They require Testcontainers (Docker must be running).
 
-### Frontend (SvelteKit — `frontend/svelte-kit/`)
+### UI (SvelteKit — `ui/`)
 
 | Task       | Command                     |
 | ---------- | --------------------------- |
@@ -42,7 +42,7 @@ Integration tests use `*IT.java` suffix and run via Maven Failsafe. They require
 
 ## Architecture
 
-### Backend (`backend/spring-boot/src/main/java/org/bugzkit/api/`)
+### API (`api/src/main/java/org/bugzkit/api/`)
 
 Organized by feature module, each with controller/service/repository/payload layers:
 
@@ -60,7 +60,7 @@ Security: Stateless sessions, JWT filter chain, role-based access (ADMIN/USER). 
 - Token data (userId, roles, deviceId) must only be extracted from a JWT **after** signature verification.
 - **Rate limiting** uses Bucket4j (token bucket algorithm) with Redis (Lettuce) as the distributed bucket store. Apply the `@RateLimit(requests, duration)` annotation to controller methods. Buckets are keyed as `rate-limit:{EndpointName}:{ClientIP}` in Redis. Configurable via `rate-limit.enabled` (defaults to `true`, disabled in tests, except @RateLimitIT). Rate-limited endpoints return `429 Too Many Requests` with a `Retry-After` header.
 
-### Frontend (`frontend/svelte-kit/src/`)
+### UI (`ui/src/`)
 
 - **`routes/`** — SvelteKit file-based routing: `/auth/*` (sign-in, sign-up, forgot-password, etc.), `/profile/`, `/user/[name]/`, `/admin/user/`.
 - **`lib/server/apis/api.ts`** — HTTP client (`makeRequest()`) that communicates with the backend, handling cookie-based auth and Set-Cookie propagation.
@@ -99,4 +99,4 @@ The `JWT_SECRET` must match between frontend and backend for token verification.
 
 ## CI
 
-GitHub Actions workflows trigger on changes to their respective directories (`backend/`, `frontend/`, `docs/`). Backend CI runs spotless check + tests + integration tests. Frontend CI runs lint + unit tests + Playwright. Only master branch pushes Docker images.
+GitHub Actions workflows trigger on changes to their respective directories (`api/`, `ui/`, `docs/`). API CI runs spotless check + tests + integration tests. UI CI runs lint + unit tests + Playwright. Only master branch pushes Docker images.

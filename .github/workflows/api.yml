@@ -1,4 +1,4 @@
-name: Spring Boot CI
+name: API CI
 run-name: ${{ github.actor }} started CI
 
 concurrency:
@@ -10,17 +10,17 @@ on:
   push:
     branches: [master]
     paths:
-      - backend/spring-boot/**
+      - api/**
   pull_request:
     branches: [master]
     paths:
-      - backend/spring-boot/**
+      - api/**
 
 jobs:
   build:
     defaults:
       run:
-        working-directory: backend/spring-boot
+        working-directory: api
 
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: jacoco-report
-          path: backend/spring-boot/target/site/jacoco/
+          path: api/target/site/jacoco/
           retention-days: 7
 
   push-image:
@@ -66,7 +66,7 @@ jobs:
       - name: Get api version
         id: api-version
         run: |
-          VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" backend/spring-boot/pom.xml | sed 's/-SNAPSHOT//')
+          VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" api/pom.xml | sed 's/-SNAPSHOT//')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
@@ -81,8 +81,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
-          context: backend/spring-boot
-          file: backend/spring-boot/Dockerfile
+          context: api
+          file: api/Dockerfile
           target: prod
           push: true
           tags: |

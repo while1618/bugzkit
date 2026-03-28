@@ -2,7 +2,7 @@ import type { components } from '../api';
 
 export type ErrorMessage = Required<components['schemas']['ErrorMessage']>;
 
-// ErrorCode is frontend-specific — maps backend error codes to i18n message keys
+// ErrorCode maps API error codes to i18n message keys
 export enum ErrorCode {
   API_ERROR_AUTH_UNAUTHORIZED = 'API_ERROR_AUTH_UNAUTHORIZED',
   API_ERROR_AUTH_FORBIDDEN = 'API_ERROR_AUTH_FORBIDDEN',
