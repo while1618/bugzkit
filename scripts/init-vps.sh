@@ -17,7 +17,6 @@
 #   10.  Docker CE
 #   11.  Docker daemon — log rotation & security defaults
 #   12.  Secret files  (mounted into containers via compose secrets)
-#   13.  Deploy the stack
 # ==============================================================================
 set -euo pipefail
 
