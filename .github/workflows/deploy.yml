@@ -1,17 +1,19 @@
 name: Deploy CI
 run-name: ${{ github.actor }} started CI
 
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
 on:
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
       - name: Fail if not on master
         if: github.ref != 'refs/heads/master'
         run: echo "This workflow can only be run on the master branch." && exit 1
@@ -19,6 +21,9 @@ jobs:
       - name: Fail if not run by owner
         if: github.actor != 'while1618'
         run: echo "This workflow can only be run by the owner." && exit 1
+
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Copy compose file to server
         uses: appleboy/scp-action@v1
