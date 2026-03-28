@@ -8,6 +8,7 @@ const config: PlaywrightTestConfig = {
   webServer: {
     command: 'pnpm run build && pnpm run preview',
     port: 4173,
+    reuseExistingServer: !process.env.CI,
   },
   use: {
     browserName: 'firefox',
@@ -18,11 +19,14 @@ const config: PlaywrightTestConfig = {
   },
   testDir: 'tests',
   testMatch: /(.+\.)?(test|spec)\.[jt]s/,
+  timeout: 60_000,
+  retries: process.env.CI ? 1 : 0,
   workers: 4,
   projects: [
     {
       name: 'setup',
       testMatch: /auth\.setup\.[jt]s/,
+      use: { trace: 'off', screenshot: 'off', video: 'off' },
     },
     {
       name: 'tests',
