@@ -12,7 +12,7 @@ import jwt from 'jsonwebtoken';
 const tryToGetSignedInUser: Handle = async ({ event, resolve }) => {
   try {
     const accessToken = event.cookies.get('accessToken') ?? '';
-    const { iss } = jwt.verify(accessToken, env.JWT_SECRET) as JwtPayload;
+    const { iss } = jwt.verify(accessToken, env.JWT_SECRET!) as JwtPayload;
     event.locals.userId = iss;
   } catch (_) {
     await tryToRefreshToken(event.cookies, event.locals, event.request);
@@ -27,7 +27,7 @@ async function tryToRefreshToken(
 ): Promise<void> {
   try {
     const refreshToken = cookies.get('refreshToken') ?? '';
-    jwt.verify(refreshToken, env.JWT_SECRET);
+    jwt.verify(refreshToken, env.JWT_SECRET!);
     const response = await makeRequest(
       {
         method: HttpRequest.POST,
