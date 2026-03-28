@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-#  Bugzkit — Production VPS Initialization Script
+#  bugzikt — Production VPS Initialization Script
 #  Target : Debian 12 (Bookworm) on DigitalOcean
 #  Run as : root
 #

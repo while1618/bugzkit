@@ -4,35 +4,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Bugzkit is a production-ready full-stack web application template with a Spring Boot backend and SvelteKit frontend, containerized with Docker.
+bugzkit is a production-ready full-stack web application template with a Spring Boot backend and SvelteKit frontend, containerized with Docker.
 
 ## Common Commands
 
 ### Backend (Spring Boot — `backend/spring-boot/`)
 
-| Task | Command                                                 |
-|---|---------------------------------------------------------|
-| Build (skip tests) | `./mvnw -B clean install -DskipTests`                   |
-| Run (dev profile) | `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` |
+| Task                 | Command                                                  |
+| -------------------- | -------------------------------------------------------- |
+| Build (skip tests)   | `./mvnw -B clean install -DskipTests`                    |
+| Run (dev profile)    | `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev`  |
 | All tests + coverage | `./mvnw -B clean verify` (report: `target/site/jacoco/`) |
-| Unit tests only | `./mvnw -B test`                                        |
-| Format check | `./mvnw -B spotless:check`                              |
-| Format fix | `./mvnw spotless:apply`                                 |
+| Unit tests only      | `./mvnw -B test`                                         |
+| Format check         | `./mvnw -B spotless:check`                               |
+| Format fix           | `./mvnw spotless:apply`                                  |
 
 Integration tests use `*IT.java` suffix and run via Maven Failsafe. They require Testcontainers (Docker must be running).
 
 ### Frontend (SvelteKit — `frontend/svelte-kit/`)
 
-| Task | Command |
-|---|---|
-| Install | `pnpm install` |
-| Dev server | `pnpm run dev` |
-| Build | `pnpm run build` |
-| Lint | `pnpm run lint` |
-| Lint fix | `pnpm run lint:fix` |
-| Unit tests | `pnpm run test:unit` |
-| E2E tests | `pnpm run test:integration` |
-| Type check | `pnpm run check` |
+| Task       | Command                     |
+| ---------- | --------------------------- |
+| Install    | `pnpm install`              |
+| Dev server | `pnpm run dev`              |
+| Build      | `pnpm run build`            |
+| Lint       | `pnpm run lint`             |
+| Lint fix   | `pnpm run lint:fix`         |
+| Unit tests | `pnpm run test:unit`        |
+| E2E tests  | `pnpm run test:integration` |
+| Type check | `pnpm run check`            |
 
 ### Docker (from repo root)
 
