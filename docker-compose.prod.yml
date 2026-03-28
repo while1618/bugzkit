@@ -184,7 +184,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:2375/version"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2375/version"]
       start_period: 5s
       interval: 10s
       timeout: 5s
